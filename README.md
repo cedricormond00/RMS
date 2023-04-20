@@ -1,2 +1,2 @@
 # RMS
-Master thesis repo code. This repository will contain all the source code
+Master thesis code repo. This repository will contain all the source code
