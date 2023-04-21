@@ -7,5 +7,7 @@
 
 //function prototypes
 void multipin_HL(unsigned int pin_array[], unsigned int arraySize, unsigned int status);
+void multipin_pinMode(unsigned int pin_array[], unsigned int arraySize, unsigned int mode);
+
 
 #endif
