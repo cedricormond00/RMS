@@ -9,8 +9,8 @@
   test test 3
  */
 unsigned int allLEDpin_array[] = m_array_allLEDpin;
-unsigned int arraySizeAllLed = sizeof(allLEDpin_array) / sizeof(allLEDpin_array[0]);
-// unsigned int arraySizeAllLed = (array_allLEDpin) / sizeof(array_allLEDpin[0]);
+unsigned int AllLedArray_length = ARRAY_LENGTH(allLEDpin_array);
+// unsigned int AllLedArray_length = (array_allLEDpin) / sizeof(array_allLEDpin[0]);
 
 
 void setup() {
@@ -18,39 +18,34 @@ void setup() {
   while (!Serial);
   Serial.println("Setup begin");
 
-  // initialize the digital pin as an output.
-  multipin_pinMode(allLEDpin_array, arraySizeAllLed, OUTPUT);
+  // unsigned int *arraypx0; //pointer to the first eleemnt of the array
+  // arraypx0 = &allLEDpin_array[0]; // adress of the first array element
+  // Serial.print("First array element : ");
+  // Serial.println(*arraypx0); // print the content at address pointed to by arraypx0
+  // unsigned int *arraypx = arraypx0 +2;//sizeof(*arraypx0); //pointer to the second element in the address
+  // Serial.print("Second array element : ");
+  // Serial.println(*arraypx);
+  // unsigned int *arraypx = arraypx0 - sizeof(allLEDpin_array[0]); //pointer to the array
+  // Serial.print("Array : ");
+  // Serial.println(*arraypx);
 
-  // for (unsigned int thisPin = 0; thisPin < arraySizeAllLed; thisPin++) 
-  // {
-  //   pinMode(allLEDpin_array[thisPin], OUTPUT);
-  //   Serial.print("setup: pin");
-  //   Serial.println(allLEDpin_array[thisPin]);
-  // }
+
+
+  // initialize the digital pin as an output.
+  //multipin_pinMode(allLEDpin_array, ARRAY_LENGTH(allLEDpin_array), 1);
+  multipin_pinMode(allLEDpin_array, AllLedArray_length, 1);
 }
 
 void loop()
 {
   // if you want to declare an array of unsigned int: make sure to include the [] after the variable name
   // unsigned int array_allLEDpin[] = m_array_allLEDpin;
-  // unsigned int arraySizeAllLed = sizeof(array_allLEDpin) / sizeof(array_allLEDpin[0]);
+  // unsigned int AllLedArray_length = sizeof(array_allLEDpin) / sizeof(array_allLEDpin[0]);
 
-  multipin_HL(allLEDpin_array, arraySizeAllLed, 1);   // turn the LED on (HIGH is the voltage level)
+  multipin_HL(allLEDpin_array, AllLedArray_length, 1);   // turn the LED on (HIGH is the voltage level)
   delay(500);              // wait for a second
-  multipin_HL(allLEDpin_array, arraySizeAllLed, 0);    // turn the LED off by making the voltage LOW
+  multipin_HL(allLEDpin_array, AllLedArray_length, 0);    // turn the LED off by making the voltage LOW
   delay(500);               // wait for a second
   Serial.println("loop: pin");
+  
 }
-
-
-
-
-// void multipin_pinMode(int n_pinAllLEDs[], int status)
-// {
-//   for(int n_pinLED : n_pinAllLEDs)// for each element in the array
-//   {
-//     pinMode(n_pinLED, 1);
-//   }
-// }
-
-

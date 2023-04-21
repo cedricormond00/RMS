@@ -2,6 +2,7 @@
 #ifndef CONSTANT_H // include guard
 #define CONSTANT_H
 
+
 // pin assignment
 #define blueLed_pin 21
 #define redLed_pin 0
@@ -10,6 +11,8 @@
 #define orangeLed_pin 3
 
 #define m_array_allLEDpin {blueLed_pin, redLed_pin, greenLed_pin, yellowLed_pin, orangeLed_pin}
-//#define arraySizeAllLed (sizeof(array_allLEDpin) / sizeof(array_allLEDpin[0]))
+
+#define ARRAY_LENGTH(arr) (sizeof(arr) / sizeof((arr)[0]))
+// #define arraySizeAllLed (sizeof(m_array_allLEDpin) / sizeof(m_array_allLEDpin[0]))
 
 #endif

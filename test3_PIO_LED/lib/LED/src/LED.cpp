@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "LED.h"
 #include "constant.h"
+#include "template.h"
 
 void multipin_HL(unsigned int pin_arr[], unsigned int arraySize, unsigned int status)
 {
@@ -25,3 +26,21 @@ void multipin_pinMode(unsigned int pin_array[], unsigned int arraySize, unsigned
     pinMode(currPin, mode);
   }
 }
+
+// void multipin_pinMode_s(unsigned int (&pin_array)[], unsigned int mode)
+// {
+//   unsigned int *arraypx0; //pointer to the first eleemnt of the array
+//   arraypx0 = &allLEDpin_array[0]; // adress of the first array element
+//   Serial.print("First array element : ");
+//   Serial.println(*arraypx0); // print the content at address pointed to by arraypx0
+//   unsigned int *arraypx = arraypx0 + 1;//sizeof(*arraypx0); //pointer to the second element in the address
+//   Serial.print("Second array element : ");
+//   Serial.println(*arraypx);
+//   unsigned int arraySize = sizeof(pin_array) / sizeof(pin_array[0]);
+//   //size_t arraySize = array_length(pin_array);
+
+//   for (unsigned int currPin = 0; currPin < arraySize; currPin++) 
+//   {
+//     pinMode(currPin, mode);
+//   }
+// }
