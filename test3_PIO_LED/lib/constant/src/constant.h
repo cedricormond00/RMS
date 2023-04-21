@@ -8,7 +8,8 @@
 #define greenLed_pin 1
 #define yellowLed_pin 2
 #define orangeLed_pin 3
-// #define array_allLEDpin {blueLed_pin, redLed_pin, greenLed_pin, yellowLed_pin, orangeLed_pin}
+
+#define m_array_allLEDpin {blueLed_pin, redLed_pin, greenLed_pin, yellowLed_pin, orangeLed_pin}
 //#define arraySizeAllLed (sizeof(array_allLEDpin) / sizeof(array_allLEDpin[0]))
 
 #endif

@@ -10,7 +10,8 @@
  */
 
 // if you want to declare an array of unsigned int: make sure to include the [] after the variable name
-unsigned int array_allLEDpin[] = {blueLed_pin, redLed_pin, greenLed_pin, yellowLed_pin, orangeLed_pin};
+//unsigned int array_allLEDpin[] = {blueLed_pin, redLed_pin, greenLed_pin, yellowLed_pin, orangeLed_pin};
+unsigned int array_allLEDpin[] = m_array_allLEDpin;
 unsigned int arraySizeAllLed = sizeof(array_allLEDpin) / sizeof(array_allLEDpin[0]);
 // the setup routine runs once when you press reset:
 
@@ -25,9 +26,10 @@ void setup() {
   // digitalWrite(n_orangeLed_pin, OUTPUT);
   Serial.begin(9600);
   delay(1000);
-  while (!Serial) {}
+  while (!Serial);
   Serial.println("setup begin");
-  for (unsigned int thisPin = 0; thisPin < arraySizeAllLed; thisPin++) {
+  pinMode(blueLed_pin, OUTPUT);
+  for (unsigned int thisPin = 1; thisPin < arraySizeAllLed; thisPin++) {
     pinMode(array_allLEDpin[thisPin], OUTPUT);
     // Serial.println(sprintf("pin %/n", thisPin));
     Serial.print("setup: pin");
