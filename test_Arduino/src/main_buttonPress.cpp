@@ -11,7 +11,7 @@
  */
 
 // declare the variable bp here and only here for the first time
-bool bp = false; // true <=> button press
+volatile bool bp = false; // true <=> button press
 
 void setup() {
   Serial.begin(9600);
@@ -31,10 +31,21 @@ void setup() {
 }
 
 void loop()
-{  
+{ Serial.print("button state: ");
+  Serial.println(digitalRead(BUTTON_PIN));
+  Serial.print("LED pin state: ");
+  Serial.println(digitalRead(ORANGELED_PIN));
+  Serial.print("bp :");
+  Serial.println(bp);
+  Serial.println();
+
+  delay(500);
   if (bp) {
     Serial.println("button pressed");
-    //digitalWrite(ORANGELED_PIN, HIGH);
+    Serial.print("bp:");
+    Serial.println(bp);
+
+    //digitalWrite(ORANGELED_PIN, LOW);
     ToggleLED(ORANGELED_PIN);
     bp = false;
   }

@@ -28,7 +28,7 @@ void multipin_pinMode(unsigned int pin_array[], unsigned int arraySize, unsigned
 }
 
 void ToggleLED(unsigned int pin){
-  digitalWrite(pin, ~digitalRead(pin));
+  digitalWrite(pin, !digitalRead(pin));
 }
 
 // void multipin_pinMode_s(unsigned int (&pin_array)[], unsigned int mode)

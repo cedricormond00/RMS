@@ -6,7 +6,7 @@
 // #ifndef bp // include guard
 // define the variable as extern here (compiler knows this variable is declared elsewhere)
 // this will be shared across all files which include this header file
-extern bool bp; // true <=> button press
+extern volatile bool bp; // true <=> button press
 // #endif
 
 // pin assignment

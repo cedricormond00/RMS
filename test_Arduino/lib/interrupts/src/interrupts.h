@@ -5,6 +5,6 @@
 
 // Function prototype
 void Interrupts_init(void);
-void ISR (void);
+void ISR_buttonPress (void);
 
 #endif
