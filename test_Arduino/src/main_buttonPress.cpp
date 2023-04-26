@@ -26,20 +26,35 @@ void setup() {
 
   // set the LED initially on
   digitalWrite(ORANGELED_PIN, HIGH);
+  Serial.println("before interrupt setup");
+  RegisterView();
 
-  Interrupts_init();
+
+
+  // Interrupts_init();
+  // Serial.println("After Arduino interrupt setup");
+  // RegisterView();
+
+  Interrupts_init_LL();
+  Serial.println("After Low Level interrupt setup");
+  RegisterView();
+  Serial.println("Setup complete");
+
 }
 
 void loop()
-{ Serial.print("button state: ");
-  Serial.println(digitalRead(BUTTON_PIN));
-  Serial.print("LED pin state: ");
-  Serial.println(digitalRead(ORANGELED_PIN));
-  Serial.print("bp :");
-  Serial.println(bp);
-  Serial.println();
+{ 
+  if (false){
+    Serial.print("button state: ");
+    Serial.println(digitalRead(BUTTON_PIN));
+    Serial.print("LED pin state: ");
+    Serial.println(digitalRead(ORANGELED_PIN));
+    Serial.print("bp :");
+    Serial.println(bp);
+    Serial.println();
 
-  delay(500);
+    delay(500);
+  }
   if (bp) {
     Serial.println("button pressed");
     Serial.print("bp:");
@@ -49,4 +64,15 @@ void loop()
     ToggleLED(ORANGELED_PIN);
     bp = false;
   }
+  if (false){
+    Serial.print("flag state:");
+    Serial.println(EIC->INTFLAG.bit.EXTINT11);
+    Serial.println(EIC->INTFLAG.reg);
+  }
+
+  if(EIC->INTFLAG.bit.EXTINT11){
+        // clear the interrupt flag
+        EIC->INTFLAG.reg = EIC_INTFLAG_EXTINT11;
+        bp = true;
+    }
 }
