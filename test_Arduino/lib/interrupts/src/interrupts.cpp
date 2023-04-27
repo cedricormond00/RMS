@@ -16,47 +16,49 @@ unsigned int count_flags = 0;
 // Here you may use the bp variable, whic was declared in main.cpp
 
 void ISR_buttonPress (void){
-    bp = true;
+    count_flags++;
     Serial.println();
-    Serial.println("in ISR");
+    Serial.println("IN ISR_BUTTONPRESS");
+    Serial.print("bp: ");
+    Serial.println(bp);
+    Serial.print("INTFLAG.bit.EXTINT11: ");
+    Serial.println(EIC->INTFLAG.bit.EXTINT11);
+    Serial.print("nb of flags raised: ");
+    bp = true;
+    Serial.println("bp toggled");
     Serial.print("bp:");
     Serial.println(bp);
-    Serial.println();
-
-
-    //ToggleLED(ORANGELED_PIN);
-
 }
 void Interrupts_init(void){
+    extern void ISR_buttonPress();
     attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), ISR_buttonPress, RISING);
 }
-void EIC_Handler(void){
-// void __attribute__((interrupt)) MyEIC_Handler() {
-    // Code to execute when EIC interrupt is triggered
-    if(EIC->INTFLAG.bit.EXTINT11){
-        // clear the interrupt flag
-        count_flags++;
-        Serial.println();
-        Serial.println("IN EIC_HANDLER");
-        Serial.print("bp: ");
-        Serial.println(bp);
-        Serial.print("INTFLAG.bit.EXTINT11: ");
-        Serial.println(EIC->INTFLAG.bit.EXTINT11);
-        Serial.print("nb of flags raised: ");
-        Serial.println(count_flags);
-        // reset flag
-        EIC->INTFLAG.reg = EIC_INTFLAG_EXTINT11;
-        bp = true;
-        Serial.println("flag and bp toggled");
-        Serial.print("bp:");
-        Serial.println(bp);
-        Serial.print("INTFLAG.bit.EXTINT11: ");
-        Serial.println(EIC->INTFLAG.bit.EXTINT11);
-        Serial.println();
-    }
-    
-    
-}
+
+// void EIC_Handler(void){
+// // void __attribute__((interrupt)) MyEIC_Handler() {
+//     // Code to execute when EIC interrupt is triggered
+//     if(EIC->INTFLAG.bit.EXTINT11){
+//         // clear the interrupt flag
+//         count_flags++;
+//         Serial.println();
+//         Serial.println("IN EIC_HANDLER");
+//         Serial.print("bp: ");
+//         Serial.println(bp);
+//         Serial.print("INTFLAG.bit.EXTINT11: ");
+//         Serial.println(EIC->INTFLAG.bit.EXTINT11);
+//         Serial.print("nb of flags raised: ");
+//         Serial.println(count_flags);
+//         // reset flag
+//         EIC->INTFLAG.reg = EIC_INTFLAG_EXTINT11;
+//         bp = true;
+//         Serial.println("flag and bp toggled");
+//         Serial.print("bp:");
+//         Serial.println(bp);
+//         Serial.print("INTFLAG.bit.EXTINT11: ");
+//         Serial.println(EIC->INTFLAG.bit.EXTINT11);
+//         Serial.println();
+//     }
+// }
 
 void RegisterView(void){
     Serial.print("GCLK->GENCTRL.reg: ");

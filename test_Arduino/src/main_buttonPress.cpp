@@ -33,14 +33,14 @@ void setup() {
 
 
 
-  // Interrupts_init();
-  // Serial.println("After Arduino interrupt setup");
-  // RegisterView();
-
-  Interrupts_init_LL();
-  Serial.println("After Low Level interrupt setup");
+  Interrupts_init();
+  Serial.println("After Arduino interrupt setup");
   RegisterView();
-  Serial.println("Setup complete");
+
+  // Interrupts_init_LL();
+  // Serial.println("After Low Level interrupt setup");
+  // RegisterView();
+  // Serial.println("Setup complete");
 
 }
 
