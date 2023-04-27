@@ -31,7 +31,7 @@ void ISR_buttonPress (void){
 }
 void Interrupts_init(void){
     extern void ISR_buttonPress();
-    attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), ISR_buttonPress, RISING);
+    attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), ISR_buttonPress, FALLING);
 }
 
 // void EIC_Handler(void){
