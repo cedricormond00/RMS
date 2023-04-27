@@ -13,6 +13,8 @@
 // declare the variable bp here and only here for the first time
 volatile bool bp = false; // true <=> button press
 
+unsigned int count_bp = 0;
+
 void setup() {
   Serial.begin(9600);
   while (!Serial);
@@ -56,23 +58,23 @@ void loop()
     delay(500);
   }
   if (bp) {
-    Serial.println("button pressed");
+    Serial.println("BUTTON PRESSED");
     Serial.print("bp:");
     Serial.println(bp);
+    count_bp++;
+    Serial.print("Nb of button presses:");
+    Serial.println(count_bp);
+
 
     //digitalWrite(ORANGELED_PIN, LOW);
     ToggleLED(ORANGELED_PIN);
     bp = false;
+    Serial.print("bp back to false: ");
+    Serial.println(bp);
   }
   if (false){
     Serial.print("flag state:");
     Serial.println(EIC->INTFLAG.bit.EXTINT11);
     Serial.println(EIC->INTFLAG.reg);
   }
-
-  if(EIC->INTFLAG.bit.EXTINT11){
-        // clear the interrupt flag
-        EIC->INTFLAG.reg = EIC_INTFLAG_EXTINT11;
-        bp = true;
-    }
 }

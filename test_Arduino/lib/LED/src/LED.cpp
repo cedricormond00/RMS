@@ -29,6 +29,9 @@ void multipin_pinMode(unsigned int pin_array[], unsigned int arraySize, unsigned
 
 void ToggleLED(unsigned int pin){
   digitalWrite(pin, !digitalRead(pin));
+  Serial.println("TOGGLING LED");
+  Serial.print("LED status: ");
+  Serial.println(digitalRead(pin));
 }
 
 // void multipin_pinMode_s(unsigned int (&pin_array)[], unsigned int mode)

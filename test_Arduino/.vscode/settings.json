@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "variant.h": "c",
+        "wvariant.h": "c",
+        "wiring_private.h": "c"
+    }
+}
