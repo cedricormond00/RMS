@@ -10,9 +10,9 @@
 #include <Wire.h>                //enable I2C.
 #define address 98               //default I2C ID number for EZO ORP Circuit.
 
-
+const bool text = true;         // If we want the full text description
 const unsigned int computerData_length = 20;
-char computerdata[computerData_length];           //we make a 20 byte character array to hold incoming data from a pc/mac/other.
+char computerdata[computerData_length] = {'\0'}; //= [0];           //we make a 20 byte character array to hold incoming data from a pc/mac/other.
 byte received_from_computer = 0; //we need to know how many characters have been received.
 byte serial_event = 0;           //a flag to signal when data has been received from the pc/mac/other.
 byte code = 0;                   //used to hold the I2C response code.
@@ -30,31 +30,41 @@ void setup()                    //hardware initialization.
   Wire.begin();                 //enable I2C port.
 }
 
+void TextDescription(){
+  Serial.print("received_from_computer: ");
+  Serial.println(received_from_computer);
+  Serial.print("computerdata: ");
+  Serial.println(computerdata);        
+  Serial.print("computerdata[0]: ");
+  Serial.println(computerdata[0]);
+  Serial.print("computerdata[0], ASCII code: ");
+  Serial.println((int)computerdata[0]);
+  Serial.print("computerdata[received_from_computer-1]: ");
+  Serial.println(computerdata[received_from_computer-1]);
+  Serial.print("computerdata[received_from_computer-1], ASCII code: ");
+  Serial.println((int)computerdata[received_from_computer-1]);
+  Serial.print("computerdata[received_from_computer]: ");
+  Serial.println(computerdata[received_from_computer]);
+  Serial.print("computerdata[received_from_computer], ASCII code: ");
+  Serial.println((int)computerdata[received_from_computer]);
+}
 
 void serialEvent() {                                                              //this interrupt will trigger when the data coming from the serial monitor(pc/mac/other) is received.
-  received_from_computer = Serial.readBytesUntil(13, computerdata, computerData_length); //13 is carriage return (enter key for terminator)          //we read the data sent from the serial monitor(pc/mac/other) until we see a <CR>. We also count how many characters have been received.
+  received_from_computer = Serial.readBytesUntil(10, computerdata, computerData_length); //13 is carriage return (enter key for terminator)          //we read the data sent from the serial monitor(pc/mac/other) until we see a <CR>. We also count how many characters have been received.
   //computerdata[received_from_computer] = '\0';
 
   if (received_from_computer){
     computerdata[received_from_computer] = 0;                                       //stop the buffer from transmitting leftovers or garbage.
                                                                                     // at the end of the buffer, write a 0 to indicateit the end of data to be trasnmitted
-
-    Serial.print("received_from_computer: ");
-    Serial.println(received_from_computer);
-    Serial.print("computerdata: ");
-    Serial.println(computerdata);        
-    Serial.print("computerdata[0]: ");
-    Serial.println(computerdata[0]);
-    Serial.print("computerdata[0], ASCII code: ");
-    Serial.println((int)computerdata[0]);
-    Serial.print("computerdata[received_from_computer]: ");
-    Serial.println(computerdata[received_from_computer]);
-    Serial.print("computerdata[received_from_computer], ASCII code: ");
-    Serial.println((int)computerdata[received_from_computer]);
-    
+    if (text){
+      TextDescription();
+    }
     
     // Serial.println(computerdata, DEC);
     serial_event = true;                                                          //set the serial event flag.
+    if (computerdata[received_from_computer-1] == 13){
+      computerdata[received_from_computer-1] = {'\0'};
+    }
   }
 }
 
@@ -65,11 +75,11 @@ void loop() {
   // 1-modify directly the buffer that gets populated from Serial
   // 2-modify the terminal settings such that it doesn't directly send ans ASCII code of 10 at the end
   // +investigate the serial.h
-  if ((int)computerdata[0]==10){
-    Serial.println("came in here");
-    serial_event = false;
-    computerdata[0] = 0;
-  }
+  // if ((int)computerdata[0]==10){
+  //   Serial.println("came in here");
+  //   serial_event = false;
+  //   computerdata[0] = 0;
+  // }
   if (serial_event == true) {                                                     //if a command was sent to the EZO device.
     for (i = 0; i <= received_from_computer; i++) {                               //set all char to lower case, this is just so this exact sample code can recognize the "sleep" command.
                                                                                   // <= to include the final zero (terminator)
@@ -91,7 +101,7 @@ void loop() {
       delay(time_);								                                                //wait the correct amount of time for the circuit to complete its instruction.
 
       Wire.requestFrom(address, 32, 1); 		                                      //call the circuit and request 32 bytes (this may be more than we need)
-      // Here we read the first byte to be sent: this contains the code
+      // Here we read the first byte to be sent: this contains the communicaiton code between the EZO board and the arduino
       code = Wire.read();               		                                      //the first byte is the response code, we read this separately.
 
       switch (code) {							          //switch case based on what the response code is.

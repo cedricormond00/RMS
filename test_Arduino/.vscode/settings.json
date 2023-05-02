@@ -3,5 +3,8 @@
         "variant.h": "c",
         "wvariant.h": "c",
         "wiring_private.h": "c"
+    },
+    "[shellscript]": {
+        "files.eol": "auto"
     }
 }
