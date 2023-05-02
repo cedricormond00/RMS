@@ -8,9 +8,10 @@
 
 #include <Arduino.h>
 #include <Wire.h>                //enable I2C.
+#include "Ezo_i2c.h"
 #define address 98               //default I2C ID number for EZO ORP Circuit.
 
-const bool text = true;         // If we want the full text description
+const bool text = false;         // If we want the full text description
 const unsigned int computerData_length = 20;
 char computerdata[computerData_length] = {'\0'}; //= [0];           //we make a 20 byte character array to hold incoming data from a pc/mac/other.
 byte received_from_computer = 0; //we need to know how many characters have been received.
@@ -50,21 +51,20 @@ void TextDescription(){
 }
 
 void serialEvent() {                                                              //this interrupt will trigger when the data coming from the serial monitor(pc/mac/other) is received.
-  received_from_computer = Serial.readBytesUntil(10, computerdata, computerData_length); //13 is carriage return (enter key for terminator)          //we read the data sent from the serial monitor(pc/mac/other) until we see a <CR>. We also count how many characters have been received.
-  //computerdata[received_from_computer] = '\0';
+  received_from_computer = Serial.readBytesUntil(10, computerdata, computerData_length); //10 is Line Feed        //we read the data sent from the serial monitor(pc/mac/other) until we see a <LF>. We also count how many characters have been received.
 
   if (received_from_computer){
     computerdata[received_from_computer] = 0;                                       //stop the buffer from transmitting leftovers or garbage.
                                                                                     // at the end of the buffer, write a 0 to indicateit the end of data to be trasnmitted
+    serial_event = true;                                                          //set the serial event flag.
+    if (computerdata[received_from_computer-1] == 13){                              // deal with the CRLF exception
+      computerdata[received_from_computer-1] = {'\0'};
+    }
+
     if (text){
       TextDescription();
     }
-    
-    // Serial.println(computerdata, DEC);
-    serial_event = true;                                                          //set the serial event flag.
-    if (computerdata[received_from_computer-1] == 13){
-      computerdata[received_from_computer-1] = {'\0'};
-    }
+        
   }
 }
 
