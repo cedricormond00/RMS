@@ -2,6 +2,8 @@
 #ifndef CONSTANT_H // include guard
 #define CONSTANT_H
 
+#include <stdint.h>
+
 // global variables
 // #ifndef bp // include guard
 // define the variable as extern here (compiler knows this variable is declared elsewhere)
