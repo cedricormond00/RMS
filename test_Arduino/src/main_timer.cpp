@@ -3,12 +3,19 @@
 #include "constant.h"
 #include "Timers.h"
 
-uint32_t freq = 2;
+
 void setup()                    
 {
     pinMode(YELLOWLED_PIN, OUTPUT);
     digitalWrite(YELLOWLED_PIN, LOW);
-    Timers_tc4_init8bit(freq);
+    delay(2000);
+    // uint32_t freq = 10;
+    // Timers_tc4_init8bit(freq);
+
+    // Timers_tc4_init8bit(1024, 46875);
+
+    Timers_tc4_init16bit_t(1100);
+
 }
 void loop()
 {
