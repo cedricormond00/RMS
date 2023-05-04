@@ -1,4 +1,4 @@
-// constant.h
+// Constant.h
 #ifndef CONSTANT_H // include guard
 #define CONSTANT_H
 
