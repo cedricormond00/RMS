@@ -20,6 +20,11 @@ extern volatile bool bp; // true <=> button press
 
 #define BUTTON_PIN 5
 
+// I2C
+#define EZO_ADDRESS 98               //default I2C ID number for EZO ORP Circuit.
+
+
+// array assignment
 #define m_array_allLEDpin {BLUELED_PIN, REDLED_PIN, GREENLED_PIN, YELLOWLED_PIN, ORANGELED_PIN}
 
 #define ARRAY_LENGTH(arr) (sizeof(arr) / sizeof((arr)[0]))

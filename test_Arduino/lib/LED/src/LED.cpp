@@ -3,6 +3,17 @@
 #include "Constant.h"
 // #include "template.h"
 
+
+void ToggleLED(unsigned int pin){
+  digitalWrite(pin, !digitalRead(pin));
+  bool debug = false;
+  if (debug){
+    Serial.println("TOGGLING LED");
+    Serial.print("LED status: ");
+    Serial.println(digitalRead(pin));
+  }
+}
+
 void multipin_HL(unsigned int pin_arr[], unsigned int arraySize, unsigned int status)
 {
   // unsigned int n_arraySize = sizeof(n_pinAllLEDs) / sizeof(n_pinAllLEDs[0]);
@@ -27,12 +38,7 @@ void multipin_pinMode(unsigned int pin_array[], unsigned int arraySize, unsigned
   }
 }
 
-void ToggleLED(unsigned int pin){
-  digitalWrite(pin, !digitalRead(pin));
-  // Serial.println("TOGGLING LED");
-  // Serial.print("LED status: ");
-  // Serial.println(digitalRead(pin));
-}
+
 
 // void multipin_pinMode_s(unsigned int (&pin_array)[], unsigned int mode)
 // {

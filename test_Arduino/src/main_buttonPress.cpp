@@ -4,7 +4,7 @@
 #include "constant.h"
 #include "LED.h"
 
-#include "interrupts.h"
+#include "Interrupt.h"
 /*
   button press
   button press to trigger an LED
