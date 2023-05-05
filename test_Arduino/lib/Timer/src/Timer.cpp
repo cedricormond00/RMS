@@ -6,7 +6,7 @@
 #include "Timer.h"
 #include "LED.h"
 
-void Timer_tc4_init16bit(uint16_t counterPrescaler_, uint16_t counterCompare_){
+void Timer_tc4_16bitInit(uint16_t counterPrescaler_, uint16_t counterCompare_){
     bool debug = 0;
     // Set up the generic clock (GCLK4) used to clock timers
     // set the division on the generic clock generator 4
@@ -83,24 +83,24 @@ void Timer_tc4_init16bit(uint16_t counterPrescaler_, uint16_t counterCompare_){
     }
     REG_TC4_CTRLA |= prescale | TC_CTRLA_WAVEGEN_MFRQ | TC_CTRLA_ENABLE;    // Enable TC4
     while (TC4->COUNT16.STATUS.bit.SYNCBUSY);        // Wait for synchronization
+    
     if (debug){
       Serial.print("REG_TC4_INTFLAG aft enable: ");
       Serial.println(REG_TC4_INTFLAG, BIN);
       Serial.print("REG_TC4_INTENSET aft enable: ");
       Serial.println(REG_TC4_INTENSET, BIN);
     }
+
     Serial.println("we got here 2");
     attachInterrupt(TC4_IRQn, TC4_Handler, RISING);
     Serial.println("we got here 3");
-
-    // Register the ISR for TC4 with the NVIC
 
 }
 
 
 //----
 
-uint16_t Timer_getCounterPrescaler(float freq_)
+uint16_t Timer_16bitGetCounterPrescaler(float freq_)
 // Valid for 16 bit
 {
   float idealCounterPrescaler=48000000.0f/(65536.0f*freq_); //this gives the widest range possible (at cost of reosution)
@@ -115,7 +115,7 @@ uint16_t Timer_getCounterPrescaler(float freq_)
   return counterPrescaler;
 }
 
-void Timer_tc4_init16bit(uint32_t value_, char valueType_)
+void Timer_tc4_16bitInit(uint32_t value_, char valueType_)
 // t_ is in miliseconds (1 s = 1000 ms = value_)
 {
   bool debug = true;
@@ -131,7 +131,7 @@ void Timer_tc4_init16bit(uint32_t value_, char valueType_)
   
   // add: a sanity check: ensure freq < GCLK_T4/(2^16*1024)
   
-  uint16_t counterPrescaler=Timer_getCounterPrescaler(freq);
+  uint16_t counterPrescaler=Timer_16bitGetCounterPrescaler(freq);
   uint16_t counterCompare=(48000000/counterPrescaler)/freq;
   
   if (debug) {
@@ -143,10 +143,10 @@ void Timer_tc4_init16bit(uint32_t value_, char valueType_)
     Serial.println(counterCompare);
   }
   Serial.println("we got here 1");
-  Timer_tc4_init16bit(counterPrescaler, counterCompare);
+  Timer_tc4_16bitInit(counterPrescaler, counterCompare);
 }
 
-// uint16_t Timer_getCounterPrescaler(uint32_t freq_)
+// uint16_t Timer_16bitGetCounterPrescaler(uint32_t freq_)
 //  // SUitable for 8 bit configuration
 // {
 //   float idealCounterPrescaler=48000000.0f/(256.0f*float(freq_));
@@ -162,17 +162,17 @@ void Timer_tc4_init16bit(uint32_t value_, char valueType_)
 // }
 //----
 
-// void Timer_tc4_init16bit(uint32_t freq_)
+// void Timer_tc4_16bitInit(uint32_t freq_)
 // {
-//   uint16_t counterPrescaler=Timer_getCounterPrescaler(freq_);
+//   uint16_t counterPrescaler=Timer_16bitGetCounterPrescaler(freq_);
 //   uint16_t counterCompare=(48000000/counterPrescaler)/freq_;
-//   Timer_tc4_init16bit(counterPrescaler, counterCompare);
+//   Timer_tc4_16bitInit(counterPrescaler, counterCompare);
 // }
 
 
 
 
-// void Timer_tc4_init16bit_t(uint32_t t_)
+// void Timer_tc4_16bitInit_t(uint32_t t_)
 // // t_ is in miliseconds (1 s = 1000 ms = t_)
 // {
 //   bool debug = true;
@@ -191,7 +191,7 @@ void Timer_tc4_init16bit(uint32_t value_, char valueType_)
 //     Serial.println(counterCompare);
 //   }
 
-//   Timer_tc4_init16bit(counterPrescaler, counterCompare);
+//   Timer_tc4_16bitInit(counterPrescaler, counterCompare);
 // }
 
 
@@ -199,83 +199,59 @@ void Timer_tc4_init16bit(uint32_t value_, char valueType_)
 
 //---------------------------------------------------------------------------
 
-// void TC4_Handler()
-// {
-//   // Serial.println(NVIC_GetPendingIRQ(PM_IRQn));              
-//   // Serial.println(NVIC_GetPendingIRQ(SYSCTRL_IRQn));    
-//   // Serial.println(NVIC_GetPendingIRQ(WDT_IRQn));  
-//   // Serial.println(NVIC_GetPendingIRQ(RTC_IRQn));  
-//   // Serial.println(NVIC_GetPendingIRQ(EIC_IRQn));  
-//   // Serial.println(NVIC_GetPendingIRQ(NVMCTRL_IRQn));  
-//   // Serial.println(NVIC_GetPendingIRQ(DMAC_IRQn));  
-//   // Serial.println(NVIC_GetPendingIRQ(USB_IRQn));    
-//   // Serial.println(NVIC_GetPendingIRQ(EVSYS_IRQn));  
-//   // Serial.println(NVIC_GetPendingIRQ(SERCOM0_IRQn));  
-//   // Serial.println(NVIC_GetPendingIRQ(SERCOM1_IRQn));   
-//   // Serial.println(NVIC_GetPendingIRQ(SERCOM2_IRQn));   
-//   // Serial.println(NVIC_GetPendingIRQ(SERCOM3_IRQn));   
-//   // Serial.println(NVIC_GetPendingIRQ(SERCOM4_IRQn));  
-//   // Serial.println(NVIC_GetPendingIRQ(SERCOM5_IRQn));      
-//   // Serial.println(NVIC_GetPendingIRQ(TCC0_IRQn));              
-//   // Serial.println(NVIC_GetPendingIRQ(TCC1_IRQn));           
-//   // Serial.println(NVIC_GetPendingIRQ(TCC2_IRQn));  
-//   // Serial.println(NVIC_GetPendingIRQ(TC3_IRQn)); 
-//   // Serial.println(NVIC_GetPendingIRQ(TC4_IRQn));    
-//   // Serial.println(NVIC_GetPendingIRQ(TC5_IRQn));  
-//   // Serial.println(NVIC_GetPendingIRQ(TC6_IRQn));  
-//   // Serial.println(NVIC_GetPendingIRQ(TC7_IRQn));  
-//   // Serial.println(NVIC_GetPendingIRQ(ADC_IRQn));    
-//   // Serial.println(NVIC_GetPendingIRQ(AC_IRQn));   
-//   // Serial.println(NVIC_GetPendingIRQ(DAC_IRQn));   
-//   // Serial.println(NVIC_GetPendingIRQ(PTC_IRQn)); 
-//   // Serial.println(NVIC_GetPendingIRQ(I2S_IRQn));      
-           
+void TC4_Handler()
+{
+  // check for the reason of the TC4 IRQ
+  if (TC4->COUNT16.INTFLAG.bit.OVF && TC4->COUNT16.INTENSET.bit.OVF)  // overflow           
+  {
+    /*write your interrupt code here*/
+    // toggle flag (set to true)
+    timerFlag = true; 
+    // Serial.println(timerFlag);
+    bool debug = false;
+    if (debug){
+      Serial.print("REG_TC4_INTFLAG bef flag reset: ");
+      Serial.println(REG_TC4_INTFLAG, BIN);
+    }
 
-//   // NVIC_ClearPendingIRQ(TC4_IRQn);
-//   // Serial.print("NVIC_GetPendingIRQ(TC4_IRQn)");
-//   // Serial.println(NVIC_GetPendingIRQ(TC4_IRQn));
+    REG_TC4_INTFLAG = TC_INTFLAG_OVF;
 
-//   if (TC4->COUNT16.INTFLAG.bit.OVF && TC4->COUNT16.INTENSET.bit.OVF)             
-//   {
-//     /*write your interrupt code here*/
-//     timerFlag = !timerFlag; // toggle flag (set to true)
-//     // Serial.println(timerFlag);
-//     bool debug = false;
-//     if (debug){
-//       Serial.print("REG_TC4_INTFLAG bef flag reset: ");
-//       Serial.println(REG_TC4_INTFLAG, BIN);
-//     }
+    if (debug){
+      Serial.print("REG_TC4_INTFLAG aft flag reset: ");
+      Serial.println(REG_TC4_INTFLAG, BIN);
+    }
 
-//     REG_TC4_INTFLAG = TC_INTFLAG_OVF;
+    // acknowledge the interrupt request
+    // not required: done by CPU
+    // TC4->COUNT16.CTRLA.reg = TC_CTRLA_ENABLE;
+  }
+}
 
-//     if (debug){
-//       Serial.print("REG_TC4_INTFLAG aft flag reset: ");
-//       Serial.println(REG_TC4_INTFLAG, BIN);
-//     }
-
-//     // acknowledge the interrupt request
-//     // TC4->COUNT16.CTRLA.reg = TC_CTRLA_ENABLE;
-    
-//     //NVIC_ClearPendingIRQ(TC4_IRQn);
-
-//     // if (debug){
-//     //   Serial.print("REG_TC4_INTENCLR bef interupt reset: ");
-//     //   Serial.println(REG_TC4_INTENCLR, BIN);
-//     // }
-//     // REG_TC4_INTENCLR = TC_INTENCLR_OVF;
-//     // if (debug){
-//     //   Serial.print("REG_TC4_INTENCLR aft interupt reset: ");
-//     //   Serial.println(REG_TC4_INTENCLR, BIN);
-//     // }
-
-
-//     // //clear all flags
-//     // REG_TC4_INTFLAG = TC_INTFLAG_MC0;
-//     // REG_TC4_INTFLAG = TC_INTFLAG_MC1;
-
-//     // if (debug){
-//     //   Serial.print("REG_TC4_INTFLAG aft all clear: ");
-//     //   Serial.println(REG_TC4_INTFLAG, BIN);
-//     // }
-//   }
-// }
+  // Serial.println(NVIC_GetPendingIRQ(PM_IRQn));              
+  // Serial.println(NVIC_GetPendingIRQ(SYSCTRL_IRQn));    
+  // Serial.println(NVIC_GetPendingIRQ(WDT_IRQn));  
+  // Serial.println(NVIC_GetPendingIRQ(RTC_IRQn));  
+  // Serial.println(NVIC_GetPendingIRQ(EIC_IRQn));  
+  // Serial.println(NVIC_GetPendingIRQ(NVMCTRL_IRQn));  
+  // Serial.println(NVIC_GetPendingIRQ(DMAC_IRQn));  
+  // Serial.println(NVIC_GetPendingIRQ(USB_IRQn));    
+  // Serial.println(NVIC_GetPendingIRQ(EVSYS_IRQn));  
+  // Serial.println(NVIC_GetPendingIRQ(SERCOM0_IRQn));  
+  // Serial.println(NVIC_GetPendingIRQ(SERCOM1_IRQn));   
+  // Serial.println(NVIC_GetPendingIRQ(SERCOM2_IRQn));   
+  // Serial.println(NVIC_GetPendingIRQ(SERCOM3_IRQn));   
+  // Serial.println(NVIC_GetPendingIRQ(SERCOM4_IRQn));  
+  // Serial.println(NVIC_GetPendingIRQ(SERCOM5_IRQn));      
+  // Serial.println(NVIC_GetPendingIRQ(TCC0_IRQn));              
+  // Serial.println(NVIC_GetPendingIRQ(TCC1_IRQn));           
+  // Serial.println(NVIC_GetPendingIRQ(TCC2_IRQn));  
+  // Serial.println(NVIC_GetPendingIRQ(TC3_IRQn)); 
+  // Serial.println(NVIC_GetPendingIRQ(TC4_IRQn));    
+  // Serial.println(NVIC_GetPendingIRQ(TC5_IRQn));  
+  // Serial.println(NVIC_GetPendingIRQ(TC6_IRQn));  
+  // Serial.println(NVIC_GetPendingIRQ(TC7_IRQn));  
+  // Serial.println(NVIC_GetPendingIRQ(ADC_IRQn));    
+  // Serial.println(NVIC_GetPendingIRQ(AC_IRQn));   
+  // Serial.println(NVIC_GetPendingIRQ(DAC_IRQn));   
+  // Serial.println(NVIC_GetPendingIRQ(PTC_IRQn)); 
+  // Serial.println(NVIC_GetPendingIRQ(I2S_IRQn));   

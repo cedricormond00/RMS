@@ -104,8 +104,10 @@ void I2c_sendCommandToSensor(char ORPData_[], char command_[], uint8_t commandLe
   //ORP_float=atof(ORPData_);
   }
 
-//   void I2c_sendCommand(uint8_t i2cAddress_, char textSent_, uint8_t textLength_){
-//     Wire.beginTransmission(i2cAddress_);                                              //call the circuit by its ID number.
-//     Wire.write(command_);                                                     //transmit the command that was sent through the serial port.
-//     Wire.endTransmission();                                                       //end the I2C data transmission.
-//   }
+void I2c_sendCommand(uint8_t i2cAddress_, char textSent_)
+{
+  // ensure you intialise the I2C communication
+  Wire.beginTransmission(i2cAddress_);                                              //call the circuit by its ID number.
+  Wire.write(textSent_);                                                     //transmit the command that was sent through the serial port.
+  Wire.endTransmission();                                                       //end the I2C data transmission.
+}
