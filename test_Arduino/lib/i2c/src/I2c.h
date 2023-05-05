@@ -9,4 +9,5 @@
 */
 void I2c_sendCommandToSensor(char ORPData_[], char command_[], uint8_t commandLength_ );                                                 //if a command was sent to the EZO device.
 
+void I2c_init (void);
 #endif

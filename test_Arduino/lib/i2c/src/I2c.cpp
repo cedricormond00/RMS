@@ -6,29 +6,60 @@
 
 //Global variables
 // extern volatile bool serialPCFlag;
-
+void I2c_init(){
+  Wire.begin();
+}
 void I2c_sendCommandToSensor(char ORPData_[], char command_[], uint8_t commandLength_ ){                                                  //if a command was sent to the EZO device.
-    for (int i = 0; i <= commandLength_; i++) {                               //set all char to lower case, this is just so this exact sample code can recognize the "sleep" command.
+    byte code = 0;                   //used to hold the I2C response code.
+    int time_ = 815;                 //used to change the delay needed depending on the command sent to the EZO Class ORP Circuit.
+    byte in_char = 0;                //used as a 1 byte buffer to store inbound bytes from the ORP Circuit.
+    bool debug = false;
+
+
+    if (debug){   
+      Serial.println(command_);
+      Serial.println(commandLength_);
+      Serial.println(ORPData_);
+    }
+
+
+    int i = 0;
+    for (i = 0; i <= commandLength_; i++) {                               //set all char to lower case, this is just so this exact sample code can recognize the "sleep" command.
                                                                                   // <= to include the final zero (terminator)
       command_[i] = tolower(command_[i]);                                 //"Sleep" ≠ "sleep"
     }
     i=0;                                                                          //reset i, we will need it later 
+
     if (command_[0] == 'c' || command_[0] == 'r')time_ = 815;             //if a command has been sent to calibrate or take a reading we wait 815ms so that the circuit has time to take the reading.
     else time_ = 250;                                                             //if any other command has been sent we wait only 250ms.
-
-    // Here we say what we will want
+    if (debug){   
+      Serial.println(time_);
+      Serial.println("send command");
+      Serial.println(command_[0]);
+    }    // Here we say what we will want
     // I2c_sendCommand();
     Wire.beginTransmission(EZO_ADDRESS);                                              //call the circuit by its ID number.
+    if (debug){   
+      Serial.println("address found");
+      Serial.println(EZO_ADDRESS);
+    }
     Wire.write(command_);                                                     //transmit the command that was sent through the serial port.
-    Wire.endTransmission();     
-    
+    if (debug){   
+      Serial.println("command sent");
+      Serial.println(command_);
+    }
+    Wire.endTransmission();  
+    if (debug){   
+      Serial.println("transmission end");
+      // Serial.println(err);
+    }
     // Here we wait + Ask + get what we want
     if (strcmp(command_, "sleep") != 0) {  	                                  //if the command that has been sent is NOT the sleep command, wait the correct amount of time and request data.
                                                                                   //if it is the sleep command, we do nothing. Issuing a sleep command and then requesting data will wake the circuit.
       
         delay(time_);								                                                //wait the correct amount of time for the circuit to complete its instruction.
 
-        Wire.requestFrom(EZOaddress, 32, 1); 		                                      //call the circuit and request 32 bytes (this may be more than we need)
+        Wire.requestFrom(EZO_ADDRESS, 32, 1); 		                                      //call the circuit and request 32 bytes (this may be more than we need)
         // Here we read the first byte to be sent: this contains the communicaiton code between the EZO board and the arduino
         code = Wire.read();               		                                      //the first byte is the response code, we read this separately.
 
@@ -53,7 +84,6 @@ void I2c_sendCommandToSensor(char ORPData_[], char command_[], uint8_t commandLe
 
 
 
-
       while (Wire.available()) {            //are there bytes to receive.
         in_char = Wire.read();           		//receive a byte.
         ORPData_[i] = in_char;					    //load this byte into our array.
@@ -61,7 +91,7 @@ void I2c_sendCommandToSensor(char ORPData_[], char command_[], uint8_t commandLe
         if (in_char == 0) {              		//if we see that we have been sent a null command.
           i = 0;                         		//reset the counter i to 0.
           Serial.println("Received all data");
-          serial_event = false;                   //reset the serial event flag.
+          serialPCFlag = false;                   //reset the serial event flag.
           break;                         		//exit the while loop.
         }
       }

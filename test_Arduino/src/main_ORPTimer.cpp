@@ -8,6 +8,7 @@
 #include "I2c.h"
 #include "LED.h"
 
+
 //Global variables
 extern volatile bool serialPCFlag;
 
@@ -15,6 +16,7 @@ extern volatile bool serialPCFlag;
 // timer parameters
 uint32_t readInterval = 1000; //in ms
 char readIntervalType = {'t'};
+
 // serial parameters
 const uint8_t PCDataLength = 20;
 char PCData[PCDataLength] = {'\0'}; //we make a 20 byte character array to hold incoming data from a pc/mac/other.
@@ -25,6 +27,7 @@ char ORP_data[32];               //we make a 32 byte character array to hold inc
 void setup()                    
 {
     while (!Serial);
+    I2c_init();
     pinMode(YELLOWLED_PIN, OUTPUT);
     digitalWrite(YELLOWLED_PIN, LOW);
     delay(2000); // to check on board
@@ -35,15 +38,17 @@ void setup()
     pinMode(REDLED_PIN, OUTPUT);
 
     digitalWrite(REDLED_PIN, HIGH);
+    timerFlag = true;
 
 
 
 }
 void loop()
 {
-    Serial.println(timerFlag);
+    //delay(1000);
     if (timerFlag) {
-        I2c_sendCommandToSensor(ORP_data, {"r"}, 1);
+        char command[1] = {'r'};
+        I2c_sendCommandToSensor(ORP_data, command, 1);
         timerFlag = false;
         ToggleLED(YELLOWLED_PIN);
 
