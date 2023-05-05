@@ -57,7 +57,8 @@ void loop()
     serialEvent(PCData, PCDataLength);
     // if data sent over the serial
     if (serialPCFlag){
-        I2c_sendCommandToSensor(ORP_data, PCData, PCDataLength);
+        // I2c_sendCommandToSensor(ORP_data, PCData, PCDataLength);
+        I2c_sendReceiveORP(ORP_data, PCData, PCDataLength);
         serialPCFlag = false; // set the boolFlag to false
         ToggleLED(ORANGELED_PIN);
     }
@@ -65,7 +66,9 @@ void loop()
     // if a timer interrupt occured, execute the command in the normal routine, when it is its turn
     if (timerFlag) {
         char command[1] = {'r'};
-        I2c_sendCommandToSensor(ORP_data, command, 1);
+        // I2c_sendCommandToSensor(ORP_data, command, 1);
+        I2c_sendReceiveORP(ORP_data, command, 1);
+
         timerFlag = false; // set the boolFlag to false
         ToggleLED(YELLOWLED_PIN);
     }
