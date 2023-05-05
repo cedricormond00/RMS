@@ -97,6 +97,7 @@ void I2c_sendCommandToSensor(char ORPData_[], char command_[], uint8_t commandLe
       }
 
       Serial.println(ORPData_);          		//print the data.
+      Serial.println("");
     }
     
   //Uncomment this section if you want to take the ORP value and convert it into floating point number.

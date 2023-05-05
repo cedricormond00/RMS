@@ -23,13 +23,16 @@ char PCData[PCDataLength] = {'\0'}; //we make a 20 byte character array to hold 
 
 char ORP_data[32];               //we make a 32 byte character array to hold incoming data from the ORP circuit.
 
-
+bool irq4 = false;
+bool irq5 = false;
 void setup()                    
 {
     while (!Serial);
     I2c_init();
     pinMode(YELLOWLED_PIN, OUTPUT);
     digitalWrite(YELLOWLED_PIN, LOW);
+    pinMode(ORANGELED_PIN, OUTPUT);
+    digitalWrite(ORANGELED_PIN, LOW);
     delay(2000); // to check on board
 
     
@@ -38,20 +41,27 @@ void setup()
     pinMode(REDLED_PIN, OUTPUT);
 
     digitalWrite(REDLED_PIN, HIGH);
-    timerFlag = true;
 
 
 
 }
 void loop()
-{
-    //delay(1000);
+{   
+    delay(500);
+    
+    serialEvent(PCData, PCDataLength);
+    if (serialPCFlag){
+        I2c_sendCommandToSensor(ORP_data, PCData, PCDataLength);
+        serialPCFlag = false;
+        ToggleLED(ORANGELED_PIN);
+
+    }
+    
     if (timerFlag) {
         char command[1] = {'r'};
         I2c_sendCommandToSensor(ORP_data, command, 1);
         timerFlag = false;
         ToggleLED(YELLOWLED_PIN);
-
     }
 
 }

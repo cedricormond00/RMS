@@ -199,82 +199,83 @@ void Timer_tc4_init16bit(uint32_t value_, char valueType_)
 
 //---------------------------------------------------------------------------
 
-void TC4_Handler()
-{
-  // Serial.println(NVIC_GetPendingIRQ(PM_IRQn));              
-  // Serial.println(NVIC_GetPendingIRQ(SYSCTRL_IRQn));    
-  // Serial.println(NVIC_GetPendingIRQ(WDT_IRQn));  
-  // Serial.println(NVIC_GetPendingIRQ(RTC_IRQn));  
-  // Serial.println(NVIC_GetPendingIRQ(EIC_IRQn));  
-  // Serial.println(NVIC_GetPendingIRQ(NVMCTRL_IRQn));  
-  // Serial.println(NVIC_GetPendingIRQ(DMAC_IRQn));  
-  // Serial.println(NVIC_GetPendingIRQ(USB_IRQn));    
-  // Serial.println(NVIC_GetPendingIRQ(EVSYS_IRQn));  
-  // Serial.println(NVIC_GetPendingIRQ(SERCOM0_IRQn));  
-  // Serial.println(NVIC_GetPendingIRQ(SERCOM1_IRQn));   
-  // Serial.println(NVIC_GetPendingIRQ(SERCOM2_IRQn));   
-  // Serial.println(NVIC_GetPendingIRQ(SERCOM3_IRQn));   
-  // Serial.println(NVIC_GetPendingIRQ(SERCOM4_IRQn));  
-  // Serial.println(NVIC_GetPendingIRQ(SERCOM5_IRQn));      
-  // Serial.println(NVIC_GetPendingIRQ(TCC0_IRQn));              
-  // Serial.println(NVIC_GetPendingIRQ(TCC1_IRQn));           
-  // Serial.println(NVIC_GetPendingIRQ(TCC2_IRQn));  
-  // Serial.println(NVIC_GetPendingIRQ(TC3_IRQn)); 
-  // Serial.println(NVIC_GetPendingIRQ(TC4_IRQn));    
-  // Serial.println(NVIC_GetPendingIRQ(TC5_IRQn));  
-  // Serial.println(NVIC_GetPendingIRQ(TC6_IRQn));  
-  // Serial.println(NVIC_GetPendingIRQ(TC7_IRQn));  
-  // Serial.println(NVIC_GetPendingIRQ(ADC_IRQn));    
-  // Serial.println(NVIC_GetPendingIRQ(AC_IRQn));   
-  // Serial.println(NVIC_GetPendingIRQ(DAC_IRQn));   
-  // Serial.println(NVIC_GetPendingIRQ(PTC_IRQn)); 
-  // Serial.println(NVIC_GetPendingIRQ(I2S_IRQn));      
+// void TC4_Handler()
+// {
+//   // Serial.println(NVIC_GetPendingIRQ(PM_IRQn));              
+//   // Serial.println(NVIC_GetPendingIRQ(SYSCTRL_IRQn));    
+//   // Serial.println(NVIC_GetPendingIRQ(WDT_IRQn));  
+//   // Serial.println(NVIC_GetPendingIRQ(RTC_IRQn));  
+//   // Serial.println(NVIC_GetPendingIRQ(EIC_IRQn));  
+//   // Serial.println(NVIC_GetPendingIRQ(NVMCTRL_IRQn));  
+//   // Serial.println(NVIC_GetPendingIRQ(DMAC_IRQn));  
+//   // Serial.println(NVIC_GetPendingIRQ(USB_IRQn));    
+//   // Serial.println(NVIC_GetPendingIRQ(EVSYS_IRQn));  
+//   // Serial.println(NVIC_GetPendingIRQ(SERCOM0_IRQn));  
+//   // Serial.println(NVIC_GetPendingIRQ(SERCOM1_IRQn));   
+//   // Serial.println(NVIC_GetPendingIRQ(SERCOM2_IRQn));   
+//   // Serial.println(NVIC_GetPendingIRQ(SERCOM3_IRQn));   
+//   // Serial.println(NVIC_GetPendingIRQ(SERCOM4_IRQn));  
+//   // Serial.println(NVIC_GetPendingIRQ(SERCOM5_IRQn));      
+//   // Serial.println(NVIC_GetPendingIRQ(TCC0_IRQn));              
+//   // Serial.println(NVIC_GetPendingIRQ(TCC1_IRQn));           
+//   // Serial.println(NVIC_GetPendingIRQ(TCC2_IRQn));  
+//   // Serial.println(NVIC_GetPendingIRQ(TC3_IRQn)); 
+//   // Serial.println(NVIC_GetPendingIRQ(TC4_IRQn));    
+//   // Serial.println(NVIC_GetPendingIRQ(TC5_IRQn));  
+//   // Serial.println(NVIC_GetPendingIRQ(TC6_IRQn));  
+//   // Serial.println(NVIC_GetPendingIRQ(TC7_IRQn));  
+//   // Serial.println(NVIC_GetPendingIRQ(ADC_IRQn));    
+//   // Serial.println(NVIC_GetPendingIRQ(AC_IRQn));   
+//   // Serial.println(NVIC_GetPendingIRQ(DAC_IRQn));   
+//   // Serial.println(NVIC_GetPendingIRQ(PTC_IRQn)); 
+//   // Serial.println(NVIC_GetPendingIRQ(I2S_IRQn));      
            
 
-  // NVIC_ClearPendingIRQ(TC4_IRQn);
-  // Serial.print("NVIC_GetPendingIRQ(TC4_IRQn)");
-  // Serial.println(NVIC_GetPendingIRQ(TC4_IRQn));
-  if (TC4->COUNT16.INTFLAG.bit.OVF && TC4->COUNT16.INTENSET.bit.OVF)             
-  {
-    /*write your interrupt code here*/
-    timerFlag = !timerFlag; // toggle flag (set to true)
-    // Serial.println(timerFlag);
-    bool debug = false;
-    if (debug){
-      Serial.print("REG_TC4_INTFLAG bef flag reset: ");
-      Serial.println(REG_TC4_INTFLAG, BIN);
-    }
+//   // NVIC_ClearPendingIRQ(TC4_IRQn);
+//   // Serial.print("NVIC_GetPendingIRQ(TC4_IRQn)");
+//   // Serial.println(NVIC_GetPendingIRQ(TC4_IRQn));
 
-    REG_TC4_INTFLAG = TC_INTFLAG_OVF;
+//   if (TC4->COUNT16.INTFLAG.bit.OVF && TC4->COUNT16.INTENSET.bit.OVF)             
+//   {
+//     /*write your interrupt code here*/
+//     timerFlag = !timerFlag; // toggle flag (set to true)
+//     // Serial.println(timerFlag);
+//     bool debug = false;
+//     if (debug){
+//       Serial.print("REG_TC4_INTFLAG bef flag reset: ");
+//       Serial.println(REG_TC4_INTFLAG, BIN);
+//     }
 
-    if (debug){
-      Serial.print("REG_TC4_INTFLAG aft flag reset: ");
-      Serial.println(REG_TC4_INTFLAG, BIN);
-    }
+//     REG_TC4_INTFLAG = TC_INTFLAG_OVF;
 
-    // acknowledge the interrupt request
-    // TC4->COUNT16.CTRLA.reg = TC_CTRLA_ENABLE;
+//     if (debug){
+//       Serial.print("REG_TC4_INTFLAG aft flag reset: ");
+//       Serial.println(REG_TC4_INTFLAG, BIN);
+//     }
+
+//     // acknowledge the interrupt request
+//     // TC4->COUNT16.CTRLA.reg = TC_CTRLA_ENABLE;
     
-    //NVIC_ClearPendingIRQ(TC4_IRQn);
+//     //NVIC_ClearPendingIRQ(TC4_IRQn);
 
-    // if (debug){
-    //   Serial.print("REG_TC4_INTENCLR bef interupt reset: ");
-    //   Serial.println(REG_TC4_INTENCLR, BIN);
-    // }
-    // REG_TC4_INTENCLR = TC_INTENCLR_OVF;
-    // if (debug){
-    //   Serial.print("REG_TC4_INTENCLR aft interupt reset: ");
-    //   Serial.println(REG_TC4_INTENCLR, BIN);
-    // }
+//     // if (debug){
+//     //   Serial.print("REG_TC4_INTENCLR bef interupt reset: ");
+//     //   Serial.println(REG_TC4_INTENCLR, BIN);
+//     // }
+//     // REG_TC4_INTENCLR = TC_INTENCLR_OVF;
+//     // if (debug){
+//     //   Serial.print("REG_TC4_INTENCLR aft interupt reset: ");
+//     //   Serial.println(REG_TC4_INTENCLR, BIN);
+//     // }
 
 
-    // //clear all flags
-    // REG_TC4_INTFLAG = TC_INTFLAG_MC0;
-    // REG_TC4_INTFLAG = TC_INTFLAG_MC1;
+//     // //clear all flags
+//     // REG_TC4_INTFLAG = TC_INTFLAG_MC0;
+//     // REG_TC4_INTFLAG = TC_INTFLAG_MC1;
 
-    // if (debug){
-    //   Serial.print("REG_TC4_INTFLAG aft all clear: ");
-    //   Serial.println(REG_TC4_INTFLAG, BIN);
-    // }
-  }
-}
+//     // if (debug){
+//     //   Serial.print("REG_TC4_INTFLAG aft all clear: ");
+//     //   Serial.println(REG_TC4_INTFLAG, BIN);
+//     // }
+//   }
+// }
