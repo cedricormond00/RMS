@@ -6,5 +6,14 @@
 
 
 volatile bool serialPCFlag = false;
+
+volatile uint8_t evInputCode = 0b0;
+// timer parameters
 volatile bool timerFlag = false;
-volatile uint8_t evInputCode;
+// how often the interrupt will trigger
+volatile uint32_t timeIncrement = 1000; //in ms // although this one shoul be a constant
+volatile char timeIncrementType = {'t'}; // either t or f
+uint32_t timeIncrementS = timeIncrement/1000; // time increment in second
+// These would be better defined in a class or a struct
+volatile uint32_t WMTC = 0 ; // Water motnitoring timer counter: incrmeenets every timeIncrement
+volatile uint32_t WMTC_limit = 10; // Upper timer limit for action to be triggered

@@ -9,7 +9,7 @@
  * \param counterPrescaler_ = counter prescaler (PRESCALER)
  * \param counterCompare_ = channel compare value (CC0)
 */
-void Timer_tc4_16bitInit(uint16_t counterPrescaler_, uint16_t counterCompare_);
+void Timer_tc4_init16bit(uint16_t counterPrescaler_, uint16_t counterCompare_);
 
 
 
@@ -17,34 +17,19 @@ void Timer_tc4_16bitInit(uint16_t counterPrescaler_, uint16_t counterCompare_);
  * \param value_ = desired interrupt value (Hz or ms)
  * \param valueType_ = t (period (ms)) or f (frequency (Hz)) 
 */
-void Timer_tc4_16bitInit(uint32_t value_, char valueType_);
+void Timer_tc4_init16bit(uint32_t value_, char valueType_);
 
 /** \brief util function to obtain the counterPrescaler 
  * \remark works only for the 16 bit mode
  * \param freq_ = interrupt frequency
 */
-uint16_t Timer_16bitGetCounterPrescaler(float freq_);
+uint16_t Timer_16bit32kHz_getCounterPrescaler(float freq_);
 
+/** \brief intialises the genericClockGenerator for TC4 and TC5 
+ * \param genClockGeneratorID_ = generic clock generator ID (4-8 works best)
+*/
+void Timer_genericClockGeneratorTC4TC5_init(uint8_t genClockGeneratorID_);
 
-
-// /** \brief intialises the TC4 timer/counter in 16bit mode 
-//  * \param freq_ = desired interrupt frequency
-// */
-// void Timer_tc4_init16bit(uint32_t freq_);
-
-// /** \brief intialises the TC4 timer/counter in 16bit mode
-//  * \param t_ = desired interrupt period. t_ is in ms (1s = 1000ms)
-// */
-// void Timer_tc4_init16bit_t(uint32_t t_);
-
-// /** \brief util function to obtain the counterPrescaler 
-//  * \param freq_ = interrupt frequency
-// */
-// uint16_t Timer_getCounterPrescaler(uint32_t freq_);
-
-
-
-uint16_t get_clk_div(uint32_t freq_);
 
 
 
