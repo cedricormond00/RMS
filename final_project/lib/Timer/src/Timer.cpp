@@ -5,40 +5,44 @@
 #include "Tool.h"
 #include "Timer.h"
 #include "LED.h"
+void Timer_genericClockSetup(uint8_t genClockID);
 
 void Timer_tc4_16bitInit(uint16_t counterPrescaler_, uint16_t counterCompare_){
     bool debug = 1;
 
-    // Enable the OSC32K oscillatoR
-    SYSCTRL->OSC32K.bit.EN32K = 1;
+    // // Enable the OSC32K oscillatoR
+    // SYSCTRL->OSC32K.bit.EN32K = 1;
+    // // Configure the OSC32K
+    // SYSCTRL->OSC32K.bit.EN32K = 0;         // Disable the oscillator
+    // while (SYSCTRL->OSC32K.bit.EN32K);     // Wait for the oscillator to be disabled
+    // SYSCTRL->OSC32K.bit.STARTUP = 0x4;     // Set the oscillator startup time (recommended value)
+    // SYSCTRL->OSC32K.bit.ONDEMAND = 1;      // Enable on-demand mode
+
     // Set up the generic clock (GCLK4) used to clock timers
     // set the division on the generic clock generator 4
     // REG_GCLK_GENDIV = GCLK -> GENDIV.reg
     // Since these are general settings, we would prefer to not modify them too much
     // should probably put the GCLK setting in a different header?
-    
-    REG_GCLK_GENDIV = //GCLK_GENDIV_DIV(1) |          // Divide the 48MHz clock source by divisor 1: 48MHz/1=48MHz
-                    GCLK_GENDIV_ID(4);            // Select Generic Clock (GCLK) 4
+    REG_GCLK_GENDIV = GCLK_GENDIV_DIV(1) |          // Divide the 48MHz clock source by divisor 1: 48MHz/1=48MHz
+                    GCLK_GENDIV_ID(5);            // Select Generic Clock (GCLK) 4
     Serial.println("test1");
     while (GCLK->STATUS.bit.SYNCBUSY);              // Wait for synchronization
     Serial.println("test2");
     // Set the source for the generic clock generator 4
     REG_GCLK_GENCTRL = GCLK_GENCTRL_IDC |           // Set the duty cycle to 50/50 HIGH/LOW
                         GCLK_GENCTRL_GENEN |         // Enable GCLK4
-                        GCLK_GENCTRL_SRC_OSC32K|   // Set the 48MHz clock source
-                        GCLK_GENCTRL_ID(4);          // Select GCLK4
+                        GCLK_GENCTRL_SRC_XOSC32K|   // Set the 48MHz clock source
+                        GCLK_GENCTRL_ID(5);          // Select GCLK4
     Serial.println("test3");
     while (GCLK->STATUS.bit.SYNCBUSY);              // Wait for synchronization
     Serial.println("test4");
     // Feed GCLK4 to TC4 and TC5
     // Enable the clock for timer 4
     REG_GCLK_CLKCTRL = GCLK_CLKCTRL_CLKEN |         // Enable GCLK4 to TC4 and TC5
-                        GCLK_CLKCTRL_GEN_GCLK4 |     // Select GCLK4
+                        GCLK_CLKCTRL_GEN(5) | //GCLK_CLKCTRL_GEN_GCLK5 |     // Select GCLK4
                         GCLK_CLKCTRL_ID_TC4_TC5;     // Feed the GCLK4 to TC4 and TC5
     
-    // GCLK->CLKCTRL.reg = GCLK_CLKCTRL_CLKEN |                 // Enable GCLK0 for TC4 and TC5
-    //                   GCLK_CLKCTRL_GEN_GCLK0 |             // Select GCLK0 at 48MHz
-    //                   GCLK_CLKCTRL_ID_TC4_TC5;     
+ 
     Serial.println("test5");
 
     while (GCLK->STATUS.bit.SYNCBUSY);              // Wait for synchronization

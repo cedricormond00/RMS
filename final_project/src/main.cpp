@@ -21,7 +21,7 @@ enum RMSState {
 // local variables
 RMSState rmsState = INIT;
 // timer parameters
-uint32_t readInterval = 100000; //in ms
+uint32_t readInterval = 1000; //in ms
 char readIntervalType = {'t'};
 
 void setup() {
