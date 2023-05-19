@@ -184,15 +184,20 @@ void TC4_Handler()
   // check for the reason of the TC4 IRQ
   if (TC4->COUNT16.INTFLAG.bit.OVF && TC4->COUNT16.INTENSET.bit.OVF)  // overflow           
   {
-    // Serial.println("in ISR");
+    bool debug = false;
+    
     /*write your interrupt code here*/
     // toggle flag (set to true)
     timerFlag = true; 
+
     // Best would be to increment here
+    WMTC += timeIncrementS;
+    
     ToggleLED(YELLOWLED_PIN);
-    // Serial.println(timerFlag);
-    bool debug = false;
+    
     if (debug){
+      Serial.println(timerFlag);
+      Serial.println("in ISR");
       Serial.print("REG_TC4_INTFLAG bef flag reset: ");
       Serial.println(REG_TC4_INTFLAG, BIN);
     }
@@ -202,9 +207,6 @@ void TC4_Handler()
     if (debug){
       Serial.print("REG_TC4_INTFLAG aft flag reset: ");
       Serial.println(REG_TC4_INTFLAG, BIN);
-    }
-    if (timerFlag){
-
     }
   }
 }

@@ -44,7 +44,7 @@ void setup()
 
     // timer
     // TC4 as 16 bit
-    Timer_tc4_16bitInit(readInterval, readIntervalType);
+    Timer_tc4_init16bit(readInterval, readIntervalType);
 
     // for debug
     digitalWrite(REDLED_PIN, HIGH);
@@ -73,3 +73,4 @@ void loop()
         ToggleLED(YELLOWLED_PIN);
     }
 }
+

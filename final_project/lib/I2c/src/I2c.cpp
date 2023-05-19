@@ -3,6 +3,7 @@
 //
 #include "Constant.h"
 #include "Global.h"
+#include "I2c.h"
 
 //Global variables
 // extern volatile bool serialPCFlag;
@@ -40,9 +41,10 @@ void I2c_sendCommand(uint8_t i2cAddress, const char *command_){
 
 
 void I2c_sendCommandORP(char command_[]){
-  byte orpInChar = 0;     //used as a 1 byte buffer to store inbound bytes from the ORP Circuit.
+  // byte orpInChar = 0;     //used as a 1 byte buffer to store inbound bytes from the ORP Circuit.
                                                 //if any other command has been sent we wait only 250ms.
-  
+  Serial.print("I2c_sendCommandORP command_: ");
+  Serial.println(command_);
   // Here we say what we will want
   I2c_sendCommand(EZO_ADDRESS, command_);
 
@@ -106,12 +108,34 @@ void I2c_receiveORPData(char ORPData_[], char command_[], int responseDelay){
 void I2c_sendReceiveORP(char ORPData_[], char command_[], uint8_t commandLength_){
   int responseDelay = 815;      //used to change the delay needed depending on the command sent to the EZO Class ORP Circuit.
   
+  Serial.print("command_");
+  Serial.println(command_);
   I2c_sendCommandORP(command_);
-  
+  Serial.print("responseDelay");
+  Serial.println(responseDelay);
   responseDelay = I2c_checkResponseDelay(command_, commandLength_); 
-
+  Serial.print("responseDelay");
+  Serial.println(responseDelay); 
   I2c_receiveORPData(ORPData_, command_, responseDelay);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 void I2c_sendCommandToSensor(char ORPData_[], char command_[], uint8_t commandLength_ )

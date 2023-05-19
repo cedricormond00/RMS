@@ -16,6 +16,11 @@ uint16_t Tool_16bitNextPow2(uint16_t v_);
 */
 float Tool_periodToFrequency(uint32_t t_);
 
+/** \brief Sets the bits off where 1 are in the mask
+ * \param byte = input 8 bit word. To be had bits turned off
+ * \param mask = mask which contains the bits to turn off
+*/
+void Tool_setBitOff(uint8_t* byte, uint8_t mask);
 
 
 

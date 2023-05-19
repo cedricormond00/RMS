@@ -16,3 +16,6 @@ float Tool_periodToFrequency(uint32_t t_){
     return freq;
 }
 
+void Tool_setBitOff(uint8_t* byte, uint8_t mask){
+  *byte &= ~(mask);
+}
