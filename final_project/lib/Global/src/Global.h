@@ -9,5 +9,6 @@
 
 extern volatile bool serialPCFlag;
 extern volatile bool timerFlag;
+extern volatile uint8_t evInputCode;
 
 #endif // GLOBALS_H
