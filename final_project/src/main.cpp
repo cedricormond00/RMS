@@ -13,25 +13,25 @@
 #include "LED.h"
 #include "FSM.h"
 #include "Tool.h"
+#include "States.h"
 
-// types
-enum RMSState {
-   INIT = 0,
-   SWQ,
-   UWQ,
-   FWQ,
-   SLEEP
-};
+
+
+
+
+// local variables
 
 // define EZO peripheral
 Ezo_board EZO_ORP = Ezo_board(EZO_ADDRESS, "ORP_EZO");       //create an ORP circuit object, who's address is 98 and name is "ORP_EZO"
 
-
-// local variables
 RMSState rmsState = INIT;
 uint16_t WMTC_limit = 5; // Upper timer limit for action to be triggered
 uint8_t eventInputCode = 0b0;
-char ORPData[32];               //we make a 32 byte character array to hold incoming data from the ORP circuit.
+const int nbLastORPValuesStored = 5; // Size of the ring buffer for ORP values
+float ORPRingBuffer[nbLastORPValuesStored];  // Array to store the floating-point values
+
+float ORPValue;
+// char ORPData[32];               //we make a 32 byte character array to hold incoming data from the ORP circuit.
 
 void setup() {
   //wait for serial monitor
@@ -42,51 +42,42 @@ void setup() {
   I2c_init();
 
   // LED pins
-  pinMode(YELLOWLED_PIN, OUTPUT);
-  digitalWrite(YELLOWLED_PIN, LOW);
-  pinMode(ORANGELED_PIN, OUTPUT);
-  digitalWrite(ORANGELED_PIN, HIGH);
+  pinMode(BLUELED_PIN, OUTPUT);
   pinMode(REDLED_PIN, OUTPUT);
-  digitalWrite(REDLED_PIN, HIGH);
-  delay(2000); // to have time to check on board
+  pinMode(GREENLED_PIN, OUTPUT);
+  pinMode(YELLOWLED_PIN, OUTPUT);
+  pinMode(ORANGELED_PIN, OUTPUT);
+  digitalWrite(BLUELED_PIN, LOW);
+  digitalWrite(REDLED_PIN, LOW);
+  digitalWrite(GREENLED_PIN, LOW);
+  digitalWrite(YELLOWLED_PIN, LOW);
   digitalWrite(ORANGELED_PIN, LOW);
-  delay(1000); // to have time to check on board
+
 
   // timer
-  //Timer_tc4_init16bit(1900, {'t'});
-
   Timer_tc4_init16bit(timeIncrement, timeIncrementType);
   Serial.println("TC4 init completed");
 
+  
 
   // init completed
-  // normally go to unsafe mode
-  rmsState = SWQ;
-
-
-
-
-
 }
 
 void loop() {
-
+  FSM_executeFunction(&eventInputCode, &EZO_ORP, &rmsState);
   //switch statement
   switch(rmsState){
+
+    
     // go in appropriate state
     case INIT:
+      digitalWrite(BLUELED_PIN, HIGH);
+      digitalWrite(REDLED_PIN, HIGH);
+      // let the mahchine know it must perform the Water Monitoring function right now
+      eventInputCode = 0b1;
+      
 
     case SWQ: 
-      // check if must read (event flag (triggered upon interrutp)
-      // if (timerFlag) {
-      //   // char command[1] = {'r'};
-      //   // // I2c_sendCommandToSensor(ORP_data, command, 1);
-      //   // I2c_sendReceiveORP(ORP_data, command, 1);
-
-      //   // timerFlag = false; // set the boolFlag to false
-      //   // ToggleLED(YELLOWLED_PIN);
-      //   // Serial.println("came in switch");
-      // }
       
 
       FSM_updateEventInputCode(&eventInputCode, WMTC_limit);
@@ -98,14 +89,27 @@ void loop() {
       //   Tool_setBitOff(&eventInputCode, WM_INPUTBIT);
       // }
       // // This one does not work
-      FSM_executeFunction(&eventInputCode, ORPData, &EZO_ORP);
+      // FSM_executeFunction(&eventInputCode, &EZO_ORP);
+      digitalWrite(REDLED_PIN, LOW);
+      digitalWrite(GREENLED_PIN, HIGH);
+
+      
       break;
+
     case UWQ:
+      FSM_updateEventInputCode(&eventInputCode, WMTC_limit);
+      digitalWrite(REDLED_PIN, HIGH);
+      digitalWrite(GREENLED_PIN, LOW);
       break;
+
     case FWQ:
+      rmsState = SWQ;
       break;
+
     case SLEEP:
+      rmsState = SWQ;
       break;
+
     
       // check if can go to sleep (if all relevant event flag are off)
     }

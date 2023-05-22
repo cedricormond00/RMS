@@ -24,4 +24,19 @@ void Tool_setBitOff(uint8_t* byte, uint8_t mask);
 
 
 
+
+// class RingBuffer {
+// private:
+//     float* buffer;
+//     int bufferSize;
+//     int currentIndex;
+
+// public:
+//     RingBuffer(int size);
+//     ~RingBuffer();
+//     void addToBuffer(float value);
+//     float getOldestValue();
+//     float getNewestValue();
+// };
+
 #endif
