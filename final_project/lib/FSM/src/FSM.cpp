@@ -40,21 +40,6 @@ void FSM_executeFunction(uint8_t* eventInputCode_, Ezo_board* EZO_ORP, RMSState*
 
 }
 
-
-void FSM_updateEventInputCode(uint8_t *eventInputCode, uint16_t waterMonitoringPeriod)//input arguments: relevant function counter
-{
-    if (WMTC >= waterMonitoringPeriod) // if reach the watermonitoringPeriod, 
-    {
-        ToggleLED(ORANGELED_PIN);
-        *eventInputCode |= 0b1; // code for WM function
-        // reset the water monitoring timer count to zero
-        WMTC = 0;
-
-    }
-}
-
-
-
 void FSM_waterMonitoring_EZO(Ezo_board* classArg, RMSState* currentState){
     classArg->send_read_cmd();
     delay(815); // delay required for reading command
@@ -73,9 +58,25 @@ void FSM_waterMonitoring_EZO(Ezo_board* classArg, RMSState* currentState){
 
 void FSM_goToLowPowerConsumption(uint8_t eventInputCode){
     if (eventInputCode == 0){
-        LowPower.sleep();
+        // LowPower.idle();
     }
 }
+
+void FSM_updateEventInputCode(uint8_t *eventInputCode, uint16_t waterMonitoringPeriod)//input arguments: relevant function counter
+{
+    if (WMTC >= waterMonitoringPeriod) // if reach the watermonitoringPeriod, 
+    {
+        ToggleLED(ORANGELED_PIN);
+        *eventInputCode |= 0b1; // code for WM function
+        // reset the water monitoring timer count to zero
+        WMTC = 0;
+
+    }
+}
+
+
+
+
 // void FSM_updateState(Ezo_board* classArg, RMSState* currentState){
 //     float ORPValue = classArg->get_last_received_reading();
 //     if (ORPValue > 230) {

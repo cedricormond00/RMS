@@ -65,6 +65,7 @@ void setup() {
 
 void loop() {
   FSM_executeFunction(&eventInputCode, &EZO_ORP, &rmsState);
+  Serial.print("test");
   //switch statement
   switch(rmsState){
 
@@ -89,9 +90,12 @@ void loop() {
       break;
 
     case UWQ:
-      FSM_updateEventInputCode(&eventInputCode, WMTC_limit);
       digitalWrite(REDLED_PIN, HIGH);
       digitalWrite(GREENLED_PIN, LOW);
+      
+      FSM_updateEventInputCode(&eventInputCode, WMTC_limit);
+      FSM_goToLowPowerConsumption(eventInputCode);
+
       break;
 
     case FWQ:
