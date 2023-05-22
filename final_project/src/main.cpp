@@ -65,7 +65,7 @@ void setup() {
 
 void loop() {
   FSM_executeFunction(&eventInputCode, &EZO_ORP, &rmsState);
-  Serial.print("test");
+  // Serial.print("test");
   //switch statement
   switch(rmsState){
 
