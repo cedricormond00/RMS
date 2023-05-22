@@ -83,6 +83,8 @@ void loop() {
 
       FSM_updateEventInputCode(&eventInputCode, WMTC_limit);
       // This one works
+      // delay(10);
+  
       if (eventInputCode & WM_INPUTBIT) {
         FSM_waterMonitoring(ORPData);
         Tool_setBitOff(&eventInputCode, WM_INPUTBIT);

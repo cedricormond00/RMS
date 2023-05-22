@@ -48,7 +48,7 @@ void Timer_tc4_init16bit(uint16_t counterPrescaler_, uint16_t counterCompare_){
   bool debug = 1;
   
   // Set up the generic clock generator to use with TC4
-  uint8_t genClockGeneratorID = 4;
+  uint8_t genClockGeneratorID = 6;
   Timer_genericClockGeneratorTC4TC5_init(genClockGeneratorID);
   while (GCLK->STATUS.bit.SYNCBUSY);              // Wait for synchronization
   // Serial.println("test6");
@@ -188,12 +188,12 @@ void TC4_Handler()
     
     /*write your interrupt code here*/
     // toggle flag (set to true)
-    timerFlag = true; 
+    // timerFlag = true; 
 
     // Best would be to increment here
     WMTC += timeIncrementS;
     
-    ToggleLED(YELLOWLED_PIN);
+    // ToggleLED(YELLOWLED_PIN);
     
     if (debug){
       Serial.println(timerFlag);
@@ -202,6 +202,7 @@ void TC4_Handler()
       Serial.println(REG_TC4_INTFLAG, BIN);
     }
 
+    // Clear flag
     REG_TC4_INTFLAG = TC_INTFLAG_OVF;
 
     if (debug){
