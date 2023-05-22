@@ -1,10 +1,11 @@
 #include <Arduino.h>
-#include <FSM.h>
+#include <ArduinoLowPower.h>
+
 
 #include <iot_cmd.h>
 #include <Ezo_i2c_util.h>  
 
-
+#include "FSM.h"
 #include "Constant.h"
 #include "Global.h"
 #include "LED.h"
@@ -70,7 +71,11 @@ void FSM_waterMonitoring_EZO(Ezo_board* classArg, RMSState* currentState){
       }
 }
 
-
+void FSM_goToLowPowerConsumption(uint8_t eventInputCode){
+    if (eventInputCode == 0){
+        LowPower.sleep();
+    }
+}
 // void FSM_updateState(Ezo_board* classArg, RMSState* currentState){
 //     float ORPValue = classArg->get_last_received_reading();
 //     if (ORPValue > 230) {

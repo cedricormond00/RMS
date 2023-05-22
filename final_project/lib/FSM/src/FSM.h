@@ -14,4 +14,7 @@ void FSM_waterMonitoring(char ORPData_[]); // not need for any pointer dereferin
 void FSM_executeFunction(uint8_t* eventInputCode_, Ezo_board* EZO_ORP, RMSState* currentState);
 void FSM_waterMonitoring_EZO(Ezo_board* classArg, RMSState* currentState);
 
+void FSM_goToLowPowerConsumption(uint8_t eventInputCode);
+
+
 #endif

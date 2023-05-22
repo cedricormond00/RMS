@@ -78,20 +78,12 @@ void loop() {
       
 
     case SWQ: 
-      
-
-      FSM_updateEventInputCode(&eventInputCode, WMTC_limit);
-      // This one works
-      // delay(10);
-  
-      // if (eventInputCode & WM_INPUTBIT) {
-      //   FSM_waterMonitoring(ORPData);
-      //   Tool_setBitOff(&eventInputCode, WM_INPUTBIT);
-      // }
-      // // This one does not work
-      // FSM_executeFunction(&eventInputCode, &EZO_ORP);
       digitalWrite(REDLED_PIN, LOW);
       digitalWrite(GREENLED_PIN, HIGH);
+      
+      FSM_updateEventInputCode(&eventInputCode, WMTC_limit);
+      FSM_goToLowPowerConsumption(eventInputCode);
+
 
       
       break;
