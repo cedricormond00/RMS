@@ -32,9 +32,11 @@ int I2c_checkResponseDelay(char command_[], uint8_t commandLength_){
 } 
 
 void I2c_sendCommand(uint8_t i2cAddress, const char *command_){
+  // noInterrupts();
   Wire.beginTransmission(i2cAddress);                                              //call the circuit by its ID number.
   Wire.write(command_);                                                     //transmit the command that was sent through the serial port.
   Wire.endTransmission();  
+  // interrupts();
 }
 
 

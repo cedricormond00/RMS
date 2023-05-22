@@ -85,12 +85,12 @@ void loop() {
       // This one works
       // delay(10);
   
-      if (eventInputCode & WM_INPUTBIT) {
-        FSM_waterMonitoring(ORPData);
-        Tool_setBitOff(&eventInputCode, WM_INPUTBIT);
-      }
+      // if (eventInputCode & WM_INPUTBIT) {
+      //   FSM_waterMonitoring(ORPData);
+      //   Tool_setBitOff(&eventInputCode, WM_INPUTBIT);
+      // }
       // // This one does not work
-      // FSM_executeFunction(&eventInputCode, ORPData);
+      FSM_executeFunction(&eventInputCode, ORPData);
       break;
     case UWQ:
       break;
