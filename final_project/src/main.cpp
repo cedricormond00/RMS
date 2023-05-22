@@ -1,5 +1,9 @@
 #include <Arduino.h>
 
+
+#include <Ezo_i2c.h> //include the EZO I2C library from https://github.com/Atlas-Scientific/Ezo_I2c_lib
+
+
 #include "Constant.h"
 #include "Global.h"
 
@@ -18,6 +22,10 @@ enum RMSState {
    FWQ,
    SLEEP
 };
+
+// define EZO peripheral
+Ezo_board EZO_ORP = Ezo_board(EZO_ADDRESS, "ORP_EZO");       //create an ORP circuit object, who's address is 98 and name is "ORP_EZO"
+
 
 // local variables
 RMSState rmsState = INIT;
@@ -90,7 +98,7 @@ void loop() {
       //   Tool_setBitOff(&eventInputCode, WM_INPUTBIT);
       // }
       // // This one does not work
-      FSM_executeFunction(&eventInputCode, ORPData);
+      FSM_executeFunction(&eventInputCode, ORPData, &EZO_ORP);
       break;
     case UWQ:
       break;

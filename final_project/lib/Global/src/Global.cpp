@@ -11,7 +11,7 @@ volatile uint8_t evInputCode = 0b0;
 // timer parameters
 volatile bool timerFlag = false;
 // how often the interrupt will trigger
-volatile uint32_t timeIncrement = 1000; //in ms // although this one shoul be a constant
+volatile uint32_t timeIncrement = 1500; //in ms // although this one shoul be a constant
 volatile char timeIncrementType = {'t'}; // either t or f
 uint32_t timeIncrementS = timeIncrement/1000; // time increment in second
 // These would be better defined in a class or a struct

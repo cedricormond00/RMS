@@ -1,6 +1,10 @@
 #include <Arduino.h>
 #include <FSM.h>
 
+#include <iot_cmd.h>
+#include <Ezo_i2c_util.h>  
+
+
 #include "Constant.h"
 #include "Global.h"
 #include "LED.h"
@@ -20,7 +24,7 @@ void FSM_updateEventInputCode(uint8_t *eventInputCode, uint16_t waterMonitoringP
 }
 
 // make it niceer with * and &
-void FSM_executeFunction(uint8_t* eventInputCode_, char ORPData_[]){
+void FSM_executeFunction(uint8_t* eventInputCode_, char ORPData_[], Ezo_board* EZO_ORP){
     bool debug=false;
     if (*eventInputCode_ & WM_INPUTBIT){
         // Serial.println("in if");
@@ -30,7 +34,9 @@ void FSM_executeFunction(uint8_t* eventInputCode_, char ORPData_[]){
             Serial.println(*eventInputCode_);
         }
 
-        FSM_waterMonitoring(ORPData_);
+        // FSM_waterMonitoring(ORPData_);
+        FSM_waterMonitoring_EZO(EZO_ORP);
+
 
 
         Tool_setBitOff(eventInputCode_, WM_INPUTBIT); // because eventInputCode_ is already the address of the pointer
@@ -43,6 +49,18 @@ void FSM_executeFunction(uint8_t* eventInputCode_, char ORPData_[]){
     }
 
 }
+
+void FSM_waterMonitoring_EZO(Ezo_board* classArg){
+    classArg->send_read_cmd();
+    delay(1000);
+    receive_and_print_reading(*classArg);
+
+
+
+
+}
+
+
 
 void FSM_waterMonitoring(char ORPData_[]){
     bool debug = false;
