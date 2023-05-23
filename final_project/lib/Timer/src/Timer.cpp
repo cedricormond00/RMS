@@ -131,7 +131,15 @@ uint16_t Timer_16bit32kHz_getCounterPrescaler(float freq_)
 // Valid for 16 bit and using XOSC32K as a clock source
 {
   float idealCounterPrescaler=32768.0f/(65536.0f*freq_); //this gives the widest range possible (at cost of reosution)
-  
+  /*The division by 65536 is used to calculate the maximum possible counter prescaler value for the TC4 timer. Let's break it down:
+
+The frequency used as input, freq_, represents the desired frequency or time interval for the timer.
+The maximum 16-bit value for the timer's counter is 65535 (2^16 - 1).
+The timer counts from 0 to the counter compare value and then resets to 0, generating an interrupt.
+The goal is to find the counter prescaler value that allows the timer to generate the desired frequency with the maximum range of values for the counter compare register.
+The equation 32768.0f / (65536.0f * freq_) calculates the maximum possible counter prescaler value that still fits within the 16-bit counter. By dividing the desired frequency by 65536, it ensures that the counter prescaler is set to its maximum value while still allowing the timer to generate interrupts within the 16-bit counter range.
+
+Dividing by 65536 in the equation gives the widest possible range for the counter prescaler at the cost of reduced resolution. This means that the timer can generate a wider range of frequencies, but the accuracy or resolution of the timer decreases because the prescaler has a larger value.*/
   uint16_t counterPrescaler=Tool_16bitNextPow2(uint16_t(ceil(idealCounterPrescaler)));
   switch(counterPrescaler) // to account for those prescalers that do not exist
   {
