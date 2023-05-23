@@ -23,11 +23,11 @@ extern volatile bool bp; // true <=> button press
 // I2C
 #define EZO_ADDRESS 98               //default I2C ID number for EZO ORP Circuit.
 
-// event input
+// event input 
 #define WM_INPUTBIT 0b1
-#define URA_INPUTBIT 0b10
-#define HB_INPUTBIT 0b100
-#define BUP_INPUTBIT 0b1000
+#define BUP_INPUTBIT 0b10
+#define URA_INPUTBIT 0b100
+#define HB_INPUTBIT 0b1000
 
 // array assignment
 #define m_array_allLEDpin {BLUELED_PIN, REDLED_PIN, GREENLED_PIN, YELLOWLED_PIN, ORANGELED_PIN}

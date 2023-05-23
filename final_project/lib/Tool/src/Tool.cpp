@@ -18,10 +18,32 @@ float Tool_periodToFrequency(uint32_t t_){
     return freq;
 }
 
+
 void Tool_setBitOff(uint8_t* byte, uint8_t mask){
   *byte &= ~(mask);
 }
 
+void Tool_setBitOff(volatile uint8_t* byte, uint8_t mask){
+  *byte &= ~(mask);
+}
+
+
+void Tool_setBitOn(uint8_t* byte, uint8_t mask){
+  *byte |= (mask);
+}
+
+void Tool_setBitOn(volatile uint8_t* byte, uint8_t mask){
+  *byte |= (mask);
+}
+
+
+bool Tool_isBitOn(uint8_t byte, uint8_t mask) {
+    return (byte & mask) != 0;
+}
+
+// bool Tool_isBitOn(volatile uint8_t byte, uint8_t mask) {
+//     return (byte & mask) != 0;
+// }
 // void Tool_addToRingBuffer(float ringBuffer[], int bufferSize, float value) {
 //     // Shift existing values to the right
 //     for (int i = bufferSize - 1; i > 0; --i) {

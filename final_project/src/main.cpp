@@ -14,6 +14,7 @@
 #include "FSM.h"
 #include "Tool.h"
 #include "States.h"
+#include "LowPower.h"
 
 
 
@@ -26,11 +27,13 @@ Ezo_board EZO_ORP = Ezo_board(EZO_ADDRESS, "ORP_EZO");       //create an ORP cir
 
 RMSState rmsState = INIT;
 uint16_t WMTC_limit = 5; // Upper timer limit for action to be triggered
-uint8_t eventInputCode = 0b0;
+uint8_t inputEventCode = 0b0;
 const int nbLastORPValuesStored = 5; // Size of the ring buffer for ORP values
 float ORPRingBuffer[nbLastORPValuesStored];  // Array to store the floating-point values
 
 float ORPValue;
+
+uint32_t wakePeriod = 0;
 // char ORPData[32];               //we make a 32 byte character array to hold incoming data from the ORP circuit.
 
 void setup() {
@@ -54,9 +57,12 @@ void setup() {
   digitalWrite(ORANGELED_PIN, LOW);
 
 
-  // timer
-  Timer_tc4_init16bit(timeIncrement, timeIncrementType);
-  Serial.println("TC4 init completed");
+  // // timer
+  // Timer_tc4_init16bit(timeIncrement, timeIncrementType);
+  // Serial.println("TC4 init completed");
+
+  // configure LowPower: tell what to do in case of ecxternal interrupt
+  LP_setupURAInterrupt();
 
   
 
@@ -64,7 +70,7 @@ void setup() {
 }
 
 void loop() {
-  FSM_executeFunction(&eventInputCode, &EZO_ORP, &rmsState);
+  FSM_executeFunction(&inputEventCode, &EZO_ORP, &rmsState);
   // Serial.print("test");
   //switch statement
   switch(rmsState){
@@ -75,16 +81,20 @@ void loop() {
       digitalWrite(BLUELED_PIN, HIGH);
       digitalWrite(REDLED_PIN, HIGH);
       // let the mahchine know it must perform the Water Monitoring function right now
-      eventInputCode = 0b1;
+      inputEventCode = 0b1;
       
 
     case SWQ: 
       digitalWrite(REDLED_PIN, LOW);
       digitalWrite(GREENLED_PIN, HIGH);
-      
-      FSM_updateEventInputCode(&eventInputCode, WMTC_limit);
-      FSM_goToLowPowerConsumption(eventInputCode);
+      wakePeriod = 15000; //every 30 sec
+      // wake evry 5 minutes (5*60*1000ms=300000)
 
+     
+
+      LP_goToLowPowerConsumption(inputEventCode, wakePeriod);
+
+      FSM_updateInputEventCode(&inputEventCode, &triggeredInputEvent);
 
       
       break;
@@ -92,9 +102,13 @@ void loop() {
     case UWQ:
       digitalWrite(REDLED_PIN, HIGH);
       digitalWrite(GREENLED_PIN, LOW);
-      
-      FSM_updateEventInputCode(&eventInputCode, WMTC_limit);
-      FSM_goToLowPowerConsumption(eventInputCode);
+      wakePeriod = 10000; // 20 sec
+      //wake every 2 minutes (2*60*1000ms = 120000)
+
+      FSM_updateInputEventCode(&inputEventCode, &triggeredInputEvent);
+
+      LP_goToLowPowerConsumption(inputEventCode, wakePeriod);
+
 
       break;
 

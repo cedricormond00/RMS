@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <assert.h>
-#include <ArduinoLowPower.h>
+
 
 #include "Constant.h"
 #include "Global.h"
@@ -120,7 +120,6 @@ void Timer_tc4_init16bit(uint16_t counterPrescaler_, uint16_t counterCompare_){
   }
 
   attachInterrupt(TC4_IRQn, TC4_Handler, RISING);       // (optional) ensure the TC4_Handler is used upon interrupt request 
-  LowPower.attachInterruptWakeup(TC4_IRQn,TC4_Handler, RISING);
 }
 
 

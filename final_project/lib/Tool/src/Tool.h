@@ -21,6 +21,24 @@ float Tool_periodToFrequency(uint32_t t_);
  * \param mask = mask which contains the bits to turn off
 */
 void Tool_setBitOff(uint8_t* byte, uint8_t mask);
+void Tool_setBitOff(volatile uint8_t* byte, uint8_t mask);
+
+/** \brief Sets the bits on where 1 are in the mask
+ * \param byte = input 8 bit word. To be had bits turned on
+ * \param mask = mask which contains the bits to turn on
+*/
+void Tool_setBitOn(uint8_t* byte, uint8_t mask);
+void Tool_setBitOn(volatile uint8_t* byte, uint8_t mask);
+
+
+/** \brief Checks if specific bit sin mask are on or not. 
+ * \param byte = input 8 bit word. Contains bits to be compared
+ * \param mask = mask which contains the bits to compare with
+*/
+bool Tool_isBitOn(uint8_t byte, uint8_t mask);
+// void Tool_isBitOn(volatile uint8_t* byte, uint8_t mask);
+
+
 
 
 

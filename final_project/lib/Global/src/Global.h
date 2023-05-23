@@ -17,4 +17,6 @@ extern volatile char timeIncrementType;
 extern uint32_t timeIncrementS;
 extern volatile uint32_t WMTC; // Water motnitoring timer counter
 
+extern volatile uint8_t triggeredInputEvent;
+
 #endif // GLOBALS_H

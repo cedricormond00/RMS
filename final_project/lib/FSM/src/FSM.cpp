@@ -16,12 +16,37 @@
 // void FSM_executeFunction(uint8_t* eventInputCode_, char ORPData[]){
 void FSM_executeFunction(uint8_t* eventInputCode_, Ezo_board* EZO_ORP, RMSState* currentState){
     bool debug=true;
+    if (*eventInputCode_ & URA_INPUTBIT){
+        // Serial.println("in if");
+        if (debug){
+            Serial.println("in FSM_executeFunction, URA");
+            Serial.print("event Input Code before update: ");
+            Serial.print(*eventInputCode_, BIN);
+            Serial.print(", ");
+            Serial.println(*eventInputCode_);
+        }
+
+        ToggleLED(ORANGELED_PIN);
+
+        Tool_setBitOff(eventInputCode_, URA_INPUTBIT); // because eventInputCode_ is already the address of the pointer
+                                                    // I am now passing the correct pointer (uint8_t*) to the Tool_setBitOff
+        if (debug){
+
+            Serial.print("event Input Code after update: ");
+            Serial.print(*eventInputCode_, BIN);
+            Serial.print(", ");
+            Serial.println(*eventInputCode_);
+        }
+    }
     if (*eventInputCode_ & WM_INPUTBIT){
         // Serial.println("in if");
         if (debug){
-            Serial.println("in if");
+            Serial.println("in FSM_executeFunction, WM");
             Serial.print("event Input Code before update: ");
+            Serial.print(*eventInputCode_, BIN);
+            Serial.print(", ");
             Serial.println(*eventInputCode_);
+
         }
 
         // FSM_waterMonitoring(ORPData_);
@@ -32,11 +57,43 @@ void FSM_executeFunction(uint8_t* eventInputCode_, Ezo_board* EZO_ORP, RMSState*
         Tool_setBitOff(eventInputCode_, WM_INPUTBIT); // because eventInputCode_ is already the address of the pointer
                                                     // I am now passing the correct pointer (uint8_t*) to the Tool_setBitOff
         if (debug){
-
+            Serial.println("");
             Serial.print("event Input Code after update: ");
+            Serial.print(*eventInputCode_, BIN);
+            Serial.print(", ");
             Serial.println(*eventInputCode_);
         }
     }
+    if (*eventInputCode_ & BUP_INPUTBIT){
+        // Serial.println("in if");
+        if (debug){
+            Serial.println("in FSM_executeFunction, BUP");
+            Serial.print("event Input Code before update: ");
+            Serial.print(*eventInputCode_, BIN);
+            Serial.print(", ");
+            Serial.println(*eventInputCode_);
+        }
+
+        // FSM_BUPMONITORINGFUNCTION
+
+
+        Tool_setBitOff(eventInputCode_, BUP_INPUTBIT); // because eventInputCode_ is already the address of the pointer
+                                                    // I am now passing the correct pointer (uint8_t*) to the Tool_setBitOff
+        if (debug){
+
+            Serial.print("event Input Code after update: ");
+            Serial.print(*eventInputCode_, BIN);
+            Serial.print(", ");
+            Serial.println(*eventInputCode_);
+        }
+    }
+
+    if (debug){
+        // Serial.println("");
+    }
+
+    
+
 
 }
 
@@ -56,23 +113,93 @@ void FSM_waterMonitoring_EZO(Ezo_board* classArg, RMSState* currentState){
       }
 }
 
-void FSM_goToLowPowerConsumption(uint8_t eventInputCode){
-    if (eventInputCode == 0){
-        // LowPower.idle();
-    }
-}
 
-void FSM_updateEventInputCode(uint8_t *eventInputCode, uint16_t waterMonitoringPeriod)//input arguments: relevant function counter
+
+void FSM_updateInputEventCode(uint8_t *eventInputCode, volatile uint8_t* triggeredInputEvent)//input arguments: relevant function counter
 {
-    if (WMTC >= waterMonitoringPeriod) // if reach the watermonitoringPeriod, 
-    {
-        ToggleLED(ORANGELED_PIN);
-        *eventInputCode |= 0b1; // code for WM function
-        // reset the water monitoring timer count to zero
-        WMTC = 0;
+    bool debug=true;
+    if (debug){
+        Serial.println("in FSM_updateInputEventCode, function");
+        Serial.print("eventInputCode before update: ");
+        Serial.print(*eventInputCode, BIN);
+        Serial.print(", ");
+        Serial.println(*eventInputCode);
+        Serial.print("triggeredInputEvent before update: ");
+        Serial.print(*triggeredInputEvent, BIN);
+        Serial.print(", ");
+        Serial.println(*triggeredInputEvent);
 
     }
+
+    if (Tool_isBitOn(*triggeredInputEvent, URA_INPUTBIT)) 
+    {
+        if (debug){
+            Serial.println("in FSM_updateInputEventCode, URA");
+            Serial.print("eventInputCode before update: ");
+            Serial.print(*eventInputCode, BIN);
+            Serial.print(", ");
+            Serial.println(*eventInputCode);
+            Serial.print("triggeredInputEvent before update: ");
+            Serial.print(*triggeredInputEvent, BIN);
+            Serial.print(", ");
+            Serial.println(*triggeredInputEvent);
+
+        }
+        // ToggleLED(YELLOWLED_PIN);
+        Tool_setBitOn(eventInputCode, URA_INPUTBIT);// code for UserraisedAlarm function
+        Tool_setBitOn(eventInputCode, WM_INPUTBIT);// code for WM function
+
+
+        // reset the triggered input event tracker
+        Tool_setBitOff(triggeredInputEvent, URA_INPUTBIT);
+        Tool_setBitOff(triggeredInputEvent, WM_INPUTBIT); // because we have already told the FSm to do a WM
+        if (debug){
+            Serial.print("eventInputCode after update: ");
+            Serial.print(*eventInputCode, BIN);
+            Serial.print(", ");
+            Serial.println(*eventInputCode);
+            Serial.print("triggeredInputEvent after update: ");
+            Serial.print(*triggeredInputEvent, BIN);
+            Serial.print(", ");
+            Serial.println(*triggeredInputEvent);
+        }
+    }
+    if (Tool_isBitOn(*triggeredInputEvent, WM_INPUTBIT)) 
+    {
+        if (debug){
+            Serial.println("in FSM_updateInputEventCode, WM");
+            Serial.print("eventInputCode before update: ");
+            Serial.print(*eventInputCode, BIN);
+            Serial.print(", ");
+            Serial.println(*eventInputCode);
+            Serial.print("triggeredInputEvent before update: ");
+            Serial.print(*triggeredInputEvent, BIN);
+            Serial.print(", ");
+            Serial.println(*triggeredInputEvent);
+        }
+        // ToggleLED(YELLOWLED_PIN);
+        Tool_setBitOn(eventInputCode, WM_INPUTBIT);// code for WM function
+
+        // reset the triggered input event tracker
+        Tool_setBitOff(triggeredInputEvent, WM_INPUTBIT);
+
+         if (debug){
+            Serial.print("eventInputCode after update: ");
+            Serial.print(*eventInputCode, BIN);
+            Serial.print(", ");
+            Serial.println(*eventInputCode);
+            Serial.print("triggeredInputEvent after update: ");
+            Serial.print(*triggeredInputEvent, BIN);
+            Serial.print(", ");
+            Serial.println(*triggeredInputEvent);
+        }
+
+    }
+    
+
+
 }
+
 
 
 
