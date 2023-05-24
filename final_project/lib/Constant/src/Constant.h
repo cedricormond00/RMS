@@ -28,6 +28,7 @@ extern volatile bool bp; // true <=> button press
 #define BUP_INPUTBIT 0b10
 #define URA_INPUTBIT 0b100
 #define HB_INPUTBIT 0b1000
+#define URA_WAIT_INPUTBIT 0b10000000 // to inform the time has not yet come to go back to sleep
 
 // array assignment
 #define m_array_allLEDpin {BLUELED_PIN, REDLED_PIN, GREENLED_PIN, YELLOWLED_PIN, ORANGELED_PIN}

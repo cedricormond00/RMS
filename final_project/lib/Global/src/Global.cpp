@@ -18,3 +18,4 @@ uint32_t timeIncrementS = timeIncrement/1000; // time increment in second
 volatile uint32_t WMTC = 0 ; // Water motnitoring timer counter: incrmeenets every timeIncrement
 
 volatile uint8_t triggeredInputEvent = 0;
+volatile unsigned long millisOnExternalWakeUp = 0;

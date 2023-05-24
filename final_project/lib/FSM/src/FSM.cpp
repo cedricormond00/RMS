@@ -15,7 +15,7 @@
 // make it niceer with * and &
 // void FSM_executeFunction(uint8_t* eventInputCode_, char ORPData[]){
 void FSM_executeFunction(uint8_t* eventInputCode_, Ezo_board* EZO_ORP, RMSState* currentState){
-    bool debug=true;
+    bool debug=false;
     if (*eventInputCode_ & URA_INPUTBIT){
         // Serial.println("in if");
         if (debug){
@@ -26,8 +26,10 @@ void FSM_executeFunction(uint8_t* eventInputCode_, Ezo_board* EZO_ORP, RMSState*
             Serial.println(*eventInputCode_);
         }
 
-        ToggleLED(ORANGELED_PIN);
+        Serial.print("milis after interrupt wakup: ");
+        Serial.println(millis());
 
+        FSM_f_URA();
         Tool_setBitOff(eventInputCode_, URA_INPUTBIT); // because eventInputCode_ is already the address of the pointer
                                                     // I am now passing the correct pointer (uint8_t*) to the Tool_setBitOff
         if (debug){
@@ -50,7 +52,7 @@ void FSM_executeFunction(uint8_t* eventInputCode_, Ezo_board* EZO_ORP, RMSState*
         }
 
         // FSM_waterMonitoring(ORPData_);
-        FSM_waterMonitoring_EZO(EZO_ORP, currentState);
+        FSM_f_WaterMonitoring_EZO(EZO_ORP, currentState);
 
 
 
@@ -97,13 +99,14 @@ void FSM_executeFunction(uint8_t* eventInputCode_, Ezo_board* EZO_ORP, RMSState*
 
 }
 
-void FSM_waterMonitoring_EZO(Ezo_board* classArg, RMSState* currentState){
-    classArg->send_read_cmd();
-    delay(815); // delay required for reading command
-    // TODO: eventually, will need to create my own fuction that only reads the values and that can then be used to store
-    receive_and_print_reading(*classArg);
+void FSM_f_WaterMonitoring_EZO(Ezo_board* classArg, RMSState* currentState){
+    FSM_getEzoWaterReading(classArg);
+    // classArg->send_read_cmd();
+    // delay(815); // delay required for reading command
+    // // TODO: eventually, will need to create my own fuction that only reads the values and that can then be used to store
+    // receive_and_print_reading(*classArg);
     float ORPValue = classArg->get_last_received_reading();
-    if (ORPValue > 300) {
+    if (ORPValue > 400) {
           *currentState = SWQ;
       }
       else 
@@ -113,11 +116,21 @@ void FSM_waterMonitoring_EZO(Ezo_board* classArg, RMSState* currentState){
       }
 }
 
+void FSM_getEzoWaterReading(Ezo_board* classArg){
+    classArg->send_read_cmd();
+    delay(815); // delay required for reading command
+    // TODO: eventually, will need to create my own fuction that only reads the values and that can then be used to store
+    receive_and_print_reading(*classArg);
+}
 
+void FSM_f_URA(){
+    ToggleLED(YELLOWLED_PIN);
+
+}
 
 void FSM_updateInputEventCode(uint8_t *eventInputCode, volatile uint8_t* triggeredInputEvent)//input arguments: relevant function counter
 {
-    bool debug=true;
+    bool debug=false;
     if (debug){
         Serial.println("in FSM_updateInputEventCode, function");
         Serial.print("eventInputCode before update: ");
@@ -146,13 +159,36 @@ void FSM_updateInputEventCode(uint8_t *eventInputCode, volatile uint8_t* trigger
 
         }
         // ToggleLED(YELLOWLED_PIN);
-        Tool_setBitOn(eventInputCode, URA_INPUTBIT);// code for UserraisedAlarm function
-        Tool_setBitOn(eventInputCode, WM_INPUTBIT);// code for WM function
-
-
+        //because we haven't yet reached the 3 seconds
+        Tool_setBitOn(eventInputCode, URA_WAIT_INPUTBIT);// This prevents to go back to sleep
+        // Because we have come out of sleep becuase of URA, we don't necessarily want to perform a WM
+        Tool_setBitOff(eventInputCode, WM_INPUTBIT);// code for WM function
         // reset the triggered input event tracker
-        Tool_setBitOff(triggeredInputEvent, URA_INPUTBIT);
         Tool_setBitOff(triggeredInputEvent, WM_INPUTBIT); // because we have already told the FSm to do a WM
+        
+        // check the button is still pressed 
+        if (digitalRead(BUTTON_PIN)==LOW){
+            if (millis()>=(millisOnExternalWakeUp + 3000)){
+                //inform the RMS the URA function may be performed
+                Tool_setBitOn(eventInputCode, URA_INPUTBIT);// code for UserraisedAlarm function
+                Tool_setBitOff(eventInputCode, URA_WAIT_INPUTBIT);
+
+                // reset the triggered input event tracker
+                Tool_setBitOff(triggeredInputEvent, URA_INPUTBIT);
+
+            }
+        }
+        else { // the button has been released
+            // no more URA alarm
+            Tool_setBitOff(triggeredInputEvent, URA_INPUTBIT);
+            // no need to inform that we shall wait for 3 seconds
+            Tool_setBitOff(eventInputCode, URA_WAIT_INPUTBIT);
+        }
+        
+        
+
+
+        
         if (debug){
             Serial.print("eventInputCode after update: ");
             Serial.print(*eventInputCode, BIN);

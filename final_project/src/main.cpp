@@ -56,6 +56,7 @@ void setup() {
   digitalWrite(YELLOWLED_PIN, LOW);
   digitalWrite(ORANGELED_PIN, LOW);
 
+  pinMode(BUTTON_PIN, INPUT);
 
   // // timer
   // Timer_tc4_init16bit(timeIncrement, timeIncrementType);
@@ -70,7 +71,9 @@ void setup() {
 }
 
 void loop() {
+  // Serial.println(digitalRead(BUTTON_PIN));
   FSM_executeFunction(&inputEventCode, &EZO_ORP, &rmsState);
+  Serial.println(digitalRead(BUTTON_PIN));
   // Serial.print("test");
   //switch statement
   switch(rmsState){
@@ -89,6 +92,7 @@ void loop() {
       digitalWrite(GREENLED_PIN, HIGH);
       wakePeriod = 15000; //every 30 sec
       // wake evry 5 minutes (5*60*1000ms=300000)
+      
 
      
 
@@ -105,9 +109,10 @@ void loop() {
       wakePeriod = 10000; // 20 sec
       //wake every 2 minutes (2*60*1000ms = 120000)
 
-      FSM_updateInputEventCode(&inputEventCode, &triggeredInputEvent);
 
       LP_goToLowPowerConsumption(inputEventCode, wakePeriod);
+      FSM_updateInputEventCode(&inputEventCode, &triggeredInputEvent);
+
 
 
       break;

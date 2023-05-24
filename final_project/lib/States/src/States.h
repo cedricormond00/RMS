@@ -12,4 +12,11 @@ enum RMSState {
    SLEEP
 };
 
+/* include a class that contains 
+- the time since at wakeup
+-  or a way to track the time between monitoring
+
+djd
+*/ 
+
 #endif

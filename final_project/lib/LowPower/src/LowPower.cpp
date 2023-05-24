@@ -6,6 +6,8 @@
 // requires the global triggeredInputEvent
 #include "Global.h"
 
+#include "Tool.h"
+
 #include "LED.h"
 
 
@@ -23,10 +25,13 @@ void LP_goToLowPowerConsumption(uint8_t inputEventCode, uint32_t wakeperiod){
 
 void LP_setupURAInterrupt(){
 
-    LowPower.attachInterruptWakeup(BUTTON_PIN, LP_callbackURA, RISING);
+    LowPower.attachInterruptWakeup(digitalPinToInterrupt(BUTTON_PIN), LP_callbackURA, FALLING);
 }
 
 void LP_callbackURA(){
-    triggeredInputEvent |= URA_INPUTBIT; //global variable
-
+    //triggeredInputEvent -> global variable
+    Tool_setBitOn(&triggeredInputEvent, URA_INPUTBIT);
+    Tool_setBitOn(&triggeredInputEvent, URA_WAIT_INPUTBIT); // inform that the 3 sec has not yet elapsed
+    //record when the URA occured
+    millisOnExternalWakeUp = millis();
 }
