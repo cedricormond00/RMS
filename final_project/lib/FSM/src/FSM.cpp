@@ -103,7 +103,7 @@ void FSM_waterMonitoring_EZO(Ezo_board* classArg, RMSState* currentState){
     // TODO: eventually, will need to create my own fuction that only reads the values and that can then be used to store
     receive_and_print_reading(*classArg);
     float ORPValue = classArg->get_last_received_reading();
-    if (ORPValue > 230) {
+    if (ORPValue > 300) {
           *currentState = SWQ;
       }
       else 
