@@ -11,8 +11,10 @@ void FSM_updateInputEventCode(uint8_t *eventInputCode, volatile uint8_t* trigger
 // void FSM_executeFunction(uint8_t* eventInputCode_, char ORPData_[]);
 void FSM_waterMonitoring(char ORPData_[]); // not need for any pointer dereferinc on an array. This is done by default
 
-void FSM_executeFunction(uint8_t* eventInputCode_, Ezo_board* EZO_ORP, RMSState* currentState);
-void FSM_f_WaterMonitoring_EZO(Ezo_board* classArg, RMSState* currentState);
+// void FSM_executeFunction(uint8_t* eventInputCode_, Ezo_board* EZO_ORP, RMSState* currentState);
+// void FSM_f_WaterMonitoring_EZO(Ezo_board* classArg, RMSState* currentState);
+void FSM_executeFunction(uint8_t* eventInputCode_, Ezo_board* EZO_ORP, rmsClass& rmsClassArg, RMSState* currentState);
+void FSM_f_WaterMonitoring_EZO(Ezo_board* classArg, rmsClass& rmsClassArg, RMSState* currentState);
 
 void FSM_getEzoWaterReading(Ezo_board* classArg);
 

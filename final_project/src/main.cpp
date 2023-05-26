@@ -15,7 +15,7 @@
 #include "Tool.h"
 #include "States.h"
 #include "LowPower.h"
-#include"RTC.h"
+#include "RTC.h"
 
 
 
@@ -37,12 +37,8 @@ RTCZero rtc;
 
 // define state machine
 rmsClass rms;
-void print2digits(int number) {
-  if (number < 10) {
-    Serial.print("0");
-  }
-  Serial.print(number);
-}
+
+
 
 // define EZO peripheral
 Ezo_board EZO_ORP = Ezo_board(EZO_ADDRESS, "ORP_EZO");       //create an ORP circuit object, who's address is 98 and name is "ORP_EZO"
@@ -102,9 +98,10 @@ void setup() {
     
   // rms
   // set RMS on same time as RTC on initialisation
-  rms.set_wakeUpEPochTime(0);
+  rms.set_wakeUpEPochTime(DEFAULT_EPOCHTIME+0);
+  rms.set_toSleepEPochTime(DEFAULT_EPOCHTIME);
   
-  for (int i=0; i<6; i++){
+  for (int i=0; i<6; i++){ 
     ToggleLED(BLUELED_PIN);
     delay(500);
   }
@@ -113,37 +110,18 @@ void setup() {
 }
 
 void loop() {
-  Serial.print("Unix time = ");
-  Serial.println(rtc.getEpoch());
-
-  Serial.print("Seconds since Jan 1 2020 = ");
-  Serial.println(rtc.getY2kEpoch());
-
-  // Print date...
-  Serial.print(rtc.getDay());
-  Serial.print("/");
-  Serial.print(rtc.getMonth());
-  Serial.print("/");
-  Serial.print(rtc.getYear());
-  Serial.print("\t");
-
-  // ...and time
-  print2digits(rtc.getHours());
-  Serial.print(":");
-  print2digits(rtc.getMinutes());
-  Serial.print(":");
-  print2digits(rtc.getSeconds());
-
-  Serial.println();
-
-  delay(1000);
+  // RTC_printTime(rtc);
+  // delay(1000);
   // Serial.println(digitalRead(BUTTON_PIN));
-  FSM_executeFunction(&inputEventCode, &EZO_ORP, &rmsState);
-  Serial.println(digitalRead(BUTTON_PIN));
+  //   FSM_executeFunction(&inputEventCode, &EZO_ORP, &rmsState);
+
+  FSM_executeFunction(&inputEventCode, &EZO_ORP, rms, &rmsState);
+  // Serial.print(rms.get_rmsState());
   // Serial.print("test");
   //switch statement
-  switch(rmsState){
-  //switch(rms.get_rmsState()){
+  //switch(rmsState){
+  switch(rms.get_rmsState()){
+    
 
     
     // go in appropriate state
@@ -162,6 +140,7 @@ void loop() {
       
 
      
+      //function: determine wakeup period (cf input trigger event)
 
       LP_goToLowPowerConsumption(rms, rtc, inputEventCode, wakePeriod);
 
