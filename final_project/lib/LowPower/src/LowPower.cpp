@@ -103,15 +103,17 @@ void LP_goToLowPowerConsumption(rmsClass& rmsClassArg, RTCZero& rtcClassArg, uin
         uint32_t nextEPochWakeUpTime = DEFAULT_EPOCHTIME + 10;
         if (Tool_isBitOn(triggeredInputEvent, URA_INPUTBIT)){
             // reset the triggered input event tracker
-            Tool_setBitOff(&triggeredInputEvent, URA_INPUTBIT);
+            // Tool_setBitOff(&triggeredInputEvent, URA_INPUTBIT);
         }
         else{
-            nextEPochWakeUpTime = rmsClassArg.get_wakeUpEPochTime()+
-                                            rmsClassArg.get_sleepPeriod();
-            rtcClassArg.setAlarmEpoch(nextEPochWakeUpTime);
+            // nextEPochWakeUpTime = rmsClassArg.get_wakeUpEPochTime()+
+            //                                 rmsClassArg.get_sleepPeriod();
+            // rtcClassArg.setAlarmEpoch(rmsClassArg.get_nextWakeUpEPochTime());
+            // TODO: add a check to ensure the next wakeup alarm is later then the present time
+
         }
-        Serial.print("nextEPochWakeUpTime: ");
-        Serial.println(nextEPochWakeUpTime);
+        Serial.print("rmsClassArg.get_nextWakeUpEPochTime(): ");
+        Serial.println(rmsClassArg.get_nextWakeUpEPochTime());
         Serial.print("Unix time = ");
         Serial.println(rtcClassArg.getEpoch());
         rmsClassArg.set_toSleepEPochTime(rtcClassArg.getEpoch());

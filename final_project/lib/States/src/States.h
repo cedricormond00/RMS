@@ -31,9 +31,14 @@ class rmsClass {
 
       RMSState get_previousRMSState();
 
+      uint32_t get_nextWakeUpEPochTime();
+      void set_nextWakeUpEPochTime(uint32_t new_nextWakeUpEPochTime);
 
+      uint32_t get_wmReadEPochTime();
+      void set_wmReadEPochTime(uint32_t new_wmReadEPochTime);
+      
       uint32_t get_wakeUpEPochTime();
-      void set_wakeUpEPochTime(uint32_t new_wakeUpEPochTime);
+      void set_wakeUpEPochTime(uint32_t new_WakeUpEPochTime);
 
       uint32_t get_toSleepEPochTime();
       void set_toSleepEPochTime(uint32_t new_toSleepEPochTime);
@@ -53,6 +58,11 @@ class rmsClass {
       // };
       enum RMSState _rmsState;
       enum RMSState _previousRMSState;
+
+      uint32_t _nextWakeUpEPochTime;
+
+      uint32_t _wmReadEPochTime;
+
       uint32_t _wakeUpEPochTime;  // epoch time at wakup
       uint32_t _toSleepEPochTime; // epoch time when going to sleep
       uint32_t _sleepPeriod; // how long the device should go to sleep for (in sec)

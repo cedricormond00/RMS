@@ -39,7 +39,6 @@ RTCZero rtc;
 rmsClass rms;
 
 
-
 // define EZO peripheral
 Ezo_board EZO_ORP = Ezo_board(EZO_ADDRESS, "ORP_EZO");       //create an ORP circuit object, who's address is 98 and name is "ORP_EZO"
 
@@ -115,7 +114,7 @@ void loop() {
   // Serial.println(digitalRead(BUTTON_PIN));
   //   FSM_executeFunction(&inputEventCode, &EZO_ORP, &rmsState);
 
-  FSM_executeFunction(&inputEventCode, &EZO_ORP, rms, &rmsState);
+  FSM_executeFunction(&inputEventCode, &EZO_ORP, rms, rtc, &rmsState);
   // Serial.print(rms.get_rmsState());
   // Serial.print("test");
   //switch statement

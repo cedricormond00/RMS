@@ -1,12 +1,15 @@
 #include <Arduino.h>
 
-#include "States.h"
 
+#include "States.h"
+#include "Constant.h"
 
 
 rmsClass::rmsClass(){
     _rmsState = INIT;
     _sleepPeriod = _UWQSleepPeriod; //or 0 to start with
+    _nextWakeUpEPochTime = DEFAULT_EPOCHTIME + 10;
+
 }
 
 // _rmsState
@@ -24,7 +27,6 @@ RMSState rmsClass::get_previousRMSState(){
 }
 
 
-
 // _wakeUpEPochTime
 uint32_t rmsClass::get_wakeUpEPochTime(){
     return _wakeUpEPochTime;
@@ -32,6 +34,27 @@ uint32_t rmsClass::get_wakeUpEPochTime(){
 
 void rmsClass::set_wakeUpEPochTime(uint32_t new_wakeUpEPochTime){
     _wakeUpEPochTime = new_wakeUpEPochTime;
+}
+
+
+// _nextWakeUpEPochTime
+uint32_t rmsClass::get_nextWakeUpEPochTime(){
+    return _nextWakeUpEPochTime;
+}
+
+void rmsClass::set_nextWakeUpEPochTime(uint32_t new_nextWakeUpEPochTime){
+    _nextWakeUpEPochTime = new_nextWakeUpEPochTime;
+
+}
+
+
+// _wmReadEPochTime
+uint32_t rmsClass::get_wmReadEPochTime(){
+    return _wmReadEPochTime;
+}
+
+void rmsClass::set_wmReadEPochTime(uint32_t new_wmReadEPochTime){
+    _wmReadEPochTime = new_wmReadEPochTime;
 }
 
 // _toSleepEPochTime
@@ -42,6 +65,7 @@ uint32_t rmsClass::get_toSleepEPochTime(){
 void rmsClass::set_toSleepEPochTime(uint32_t new_toSleepEPochTime){
     _toSleepEPochTime = new_toSleepEPochTime;
 }
+
 
 // _sleepPeriod
 uint32_t rmsClass::get_sleepPeriod(){

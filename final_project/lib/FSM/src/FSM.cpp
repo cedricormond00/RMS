@@ -12,9 +12,12 @@
 #include "I2c.h"
 #include "Tool.h"
 
+bool debugDisplay = 1;
+
+
 // make it niceer with * and &
 // void FSM_executeFunction(uint8_t* eventInputCode_, char ORPData[]){
-void FSM_executeFunction(uint8_t* eventInputCode_, Ezo_board* EZO_ORP, rmsClass& rmsClassArg, RMSState* currentState){
+void FSM_executeFunction(uint8_t* eventInputCode_, Ezo_board* EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtcClassArg, RMSState* currentState){
     bool debug=true;
     if (*eventInputCode_ & URA_INPUTBIT){
         // Serial.println("in if");
@@ -53,15 +56,15 @@ void FSM_executeFunction(uint8_t* eventInputCode_, Ezo_board* EZO_ORP, rmsClass&
         }
 
         // FSM_waterMonitoring(ORPData_);
-        FSM_f_WaterMonitoring_EZO(EZO_ORP, rmsClassArg, currentState);
+        FSM_f_WaterMonitoring_EZO(EZO_ORP, rmsClassArg, rtcClassArg, currentState);
 
-
+        // rmsClassArg.set_nextWakeUpEPochTime
 
 
         Tool_setBitOff(eventInputCode_, WM_INPUTBIT); // because eventInputCode_ is already the address of the pointer
                                                     // I am now passing the correct pointer (uint8_t*) to the Tool_setBitOff
-        Tool_setBitOff(eventInputCode_, 0b11111111);
-        Tool_setBitOff(&triggeredInputEvent, 0b11111111);
+        // Tool_setBitOff(eventInputCode_, 0b11111111);
+        // Tool_setBitOff(&triggeredInputEvent, 0b11111111);
         if (debug){
             Serial.println("");
             Serial.print("event Input Code after update: ");
@@ -103,23 +106,32 @@ void FSM_executeFunction(uint8_t* eventInputCode_, Ezo_board* EZO_ORP, rmsClass&
 
 }
 
-void FSM_f_WaterMonitoring_EZO(Ezo_board* classArg, rmsClass& rmsClassArg, RMSState* currentState){
+void FSM_f_WaterMonitoring_EZO(Ezo_board* classArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg, RMSState* currentState){
     FSM_getEzoWaterReading(classArg);
     // classArg->send_read_cmd();
     // delay(815); // delay required for reading command
     // // TODO: eventually, will need to create my own fuction that only reads the values and that can then be used to store
     // receive_and_print_reading(*classArg);
+
+    rmsClassArg.set_wmReadEPochTime(rtcClassArg.getEpoch());
+
     float ORPValue = classArg->get_last_received_reading();
     if (ORPValue > 400) {
-          *currentState = SWQ;
-          rmsClassArg.set_rmsState(SWQ);
-      }
-      else 
-      // TODO: need to deal with faulty reading as well
-      {
-          *currentState = UWQ;
-          rmsClassArg.set_rmsState(UWQ);
-      }
+        *currentState = SWQ;
+        rmsClassArg.set_rmsState(SWQ);
+    }
+    else 
+    // TODO: need to deal with faulty reading as well
+    {
+        *currentState = UWQ;
+        rmsClassArg.set_rmsState(UWQ);
+    }
+    rmsClassArg.set_nextWakeUpEPochTime(rmsClassArg.get_wmReadEPochTime()+rmsClassArg.get_sleepPeriod());
+    // TODO: add a check to ensure the next wakeup alarm is later then the present time
+    rtcClassArg.setAlarmEpoch(rmsClassArg.get_nextWakeUpEPochTime());
+
+
+
 }
 
 void FSM_getEzoWaterReading(Ezo_board* classArg){
@@ -131,12 +143,13 @@ void FSM_getEzoWaterReading(Ezo_board* classArg){
 
 void FSM_f_URA(){
     ToggleLED(YELLOWLED_PIN);
+    debugDisplay = 1;
 
 }
 
 void FSM_updateInputEventCode(uint8_t *eventInputCode, volatile uint8_t* triggeredInputEvent)//input arguments: relevant function counter
 {
-    bool debug=false;
+    bool debug=true;
     // if (debug){
     //     Serial.println("in FSM_updateInputEventCode, function");
     //     Serial.print("eventInputCode before update: ");
@@ -152,7 +165,7 @@ void FSM_updateInputEventCode(uint8_t *eventInputCode, volatile uint8_t* trigger
 
     if (Tool_isBitOn(*triggeredInputEvent, URA_INPUTBIT)) 
     {
-        if (debug){
+        if (debug && debugDisplay){
             Serial.println("in FSM_updateInputEventCode, URA");
             Serial.print("eventInputCode before update: ");
             Serial.print(*eventInputCode, BIN);
@@ -162,6 +175,7 @@ void FSM_updateInputEventCode(uint8_t *eventInputCode, volatile uint8_t* trigger
             Serial.print(*triggeredInputEvent, BIN);
             Serial.print(", ");
             Serial.println(*triggeredInputEvent);
+            
 
         }
         // ToggleLED(YELLOWLED_PIN);
@@ -179,14 +193,14 @@ void FSM_updateInputEventCode(uint8_t *eventInputCode, volatile uint8_t* trigger
                 Tool_setBitOn(eventInputCode, URA_INPUTBIT);// code for UserraisedAlarm function
                 Tool_setBitOff(eventInputCode, URA_WAIT_INPUTBIT);
 
-                // // reset the triggered input event tracker
-                // Tool_setBitOff(triggeredInputEvent, URA_INPUTBIT);
+                // reset the triggered input event tracker
+                Tool_setBitOff(triggeredInputEvent, URA_INPUTBIT);
 
             }
         }
         else { // the button has been released
             // // no more URA alarm
-            // Tool_setBitOff(triggeredInputEvent, URA_INPUTBIT);
+            Tool_setBitOff(triggeredInputEvent, URA_INPUTBIT);
             // no need to inform that we shall wait for 3 seconds
             Tool_setBitOff(eventInputCode, URA_WAIT_INPUTBIT);
         }
@@ -195,7 +209,7 @@ void FSM_updateInputEventCode(uint8_t *eventInputCode, volatile uint8_t* trigger
 
 
         
-        if (debug){
+        if (debug && debugDisplay){
             Serial.print("eventInputCode after update: ");
             Serial.print(*eventInputCode, BIN);
             Serial.print(", ");
@@ -204,6 +218,7 @@ void FSM_updateInputEventCode(uint8_t *eventInputCode, volatile uint8_t* trigger
             Serial.print(*triggeredInputEvent, BIN);
             Serial.print(", ");
             Serial.println(*triggeredInputEvent);
+            debugDisplay = 0;
         }
     }
     if (Tool_isBitOn(*triggeredInputEvent, WM_INPUTBIT)) 
