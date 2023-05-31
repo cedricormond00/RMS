@@ -13,6 +13,7 @@
 #include "Tool.h"
 
 #include "RTC.h"
+#include "Data.h"
 
 bool debugDisplay = 1;
 
@@ -101,11 +102,11 @@ void FSM_executeFunction(Ezo_board* EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
     }
 }
 
-void FSM_f_WM_EZO(Ezo_board* classArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg){
+void FSM_f_WM_EZO(Ezo_board* ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg){
     rmsClassArg.set_wmReadEPochTime(rtcClassArg.getEpoch());
     Serial.print("rmsClassArg.get_wmReadEPochTime(): ");
     Serial.println(rmsClassArg.get_wmReadEPochTime());
-    FSM_getEzoWaterReading(classArg);
+    FSM_getEzoWaterReading(ezoClassArg);
     
     
     // classArg->send_read_cmd();
@@ -113,7 +114,8 @@ void FSM_f_WM_EZO(Ezo_board* classArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
     // // TODO: eventually, will need to create my own fuction that only reads the values and that can then be used to store
     // receive_and_print_reading(*classArg);
 
-    float ORPValue = classArg->get_last_received_reading();
+    float ORPValue = ezoClassArg->get_last_received_reading();
+    rmsClassArg.set_orpReading(ORPValue);
     // TODO: allow the ORPValue threshold to be set at initialisation
     if (ORPValue > 400) {
         rmsClassArg.set_rmsState(SWQ);
@@ -132,6 +134,11 @@ void FSM_f_WM_EZO(Ezo_board* classArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
 
     // should be added literaly just before going to sleep
     rtcClassArg.setAlarmEpoch(rmsClassArg.get_nextWakeUpEPochTime());
+    Data_saveDataPointToFile(rmsClassArg.get_wmReadEPochTime(),
+                        rmsClassArg.get_orpReading(),
+                        rmsClassArg.get_rmsState(),
+                        rmsClassArg.get_inputEventCode(),
+                        dataFileName);
 }
 
 
@@ -187,9 +194,10 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
         }
         uint32_t currentTime = rtcClassArg.getEpoch();
         char buf[256];
+        RTC_getTimeInText(currentTime, buf);
+        
         Serial.print("Current unix time: ");
         Serial.println(currentTime);
-        RTC_getTimeInText(currentTime, buf);
         Serial.print("Current unix timestamp: ");
         Serial.println(buf);
         Serial.print("rmsClassArg.get_wakeUpEPochTime(): ");

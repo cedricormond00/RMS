@@ -21,5 +21,8 @@ extern volatile uint8_t triggeredInputEvent;
 extern volatile unsigned long millisOnExternalWakeUp;
 extern volatile unsigned long previousMillis;
 
+extern char dataFileName[13];
+
+
 
 #endif // GLOBALS_H

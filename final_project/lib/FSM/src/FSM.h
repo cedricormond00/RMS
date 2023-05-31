@@ -15,7 +15,7 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
 // void FSM_executeFunction(uint8_t* eventInputCode_, Ezo_board* EZO_ORP, RMSState* currentState);
 // void FSM_f_WaterMonitoring_EZO(Ezo_board* classArg, RMSState* currentState);
 void FSM_executeFunction(Ezo_board* EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtcClassArg);
-void FSM_f_WM_EZO(Ezo_board* classArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg);
+void FSM_f_WM_EZO(Ezo_board* ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg);
 
 void FSM_getEzoWaterReading(Ezo_board* classArg);
 

@@ -89,6 +89,14 @@ void rmsClass::set_toSleepEPochTime(uint32_t new_toSleepEPochTime){
 }
 
 
+// _orpReading
+float rmsClass::get_orpReading(){
+    return _orpReading;
+}
+void rmsClass::set_orpReading(float new_orpReading){
+    _orpReading = new_orpReading;
+}
+
 // _sleepPeriod
 uint32_t rmsClass::get_sleepPeriod(){
     return _sleepPeriod;

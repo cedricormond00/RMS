@@ -20,3 +20,4 @@
 volatile uint8_t triggeredInputEvent = 0;
 volatile unsigned long millisOnExternalWakeUp = 0;
 volatile unsigned long previousMillis = 0;
+char dataFileName[13] = {"dataFile.csv"};

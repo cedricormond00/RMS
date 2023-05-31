@@ -16,6 +16,7 @@
 #include "States.h"
 #include "LowPower.h"
 #include "RTC.h"
+#include "Data.h"
 
 
 
@@ -55,6 +56,7 @@ uint32_t initWakeUpTime = 0; //TODO: find a better way to define the first time 
 // char ORPData[32];               //we make a 32 byte character array to hold incoming data from the ORP circuit.
 
 void setup() {
+  Serial.begin(9600);
   //wait for serial monitor
   while (!Serial);
 
@@ -81,8 +83,6 @@ void setup() {
 
   pinMode(BUTTON_PIN, INPUT);
 
-
-
   // // timer
   // Timer_tc4_init16bit(timeIncrement, timeIncrementType);
   // Serial.println("TC4 init completed");
@@ -95,6 +95,9 @@ void setup() {
   
   // RTC  
   RTC_init(rtc);
+
+  bool SDIsInit = Data_SDCard_init();
+  Serial.println(SDIsInit);
     
     
   // rms

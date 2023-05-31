@@ -51,6 +51,9 @@ class rmsClass {
       uint32_t get_toSleepEPochTime();
       void set_toSleepEPochTime(uint32_t new_toSleepEPochTime);
 
+      float get_orpReading();
+      void set_orpReading(float new_orpReading);
+
       uint32_t get_sleepPeriod();
       void set_sleepPeriod();
 
@@ -77,6 +80,8 @@ class rmsClass {
       uint32_t _wakeUpEPochTime;  // epoch time at wakup
       uint32_t _toSleepEPochTime; // epoch time when going to sleep
       uint32_t _sleepPeriod; // how long the device should go to sleep for (in sec)
+
+      float _orpReading = 0;
 
       /* -1 is to account for the delay of 1 sec after the occurence of the alram match. 
       This is because the alarm 0 interrupt flag in the interrupt flag status and clear registers 
