@@ -1,3 +1,5 @@
+#include <TimeLib.h>
+
 
 #include "RTC.h"
 #include "Constant.h"
@@ -27,6 +29,25 @@ void RTC_callbackAlarmMatch(){
   
 
 }
+
+
+/* convert the time stamp into readable form */
+void RTC_getTimeInText(uint32_t ePochTime, char* buf){
+  // // Convert the epoch time to time_t
+  // time_t time = ePochTime;
+
+  // uint32_t time = ePochTime;
+
+  // Convert the timestamp to a tm structure
+  tmElements_t timeInfo;
+  breakTime(ePochTime, timeInfo);
+
+  // Format the time components into the provided buffer
+  sprintf(buf, "%4d-%02d-%02d %02d:%02d:%02d", timeInfo.Year + 1970, timeInfo.Month, timeInfo.Day, timeInfo.Hour, timeInfo.Minute, timeInfo.Second);
+
+}
+
+
 void RTC_print2digits(int number) {
   if (number < 10) {
     Serial.print("0");

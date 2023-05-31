@@ -12,6 +12,8 @@
 #include "I2c.h"
 #include "Tool.h"
 
+#include "RTC.h"
+
 bool debugDisplay = 1;
 
 
@@ -148,7 +150,8 @@ void FSM_f_URA(){
 }
 
 
-void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volatile uint8_t* triggeredInputEvent)//input arguments: relevant function counter
+void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volatile uint8_t* triggeredInputEvent)
+//TODO: maybe the URA_WAIT bit is useless: just use triggerInput as a means to check 
 {
 
     bool debug=true;
@@ -169,6 +172,8 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
 
     if (Tool_isBitOn(*triggeredInputEvent, WM_INPUTBIT)) 
     {
+        //if include 9AM alarm -> add the check to see if we are just close to 9AM
+        // double gate: one for the time window, and one for a boolean to inform if the HB's been sent. Once out ot the time window, reset to the boolean
         if (debug){
             Serial.println("in FSM_updateInputEventCode, WM");
             Serial.print("eventInputCode before update: ");
@@ -181,11 +186,12 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
             Serial.println(*triggeredInputEvent);
         }
         uint32_t currentTime = rtcClassArg.getEpoch();
-        
-        //if include 9AM alarm -> add the check to see if we are just close to 9AM
-        // double gate: one for the time window, and one for a boolean to inform if the HB's been sent. Once out ot the time window, reset to the boolean
+        char buf[256];
         Serial.print("Current unix time: ");
         Serial.println(currentTime);
+        RTC_getTimeInText(currentTime, buf);
+        Serial.print("Current unix timestamp: ");
+        Serial.println(buf);
         Serial.print("rmsClassArg.get_wakeUpEPochTime(): ");
         Serial.println(rmsClassArg.get_wakeUpEPochTime());
         Serial.print("rmsClassArg.get_wmWakeUpEPochTime(): ");
@@ -194,7 +200,6 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
         // Check to see if the alarm match occured at a time when the device was not asleep
         // alarm occured when device not asleep 
         // -> artificially use current time
-        // if (currentTime-rmsClassArg.get_wmWakeUpEPochTime()<=rmsClassArg.get_sleepPeriod()){ //alarm occured when the device was not asleep
         if (Tool_isBitOn(*triggeredInputEvent, 0b11111110) || Tool_isBitOn(rmsClassArg.get_inputEventCode(), 0b11111110)){ //alarm occured when the device was not asleep
             rmsClassArg.set_wmWakeUpEPochTime(currentTime); //+1
 
@@ -211,11 +216,6 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
             Serial.print("rmsClassArg.get_wmWakeUpEPochTime(): ");
             Serial.println(rmsClassArg.get_wmWakeUpEPochTime());
         }
-        // in case the alarm match occured at some other time then when waking up from sleep
-        // if (rmsClassArg.get_nextWakeUpEPochTime() <= currentTime){
-        //     Serial.println("came in if time test");
-        //     rmsClassArg.set_wmWakeUpEPochTime(currentTime);
-        // }
 
         Tool_setBitOn(&eventInputCode, WM_INPUTBIT);// code for WM function
 
@@ -235,7 +235,7 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
 
     }
 
-        if (Tool_isBitOn(*triggeredInputEvent, URA_INPUTBIT)) 
+    if (Tool_isBitOn(*triggeredInputEvent, URA_INPUTBIT)) 
     {
         if (debug && debugDisplay){
             Serial.println("in FSM_updateInputEventCode, URA");

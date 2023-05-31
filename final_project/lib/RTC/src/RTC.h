@@ -16,5 +16,8 @@ void RTC_printTime(RTCZero& rtcClassArg);
 */
 void RTC_callbackAlarmMatch();
 
+void RTC_getTimeInText(uint32_t ePochTime, char* buf);
+
+
 
 #endif
