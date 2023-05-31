@@ -4,7 +4,9 @@
 #include "Global.h"
 #include "Tool.h"
 
+#include "States.h"
 
+uint8_t dummyVar = 0;
 
 void RTC_init(RTCZero& rtc){
     rtc.begin();
@@ -12,14 +14,17 @@ void RTC_init(RTCZero& rtc){
     // rtc.setDate(01, 01, 2020);
     // rtc.setTime(0, 0, 0);
     rtc.enableAlarm(rtc.MATCH_YYMMDDHHMMSS);
-    rtc.attachInterrupt(RTC_alarmMatchISR);
+    rtc.attachInterrupt(RTC_callbackAlarmMatch);
 
 }
 
-void RTC_alarmMatchISR(){
+// void RTC_callbackAlarmMatch(RMSClass& rmsClassArg, RTCZero& rtcClassArg){
+void RTC_callbackAlarmMatch(){
+  
   // //when match alarm, set all other bits to zero
   // Tool_setBitOff(&triggeredInputEvent, ~WM_INPUTBIT);
   Tool_setBitOn(&triggeredInputEvent, WM_INPUTBIT);
+  
 
 }
 void RTC_print2digits(int number) {

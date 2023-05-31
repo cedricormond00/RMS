@@ -9,6 +9,12 @@
 void RTC_init(RTCZero& rtc);
 void RTC_print2digits(int number);
 void RTC_printTime(RTCZero& rtcClassArg);
-void RTC_alarmMatchISR();
+
+/** \brief function called RTC matches set alarm time
+ * \remarks - currently deals with alarm match upon WM request.
+ * - TODO: future: needs to deal with Hb time alaram raised
+*/
+void RTC_callbackAlarmMatch();
+
 
 #endif

@@ -29,27 +29,29 @@
 //    SLEEP
 // };
 
-// local variables
 
-
-
+// instance of Real Time Clock
 RTCZero rtc;
 
 // define state machine
 rmsClass rms;
 
 
+// local variables
 // define EZO peripheral
 Ezo_board EZO_ORP = Ezo_board(EZO_ADDRESS, "ORP_EZO");       //create an ORP circuit object, who's address is 98 and name is "ORP_EZO"
 
 RMSState rmsState = INIT;
+
+uint32_t initWakeUpTime = 0; //TODO: find a better way to define the first time interval for intialisation
+
 // uint16_t WMTC_limit = 5; // Upper timer limit for action to be triggered
-uint8_t inputEventCode = 0b0;
+// uint8_t inputEventCode = 0b0;
 // const int nbLastORPValuesStored = 5; // Size of the ring buffer for ORP values
 // float ORPRingBuffer[nbLastORPValuesStored];  // Array to store the floating-point values
 
 
-uint32_t wakePeriod = 0;
+// uint32_t wakePeriod = 0;
 // char ORPData[32];               //we make a 32 byte character array to hold incoming data from the ORP circuit.
 
 void setup() {
@@ -100,9 +102,9 @@ void setup() {
   rms.set_wakeUpEPochTime(DEFAULT_EPOCHTIME+0);
   rms.set_toSleepEPochTime(DEFAULT_EPOCHTIME);
   
-  for (int i=0; i<6; i++){ 
+  for (int i=0; i<10; i++){ 
     ToggleLED(BLUELED_PIN);
-    delay(500);
+    delay(100);
   }
   digitalWrite(BLUELED_PIN, LOW);
   // init completed
@@ -113,12 +115,15 @@ void loop() {
   // delay(1000);
   // Serial.println(digitalRead(BUTTON_PIN));
   //   FSM_executeFunction(&inputEventCode, &EZO_ORP, &rmsState);
-
-  FSM_executeFunction(&inputEventCode, &EZO_ORP, rms, rtc, &rmsState);
+  // if (digitalRead(BUTTON_PIN) == HIGH){
+  //   Serial.print("triggeredInputEvent: ");
+  //   Serial.println(triggeredInputEvent, BIN);
+  // }
+  
+  FSM_executeFunction(&EZO_ORP, rms, rtc);
   // Serial.print(rms.get_rmsState());
   // Serial.print("test");
-  //switch statement
-  //switch(rmsState){
+
   switch(rms.get_rmsState()){
     
 
@@ -128,22 +133,37 @@ void loop() {
       digitalWrite(BLUELED_PIN, HIGH);
       digitalWrite(REDLED_PIN, HIGH);
       // let the mahchine know it must perform the Water Monitoring function right now
-      inputEventCode = 0b1;
+
+      // as if at initialisation the device has just woken up
+      initWakeUpTime = rtc.getEpoch();
+      rms.set_wakeUpEPochTime(initWakeUpTime);
+      rms.set_wmWakeUpEPochTime(initWakeUpTime);
+
+      Serial.print("rms.get_wakeUpEPochTime(): ");
+      Serial.println(rms.get_wakeUpEPochTime());
+      rtc.setAlarmEpoch(rms.get_wakeUpEPochTime());
+
+      // Serial.print("rms.get_wmWakeUpEPochTime(): ");
+      // Serial.println(rms.get_wmWakeUpEPochTime());
+      // rtc.setAlarmEpoch(rms.get_wmWakeUpEPochTime());
+
+      rms.set_inputEventCode(0b1);
+
       
 
     case SWQ: 
       digitalWrite(REDLED_PIN, LOW);
       digitalWrite(GREENLED_PIN, HIGH);
-      wakePeriod = 10000; //every 30 sec
+      // wakePeriod = 10000; //every 30 sec
       // wake evry 5 minutes (5*60*1000ms=300000)
       
 
      
       //function: determine wakeup period (cf input trigger event)
 
-      LP_goToLowPowerConsumption(rms, rtc, inputEventCode, wakePeriod);
+      LP_goToLowPowerConsumption(rms, rtc, &triggeredInputEvent);
 
-      FSM_updateInputEventCode(&inputEventCode, &triggeredInputEvent);
+      FSM_updateInputEventCode(rms, rtc, &triggeredInputEvent);
 
       
       break;
@@ -151,12 +171,12 @@ void loop() {
     case UWQ:
       digitalWrite(REDLED_PIN, HIGH);
       digitalWrite(GREENLED_PIN, LOW);
-      wakePeriod = 10000; // 20 sec
+      // wakePeriod = 10000; // 20 sec
       //wake every 2 minutes (2*60*1000ms = 120000)
 
 
-      LP_goToLowPowerConsumption(rms, rtc, inputEventCode, wakePeriod);
-      FSM_updateInputEventCode(&inputEventCode, &triggeredInputEvent);
+      LP_goToLowPowerConsumption(rms, rtc, &triggeredInputEvent);
+      FSM_updateInputEventCode(rms, rtc, &triggeredInputEvent);
 
 
 

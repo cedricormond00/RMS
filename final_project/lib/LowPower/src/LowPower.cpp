@@ -14,134 +14,72 @@
 #include "LED.h"
 
 
-void LP_goToLowPowerConsumption(rmsClass& rmsClassArg, RTCZero& rtcClassArg, uint8_t inputEventCode, uint32_t intendedWakePeriod){
+void LP_goToLowPowerConsumption(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volatile uint8_t* triggeredInputEvent){
     
     
-     
-    if (inputEventCode == 0){
+     /*ensure
+      - all functions have been completed
+      - no external interrupt triggered in the meantime
+     */
+    if (rmsClassArg.get_inputEventCode() == 0 && *triggeredInputEvent == 0){
+        uint32_t wakeUpEpochTime = 0;
         Serial.println("");
-        Serial.println("Going to sleep");
-        // Serial.println("");
-        // // find the time awake from wakeupe
-        // uint32_t awakePeriod = (rtcClassArg.getY2kEpoch()- rmsClassArg.get_wakeUpEPochTime())*1000;
-        // Serial.print("awakePeriod: ");
-        // Serial.println(awakePeriod);
-        // uint32_t nextWakeUpPeriod = intendedWakePeriod-awakePeriod;
-        // Serial.print("nextWakeUpPeriod: ");
-        // Serial.println(nextWakeUpPeriod);
-
-        // // milis = (seconds - seconds) *1000
-        // uint32_t lastAtSleepPeriod = (rmsClassArg.get_wakeUpEPochTime() - rmsClassArg.get_toSleepEPochTime())*1000;
-        // Serial.print("lastAtSleepPeriod");
-        // Serial.println(lastAtSleepPeriod);
-        // // intendedWakePeriod in milis
-        // // lastAtSleepPeriod in milis
-        // if (lastAtSleepPeriod < intendedWakePeriod){
-        //     Serial.println("updating the wakeup period");
-        //     nextWakeUpPeriod = nextWakeUpPeriod - lastAtSleepPeriod;
-        //     Serial.print("nextWakeUpPeriod; ");
-        //     Serial.println(nextWakeUpPeriod);
-        // }
-        // Serial.print("nextWakeUpPeriod used: ");
-        // Serial.println(nextWakeUpPeriod);
-        
+        Serial.println("inputEventCode and trigger equal to zero");
+        Serial.print("rmsClassArg.get_inputEventCode(): ");
+        Serial.println(rmsClassArg.get_inputEventCode());
+        Serial.print("triggeredInputEvent: ");
+        Serial.println(*triggeredInputEvent);
 
 
-        // // update the time at which the board goes to sleep
-        // rmsClassArg.set_toSleepEPochTime(rtcClassArg.getY2kEpoch());
-
-        //LowPower.sleep(nextWakeUpPeriod);
-        //v2 
-        // Serial.print("rmsClassArg.get_toSleepEPochTime(): ");
-        // Serial.println(rmsClassArg.get_toSleepEPochTime());
-        // Serial.print("rmsClassArg.get_sleepPeriod(rmsClassArg.get_previousRMSState()): ");
-        // Serial.println(rmsClassArg.get_sleepPeriod(rmsClassArg.get_previousRMSState()));
-        // Serial.print("rmsClassArg.get_sleepPeriod(): ");
-        // Serial.println(rmsClassArg.get_sleepPeriod());
-        // uint32_t nextEPochWakeUpTime = rmsClassArg.get_toSleepEPochTime()
-        //                             + rmsClassArg.get_sleepPeriod(rmsClassArg.get_previousRMSState())
-        //                             + rmsClassArg.get_sleepPeriod();
-        // Serial.print("nextEPochWakeUpTime: ");
-        // Serial.println(nextEPochWakeUpTime);
-        // rtcClassArg.setAlarmEpoch(nextEPochWakeUpTime);
-        // if (Tool_isBitOn(triggeredInputEvent, URA_INPUTBIT)){
-        //     // reset the triggered input event tracker
-        //     Tool_setBitOff(&triggeredInputEvent, URA_INPUTBIT);
-        // }
-        // else{
-        //     // update the time at which the board goes to sleep
-        //     rmsClassArg.set_toSleepEPochTime(rmsClassArg.get_toSleepEPochTime()
-        //                             + rmsClassArg.get_sleepPeriod(rmsClassArg.get_previousRMSState()));
-        //     // rmsClassArg.set_toSleepEPochTime(rtcClassArg.getEpoch());
-        // }
-        
-
-        // Serial.print("Eopoch time at sleep: ");
-        // Serial.println(rmsClassArg.get_toSleepEPochTime())
-
-        // LowPower.sleep();
-        // uint32_t wakeUpEpochTime = rtcClassArg.getEpoch();
-        // if (Tool_isBitOn(triggeredInputEvent, URA_INPUTBIT)){
-        //     // update the time at which the board woke up
-        //     rmsClassArg.set_wakeUpEPochTime(wakeUpEpochTime);
-
-        // }
-        // else{
-
-        //     rmsClassArg.set_wakeUpEPochTime(rtcClassArg.getEpoch());
-        //     // inform that RMS just woke up
-        //     triggeredInputEvent |= WM_INPUTBIT; //global variable
-
-        // }
-
-        // Serial.print("Eopoch time at wakup: ");
-        // Serial.println(rtcClassArg.getEpoch());
-
-        // Serial.println("Woke up");
-
-        //v3
-        uint32_t nextEPochWakeUpTime = DEFAULT_EPOCHTIME + 10;
-        if (Tool_isBitOn(triggeredInputEvent, URA_INPUTBIT)){
-            // reset the triggered input event tracker
-            // Tool_setBitOff(&triggeredInputEvent, URA_INPUTBIT);
-        }
-        else{
-            // nextEPochWakeUpTime = rmsClassArg.get_wakeUpEPochTime()+
-            //                                 rmsClassArg.get_sleepPeriod();
-            // rtcClassArg.setAlarmEpoch(rmsClassArg.get_nextWakeUpEPochTime());
-            // TODO: add a check to ensure the next wakeup alarm is later then the present time
-
-        }
+        // v4
         Serial.print("rmsClassArg.get_nextWakeUpEPochTime(): ");
         Serial.println(rmsClassArg.get_nextWakeUpEPochTime());
         Serial.print("Unix time = ");
         Serial.println(rtcClassArg.getEpoch());
-        rmsClassArg.set_toSleepEPochTime(rtcClassArg.getEpoch());
-        LowPower.sleep();
+        uint32_t toSleepEPochTime = rtcClassArg.getEpoch();
+        rmsClassArg.set_toSleepEPochTime(toSleepEPochTime);
 
-        if (Tool_isBitOn(triggeredInputEvent, URA_INPUTBIT)){
-            // //just to do something
-            // Tool_setBitOn(&triggeredInputEvent, URA_INPUTBIT);
+        // if (rtcClassArg.getEpoch() < rmsClassArg.get_nextWakeUpEPochTime()){
+        //     Serial.println("really going to sleep");
+        //     rmsClassArg.set_toSleepEPochTime(toSleepEPochTime);
+        //     LowPower.sleep();
+        // }
+        
+        // one final check that no wm occured in the last few ms
+        if (*triggeredInputEvent == 0){
+            Serial.println("to sleep now");
+            LowPower.sleep();
         }
-        else{
-            //TODO: this section needs to be placed elesewhere: if the user presses the button when the alarm is matched, the new wakeup time will not be updated this will mean the device will never wakeup
-            // update the time at which the board woke up
-            rmsClassArg.set_wakeUpEPochTime(rtcClassArg.getEpoch());
-            // // inform that RMS just woke up --> no nooed to: done in RTC_matchAlarmISR()
-            // triggeredInputEvent |= WM_INPUTBIT; //global variable
 
-        }
+        // store time at which device woke up
+        wakeUpEpochTime = rtcClassArg.getEpoch();
         Serial.println("");
         Serial.println("Woke up");
-        Serial.print("rmsClassArg.get_wakeUpEPochTime()");
-        Serial.println(rmsClassArg.get_wakeUpEPochTime());
-        Serial.print("Unix time = ");
-        Serial.println(rtcClassArg.getEpoch());
+        Serial.print("triggeredInputEvent: ");
+        Serial.println(*triggeredInputEvent, BIN);
+        rmsClassArg.set_wakeUpEPochTime(wakeUpEpochTime);
+        // if (Tool_isBitOn(*triggeredInputEvent,WM_INPUTBIT)){
+        //     rmsClassArg.set_wakeUpEPochTime(wakeUpEpochTime);
+        //     rmsClassArg.set_wmWakeUpEPochTime(wakeUpEpochTime);
+        //     // Serial.println("Came in here");
+        // }
+        // else{
+        //     //TODO: this section needs to be placed elesewhere: if the user presses the button when the alarm is matched, the new wakeup time will not be updated this will mean the device will never wakeup
+        //     // update the time at which the board woke up
+        //     rmsClassArg.set_wakeUpEPochTime(wakeUpEpochTime);
+        //     // // inform that RMS just woke up --> no nooed to: done in RTC_matchAlarmISR()
+        //     // triggeredInputEvent |= WM_INPUTBIT; //global variable
 
-
-
+        // }
         
-
+        // Serial.print("rmsClassArg.get_wakeUpEPochTime()");
+        // Serial.println(rmsClassArg.get_wakeUpEPochTime());
+        // Serial.print("rmsClassArg.get_wmWakeUpEPochTime()");
+        // Serial.println(rmsClassArg.get_wmWakeUpEPochTime());
+        Serial.print("Current unix time = ");
+        Serial.println(rtcClassArg.getEpoch());
+        Serial.print("triggeredInputEvent: ");
+        Serial.println(*triggeredInputEvent, BIN);
     }
 }
 
@@ -157,3 +95,4 @@ void LP_callbackURA(){
     //record when the URA occured
     millisOnExternalWakeUp = millis();
 }
+

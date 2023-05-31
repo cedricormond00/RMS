@@ -7,6 +7,7 @@
 
 rmsClass::rmsClass(){
     _rmsState = INIT;
+    _inputEventCode = 0b0;
     _sleepPeriod = _UWQSleepPeriod; //or 0 to start with
     _nextWakeUpEPochTime = DEFAULT_EPOCHTIME + 10;
 
@@ -22,8 +23,20 @@ RMSState rmsClass::get_rmsState(){
     return _rmsState;
 }
 
+
+// _previousRMSState
 RMSState rmsClass::get_previousRMSState(){
     return _previousRMSState;
+}
+
+
+// _inputEventCode
+uint8_t rmsClass::get_inputEventCode(){
+    return _inputEventCode;
+}
+
+void rmsClass::set_inputEventCode(uint8_t new_inputEventCode){
+    _inputEventCode = new_inputEventCode;
 }
 
 
@@ -34,6 +47,15 @@ uint32_t rmsClass::get_wakeUpEPochTime(){
 
 void rmsClass::set_wakeUpEPochTime(uint32_t new_wakeUpEPochTime){
     _wakeUpEPochTime = new_wakeUpEPochTime;
+}
+
+// _wmWakeUpEPochTime
+uint32_t rmsClass::get_wmWakeUpEPochTime(){
+    return _wmWakeUpEPochTime;
+}
+
+void rmsClass::set_wmWakeUpEPochTime(uint32_t new_wmWakeUpEPochTime){
+    _wmWakeUpEPochTime = new_wmWakeUpEPochTime;
 }
 
 

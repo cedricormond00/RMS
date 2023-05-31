@@ -19,5 +19,7 @@ extern volatile uint32_t WMTC; // Water motnitoring timer counter
 
 extern volatile uint8_t triggeredInputEvent;
 extern volatile unsigned long millisOnExternalWakeUp;
+extern volatile unsigned long previousMillis;
+
 
 #endif // GLOBALS_H

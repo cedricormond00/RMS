@@ -4,7 +4,7 @@
 
 #include <Arduino.h>
 
-void LP_goToLowPowerConsumption(rmsClass& rmsClassArg, RTCZero& rtcClassArg, uint8_t inputEventCode, uint32_t intendedWakePeriod);
+void LP_goToLowPowerConsumption(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volatile uint8_t* triggeredInputEvent);
 
 void LP_setupURAInterrupt();
 

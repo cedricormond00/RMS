@@ -30,7 +30,9 @@ extern volatile bool bp; // true <=> button press
 #define HB_INPUTBIT 0b1000
 #define URA_WAIT_INPUTBIT 0b10000000 // to inform the time has not yet come to go back to sleep
 
+// ATTENTION: refence must be a leap year!!
 #define DEFAULT_EPOCHTIME 1577836800 //01/01/2020 00:00:00
+#define DEFAULT_INITSLEEPPERIOD 10 // time at which the frist reading will occur
 // array assignment
 #define m_array_allLEDpin {BLUELED_PIN, REDLED_PIN, GREENLED_PIN, YELLOWLED_PIN, ORANGELED_PIN}
 
