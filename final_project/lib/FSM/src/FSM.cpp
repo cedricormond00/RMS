@@ -6,154 +6,20 @@
 #include <Ezo_i2c_util.h>  
 
 #include "FSM.h"
+
 #include "Constant.h"
 #include "Global.h"
-#include "LED.h"
-#include "I2c.h"
+
+
 #include "Tool.h"
 
+#include "LED.h"
+#include "I2c.h"
 #include "RTC.h"
 #include "Data.h"
+#include "EZO.h"
 
 bool debugDisplay = 1;
-
-
-void FSM_executeFunction(Ezo_board* EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtcClassArg){
-    bool debug=true;
-
-    uint8_t eventInputCode = rmsClassArg.get_inputEventCode();
-    if (Tool_isBitOn(eventInputCode, WM_INPUTBIT)){
-        // Serial.println("in if");
-        if (debug){
-            Serial.println("in FSM_executeFunction, WM");
-            Serial.print("Current unix time = ");
-            Serial.println(rtcClassArg.getEpoch());
-            Serial.print("event Input Code before update: ");
-            Serial.print(eventInputCode, BIN);
-            Serial.print(", ");
-            Serial.println(eventInputCode);
-
-        }
-
-        FSM_f_WM_EZO(EZO_ORP, rmsClassArg, rtcClassArg);
-
-        Tool_setBitOff(&eventInputCode, WM_INPUTBIT); // because eventInputCode_ is already the address of the pointer
-                                                    // I am now passing the correct pointer (uint8_t*) to the Tool_setBitOff
-
-        if (debug){
-            Serial.println("");
-            Serial.print("event Input Code after update: ");
-            Serial.print(eventInputCode, BIN);
-            Serial.print(", ");
-            Serial.println(eventInputCode);
-        }
-    }
-
-    if (Tool_isBitOn(eventInputCode, URA_INPUTBIT)){
-        // Serial.println("in if");
-        if (debug){
-            Serial.println("in FSM_executeFunction, URA");
-            Serial.print("Current unix time = ");
-            Serial.println(rtcClassArg.getEpoch());
-            Serial.print("event Input Code before update: ");
-            Serial.print(eventInputCode, BIN);
-            Serial.print(", ");
-            Serial.println(eventInputCode);
-        }
-
-        Serial.print("milis after interrupt wakup: ");
-        Serial.println(millis());
-
-        FSM_f_URA();
-        Tool_setBitOff(&eventInputCode, URA_INPUTBIT); // because eventInputCode_ is already the address of the pointer
-                                                    // I am now passing the correct pointer (uint8_t*) to the Tool_setBitOff
-        
-        if (debug){
-
-            Serial.print("event Input Code after update: ");
-            Serial.print(eventInputCode, BIN);
-            Serial.print(", ");
-            Serial.println(eventInputCode);
-        }
-    }
-
-    // if (*eventInputCode_ & BUP_INPUTBIT){
-    //     // Serial.println("in if");
-    //     if (debug){
-    //         Serial.println("in FSM_executeFunction, BUP");
-    //         Serial.print("event Input Code before update: ");
-    //         Serial.print(*eventInputCode_, BIN);
-    //         Serial.print(", ");
-    //         Serial.println(*eventInputCode_);
-    //     }
-    //     // FSM_BUPMONITORINGFUNCTION;
-    //     Tool_setBitOff(eventInputCode_, BUP_INPUTBIT); // because eventInputCode_ is already the address of the pointer
-    //                                                 // I am now passing the correct pointer (uint8_t*) to the Tool_setBitOff
-    //     if (debug){
-    //         Serial.print("event Input Code after update: ");
-    //         Serial.print(*eventInputCode_, BIN);
-    //         Serial.print(", ");
-    //         Serial.println(*eventInputCode_);
-    //     }
-    // }
-    rmsClassArg.set_inputEventCode(eventInputCode);
-    if (debug){
-        // Serial.println("");
-    }
-}
-
-void FSM_f_WM_EZO(Ezo_board* ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg){
-    rmsClassArg.set_wmReadEPochTime(rtcClassArg.getEpoch());
-    Serial.print("rmsClassArg.get_wmReadEPochTime(): ");
-    Serial.println(rmsClassArg.get_wmReadEPochTime());
-    
-    FSM_getEzoWaterReading(ezoClassArg);
-
-    float ORPValue = ezoClassArg->get_last_received_reading();
-    rmsClassArg.set_orpReading(ORPValue);
-    // TODO: allow the ORPValue threshold to be set at initialisation
-    if (ORPValue > 400) {
-        rmsClassArg.set_rmsState(SWQ);
-    }
-    else 
-    // TODO: need to deal with faulty reading as well
-    {
-        rmsClassArg.set_rmsState(UWQ);
-    }
-    // rmsClassArg.set_nextWakeUpEPochTime(rmsClassArg.get_wakeUpEPochTime()+rmsClassArg.get_sleepPeriod());
-    // This solution would allow to minisme this drift. However, it would probably require to add a check to ensure the next wakup alarm time is later then the present time
-    // TODO: add a check to ensure the next wakeup alarm is later then the present time
-    rmsClassArg.set_nextWakeUpEPochTime(rmsClassArg.get_wmWakeUpEPochTime()+rmsClassArg.get_sleepPeriod());
-    
-    // rmsClassArg.set_nextWakeUpEPochTime(rmsClassArg.get_wmReadEPochTime()+rmsClassArg.get_sleepPeriod());
-
-    // should be added literaly just before going to sleep
-    rtcClassArg.setAlarmEpoch(rmsClassArg.get_nextWakeUpEPochTime());
-    Data_saveDataPointToDataFile(rmsClassArg.get_wmReadEPochTime(),
-                        rmsClassArg.get_orpReading(),
-                        rmsClassArg.get_rmsState(),
-                        WM_INPUTBIT,
-                        dataFileName);
-}
-
-
-void FSM_getEzoWaterReading(Ezo_board* classArg){
-    classArg->send_read_cmd();
-    delay(815); // delay required for reading command
-    // TODO: eventually, will need to create my own fuction that only reads the values and that can then be used to store
-    receive_and_print_reading(*classArg);
-
-    // put device to sleep
-    classArg->send_cmd("Sleep");
-
-}
-
-
-void FSM_f_URA(){
-    ToggleLED(ORANGELED_PIN);
-    debugDisplay = 1;
-
-}
 
 
 void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volatile uint8_t* triggeredInputEvent)
@@ -304,6 +170,160 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
 }
 
 
+void FSM_executeFunction(Ezo_board* EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtcClassArg){
+    bool debug=true;
+
+    uint8_t eventInputCode = rmsClassArg.get_inputEventCode();
+    if (Tool_isBitOn(eventInputCode, WM_INPUTBIT)){
+        // Serial.println("in if");
+        if (debug){
+            Serial.println("in FSM_executeFunction, WM");
+            Serial.print("Current unix time = ");
+            Serial.println(rtcClassArg.getEpoch());
+            Serial.print("event Input Code before update: ");
+            Serial.print(eventInputCode, BIN);
+            Serial.print(", ");
+            Serial.println(eventInputCode);
+
+        }
+
+        FSM_f_WM_EZO(EZO_ORP, rmsClassArg, rtcClassArg);
+
+        Tool_setBitOff(&eventInputCode, WM_INPUTBIT); // because eventInputCode_ is already the address of the pointer
+                                                    // I am now passing the correct pointer (uint8_t*) to the Tool_setBitOff
+
+        if (debug){
+            Serial.println("");
+            Serial.print("event Input Code after update: ");
+            Serial.print(eventInputCode, BIN);
+            Serial.print(", ");
+            Serial.println(eventInputCode);
+        }
+    }
+
+    if (Tool_isBitOn(eventInputCode, URA_INPUTBIT)){
+        // Serial.println("in if");
+        if (debug){
+            Serial.println("in FSM_executeFunction, URA");
+            Serial.print("Current unix time = ");
+            Serial.println(rtcClassArg.getEpoch());
+            Serial.print("event Input Code before update: ");
+            Serial.print(eventInputCode, BIN);
+            Serial.print(", ");
+            Serial.println(eventInputCode);
+        }
+
+        Serial.print("milis after interrupt wakup: ");
+        Serial.println(millis());
+
+        FSM_f_URA();
+        Tool_setBitOff(&eventInputCode, URA_INPUTBIT); // because eventInputCode_ is already the address of the pointer
+                                                    // I am now passing the correct pointer (uint8_t*) to the Tool_setBitOff
+        
+        if (debug){
+
+            Serial.print("event Input Code after update: ");
+            Serial.print(eventInputCode, BIN);
+            Serial.print(", ");
+            Serial.println(eventInputCode);
+        }
+    }
+
+    // if (*eventInputCode_ & BUP_INPUTBIT){
+    //     // Serial.println("in if");
+    //     if (debug){
+    //         Serial.println("in FSM_executeFunction, BUP");
+    //         Serial.print("event Input Code before update: ");
+    //         Serial.print(*eventInputCode_, BIN);
+    //         Serial.print(", ");
+    //         Serial.println(*eventInputCode_);
+    //     }
+    //     // FSM_BUPMONITORINGFUNCTION;
+    //     Tool_setBitOff(eventInputCode_, BUP_INPUTBIT); // because eventInputCode_ is already the address of the pointer
+    //                                                 // I am now passing the correct pointer (uint8_t*) to the Tool_setBitOff
+    //     if (debug){
+    //         Serial.print("event Input Code after update: ");
+    //         Serial.print(*eventInputCode_, BIN);
+    //         Serial.print(", ");
+    //         Serial.println(*eventInputCode_);
+    //     }
+    // }
+    rmsClassArg.set_inputEventCode(eventInputCode);
+    if (debug){
+        // Serial.println("");
+    }
+}
+
+
+
+void FSM_f_WM_EZO(Ezo_board* ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg){
+    rmsClassArg.set_wmReadEPochTime(rtcClassArg.getEpoch());
+    Serial.print("rmsClassArg.get_wmReadEPochTime(): ");
+    Serial.println(rmsClassArg.get_wmReadEPochTime());
+    
+    EZO_getEzoORPReading(ezoClassArg);
+
+    float orpValue = ezoClassArg->get_last_received_reading();
+    rmsClassArg.set_orpReading(orpValue);
+    // TODO: allow the ORPValue threshold to be set at initialisation
+    // if (ORPValue > 400) {
+    //     rmsClassArg.set_rmsState(SWQ);
+    // }
+    // else 
+    // // TODO: need to deal with faulty reading as well
+    // {
+    //     rmsClassArg.set_rmsState(UWQ);
+    // }
+
+    RMSState newState = FSM_decideState(orpValue);
+    rmsClassArg.set_rmsState(newState);
+
+    // rmsClassArg.set_nextWakeUpEPochTime(rmsClassArg.get_wakeUpEPochTime()+rmsClassArg.get_sleepPeriod());
+    // This solution would allow to minisme this drift. However, it would probably require to add a check to ensure the next wakup alarm time is later then the present time
+    // TODO: add a check to ensure the next wakeup alarm is later then the present time
+
+
+    rmsClassArg.set_nextWakeUpEPochTime(rmsClassArg.get_wmWakeUpEPochTime()+rmsClassArg.get_sleepPeriod());
+    
+    // rmsClassArg.set_nextWakeUpEPochTime(rmsClassArg.get_wmReadEPochTime()+rmsClassArg.get_sleepPeriod());
+
+    // should be added literaly just before going to sleep
+    //TODO: CHECK THIS IS BUG PROOF WITH THE COMMENT BEFORE GOING TO SLEEP
+    rtcClassArg.setAlarmEpoch(rmsClassArg.get_nextWakeUpEPochTime());
+    Data_saveDataPointToDataFile(rmsClassArg.get_wmReadEPochTime(),
+                        rmsClassArg.get_orpReading(),
+                        rmsClassArg.get_rmsState(),
+                        WM_INPUTBIT,
+                        dataFileName);
+}
+
+
+
+
+void FSM_f_URA(){
+    ToggleLED(ORANGELED_PIN);
+    debugDisplay = 1;
+
+}
+
+
+
+RMSState FSM_decideState(float orpValue){
+    RMSState state = UWQ;
+    if (orpValue > 400) {
+        state = SWQ;
+    }
+    else if (orpValue <= 400){
+        state = UWQ;
+    }
+    // TODO: need to deal with faulty reading as well
+    return state;
+}
+        
+
+
+
+
 
 
 
@@ -330,4 +350,13 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
 //         Serial.print("ORP value: ");
 //         Serial.println(ORPData_);
 //     }
+// }
+
+// void FSM_getEzoWaterReading(Ezo_board* classArg){
+//     classArg->send_read_cmd();
+//     delay(815); // delay required for reading command
+//     // TODO: eventually, will need to create my own fuction that only reads the values and that can then be used to store
+//     receive_and_print_reading(*classArg);
+//     // put device to sleep
+//     classArg->send_cmd("Sleep");
 // }
