@@ -26,8 +26,7 @@ void RTC_callbackAlarmMatch(){
   // //when match alarm, set all other bits to zero
   // Tool_setBitOff(&triggeredInputEvent, ~WM_INPUTBIT);
   Tool_setBitOn(&triggeredInputEvent, WM_INPUTBIT);
-  
-
+  alarmMatchEPochTime = rtc.getEpoch();
 }
 
 

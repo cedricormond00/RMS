@@ -70,25 +70,28 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
         Serial.print("rmsClassArg.get_wmWakeUpEPochTime(): ");
         Serial.println(rmsClassArg.get_wmWakeUpEPochTime());
 
-        // Check to see if the alarm match occured at a time when the device was not asleep
-        // alarm occured when device not asleep 
-        // -> artificially use current time
-        if (Tool_isBitOn(*triggeredInputEvent, 0b11111110) || Tool_isBitOn(rmsClassArg.get_inputEventCode(), 0b11111110)){ //alarm occured when the device was not asleep
-            rmsClassArg.set_wmWakeUpEPochTime(currentTime); //+1
+        // // Check to see if the alarm match occured at a time when the device was not asleep
+        // // alarm occured when device not asleep 
+        // // -> artificially use current time
+        // if (Tool_isBitOn(*triggeredInputEvent, 0b11111110) || Tool_isBitOn(rmsClassArg.get_inputEventCode(), 0b11111110)){ //alarm occured when the device was not asleep
+        //     rmsClassArg.set_wmWakeUpEPochTime(currentTime); //+1
 
-            Serial.print("Alarm match occured when device awake: ");
-            Serial.print("rmsClassArg.get_wmWakeUpEPochTime(): ");
-            Serial.println(rmsClassArg.get_wmWakeUpEPochTime());
-        }
-        // alarm occured when the device was asleep
-        // -> use the time at which the device wokeup
-        else{ 
+        //     Serial.print("Alarm match occured when device awake: ");
+        //     Serial.print("rmsClassArg.get_wmWakeUpEPochTime(): ");
+        //     Serial.println(rmsClassArg.get_wmWakeUpEPochTime());
+        // }
+        // // alarm occured when the device was asleep
+        // // -> use the time at which the device wokeup
+        // else{ 
 
-            rmsClassArg.set_wmWakeUpEPochTime(rmsClassArg.get_wakeUpEPochTime());
-            Serial.print("Alarm match occured when device asleep: ");
-            Serial.print("rmsClassArg.get_wmWakeUpEPochTime(): ");
-            Serial.println(rmsClassArg.get_wmWakeUpEPochTime());
-        }
+        //     rmsClassArg.set_wmWakeUpEPochTime(rmsClassArg.get_wakeUpEPochTime());
+        //     Serial.print("Alarm match occured when device asleep: ");
+        //     Serial.print("rmsClassArg.get_wmWakeUpEPochTime(): ");
+        //     Serial.println(rmsClassArg.get_wmWakeUpEPochTime());
+        // }
+
+        rmsClassArg.set_wmWakeUpEPochTime(alarmMatchEPochTime);
+
 
         Tool_setBitOn(&eventInputCode, WM_INPUTBIT);// code for WM function
 

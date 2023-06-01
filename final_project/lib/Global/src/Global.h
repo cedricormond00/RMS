@@ -3,6 +3,8 @@
 
 #ifndef GLOBAL_H
 #define GLOBAL_H
+
+#include <RTCZero.h>
 /** \brief include all global variable declaration that must be used in separate files
  * \remark the global variable declaration is done in Global.c
 */
@@ -22,6 +24,9 @@ extern volatile unsigned long millisOnExternalWakeUp;
 extern volatile unsigned long previousMillis;
 
 extern char dataFileName[13];
+
+extern RTCZero rtc;
+extern uint32_t alarmMatchEPochTime;
 
 
 

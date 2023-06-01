@@ -39,6 +39,13 @@ bool Data_saveDataPointToDataFile(uint32_t ePochTime,
         dataFile.print(",");
         
         dataFile.print(inputEventCodeBit, BIN);
+
+        dataFile.print(",");
+        dataFile.print(triggeredInputEvent, BIN);
+
+        
+
+
         dataFile.println();
         
         dataFile.close();

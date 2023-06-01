@@ -32,7 +32,7 @@
 
 
 // instance of Real Time Clock
-RTCZero rtc;
+// RTCZero rtc;
 
 // define state machine
 rmsClass rms;
