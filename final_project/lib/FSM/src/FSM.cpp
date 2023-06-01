@@ -106,13 +106,8 @@ void FSM_f_WM_EZO(Ezo_board* ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
     rmsClassArg.set_wmReadEPochTime(rtcClassArg.getEpoch());
     Serial.print("rmsClassArg.get_wmReadEPochTime(): ");
     Serial.println(rmsClassArg.get_wmReadEPochTime());
+    
     FSM_getEzoWaterReading(ezoClassArg);
-    
-    
-    // classArg->send_read_cmd();
-    // delay(815); // delay required for reading command
-    // // TODO: eventually, will need to create my own fuction that only reads the values and that can then be used to store
-    // receive_and_print_reading(*classArg);
 
     float ORPValue = ezoClassArg->get_last_received_reading();
     rmsClassArg.set_orpReading(ORPValue);
@@ -134,10 +129,10 @@ void FSM_f_WM_EZO(Ezo_board* ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
 
     // should be added literaly just before going to sleep
     rtcClassArg.setAlarmEpoch(rmsClassArg.get_nextWakeUpEPochTime());
-    Data_saveDataPointToFile(rmsClassArg.get_wmReadEPochTime(),
+    Data_saveDataPointToDataFile(rmsClassArg.get_wmReadEPochTime(),
                         rmsClassArg.get_orpReading(),
                         rmsClassArg.get_rmsState(),
-                        rmsClassArg.get_inputEventCode(),
+                        WM_INPUTBIT,
                         dataFileName);
 }
 
@@ -147,6 +142,10 @@ void FSM_getEzoWaterReading(Ezo_board* classArg){
     delay(815); // delay required for reading command
     // TODO: eventually, will need to create my own fuction that only reads the values and that can then be used to store
     receive_and_print_reading(*classArg);
+
+    // put device to sleep
+    classArg->send_cmd("Sleep");
+
 }
 
 

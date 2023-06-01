@@ -96,8 +96,23 @@ void setup() {
   // RTC  
   RTC_init(rtc);
 
+
+  //SD
   bool SDIsInit = Data_SDCard_init();
+  Serial.print("is cSD Card initialised? ");
   Serial.println(SDIsInit);
+
+  // Sd card
+  if (SDIsInit){
+    // remove preexisting file
+    Data_removeFile(dataFileName);
+
+    //initialise first row
+    uint8_t numberOfRows = 5;
+    String rownames[numberOfRows] = {"ActionEPochTimeStamp", "actionTimeStamp", "orpValue", "State", "inputEvent"};
+    Data_populateHeaderRowToFile(rownames, numberOfRows, dataFileName);
+  }
+  
     
     
   // rms

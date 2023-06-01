@@ -21,7 +21,8 @@
 #include <SPI.h>
 #include <SD.h>
 
-#define SD_CS 4
+// #define SD_CS 4
+const int chipSelect = 4;
 
 File myFile;
 
@@ -32,14 +33,12 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 
-  pinMode(SD_CS, OUTPUT);
-
   SPI.begin();
 
 
   Serial.print("Initializing SD card...");
 
-  if (!SD.begin(SD_CS)) {
+  if (!SD.begin(chipSelect)) {
     Serial.println("initialization failed!");
     while (1);
   }

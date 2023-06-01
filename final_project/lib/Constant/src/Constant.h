@@ -20,7 +20,7 @@ extern volatile bool bp; // true <=> button press
 
 #define BUTTON_PIN 5
 
-#define SD_CHIPSELECT 13
+#define SD_CHIPSELECT 4
 
 // I2C
 #define EZO_ADDRESS 98               //default I2C ID number for EZO ORP Circuit.
