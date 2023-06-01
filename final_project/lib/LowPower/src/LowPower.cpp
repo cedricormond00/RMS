@@ -46,6 +46,13 @@ void LP_goToLowPowerConsumption(rmsClass& rmsClassArg, RTCZero& rtcClassArg, vol
         
         // one final check that no wm occured in the last few ms
         if (*triggeredInputEvent == 0){
+        /* ToDO: add check to ensure the next wakeup time is in future compared to current time. 
+        Else, either:
+        - set next wakeup time in 1 sec
+        - check why it is not appropriate
+        - raise an error
+        */
+
             rmsClassArg.set_toSleepEPochTime(toSleepEPochTime);
             Serial.println("to sleep now");
             LowPower.sleep();

@@ -4,13 +4,20 @@
 #include "States.h"
 #include "Constant.h"
 
+// Implement the constructor for the struct
+rmsClass::alarmStruct::alarmStruct(uint32_t lastAlarmSMSEPochTime_initVal = 0, 
+                     uint32_t currentAlarmEPochTime_initVal = 0, 
+                     uint32_t allowedIntervalBetweenSMS_initVal = 20){
+    lastAlarmSMSEPochTime = lastAlarmSMSEPochTime_initVal;
+    currentAlarmEPochTime = currentAlarmEPochTime_initVal;
+    allowedIntervalBetweenSMS = allowedIntervalBetweenSMS_initVal;
+}
 
-rmsClass::rmsClass(){
+rmsClass::rmsClass():_uraStruct(0,0,20){
     _rmsState = INIT;
     _inputEventCode = 0b0;
     _sleepPeriod = _UWQSleepPeriod; //or 0 to start with
     _nextWakeUpEPochTime = DEFAULT_EPOCHTIME + 10;
-
 }
 
 // _rmsState
@@ -142,3 +149,68 @@ void rmsClass::set_sleepPeriod(){
         break;
     }
  }
+
+
+ // alarm raising
+
+
+//  initialize each instance of the private struct using the constructor and provide the desired values for each instance:
+// rmsClass::rmsClass() : _uraStruct(0,0,20){}
+
+void rmsClass::set_lastAlarmSMSEPochTime(alarmStruct& alarmStructArg, uint32_t new_lastAlarmSMSEPochTime){
+    alarmStructArg.lastAlarmSMSEPochTime = new_lastAlarmSMSEPochTime;
+}
+
+uint32_t rmsClass::get_lastAlarmSMSEPochTime(alarmStruct& alarmStructArg){
+    return alarmStructArg.lastAlarmSMSEPochTime;
+}
+
+void rmsClass::set_currentAlarmEPochTime(alarmStruct& alarmStructArg, uint32_t new_currentAlarmEPochTime){
+    alarmStructArg.currentAlarmEPochTime = new_currentAlarmEPochTime;
+}
+
+uint32_t rmsClass::get_currentAlarmEPochTime(alarmStruct& alarmStructArg){
+    return alarmStructArg.currentAlarmEPochTime;
+}
+
+
+uint32_t rmsClass::get_allowedIntervalBetweenSMS(alarmStruct& alarmStructArg){
+    return alarmStructArg.allowedIntervalBetweenSMS;
+}
+
+//URA
+void rmsClass::set_URAlastAlarmSMSEPochTime(uint32_t new_lastAlarmSMSEPochTime){
+    set_lastAlarmSMSEPochTime(_uraStruct, new_lastAlarmSMSEPochTime);
+}
+
+uint32_t rmsClass::get_URAlastAlarmSMSEPochTime(){
+    return get_lastAlarmSMSEPochTime(_uraStruct);
+}
+
+void rmsClass::set_URAcurrentAlarmEPochTime(uint32_t new_currentAlarmEPochTime){
+    set_currentAlarmEPochTime(_uraStruct, new_currentAlarmEPochTime);
+}
+
+uint32_t rmsClass::get_URAcurrentAlarmEPochTime(){
+    return get_currentAlarmEPochTime(_uraStruct);
+}
+
+uint32_t rmsClass::get_URAallowedIntervalBetweenSMS(){
+    return get_allowedIntervalBetweenSMS(_uraStruct);
+}
+
+bool rmsClass::ura_canSendSMS(uint32_t new_currentAlarmEPochTime){
+    bool canSendSMS = true;
+    set_URAcurrentAlarmEPochTime(new_currentAlarmEPochTime);
+    if (get_URAcurrentAlarmEPochTime()-get_URAlastAlarmSMSEPochTime() > get_URAallowedIntervalBetweenSMS()){
+        set_URAlastAlarmSMSEPochTime(get_URAcurrentAlarmEPochTime());
+    }
+    else {
+        canSendSMS = false;
+    }
+    return canSendSMS;
+}
+
+
+
+

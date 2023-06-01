@@ -59,6 +59,37 @@ class rmsClass {
 
       uint8_t get_sleepPeriod(RMSState anyState);
 
+
+      struct alarmStruct{
+         uint32_t lastAlarmSMSEPochTime;
+         uint32_t currentAlarmEPochTime; 
+         uint32_t allowedIntervalBetweenSMS;
+
+         //constructor
+         alarmStruct(uint32_t lastAlarmSMSEPochTime_initVal, 
+                     uint32_t currentAlarmEPochTime_initVal, 
+                     uint32_t allowedIntervalBetweenSMS_initVal);
+
+      };
+
+      //URA
+      void set_URAlastAlarmSMSEPochTime(uint32_t new_lastAlarmSMSEPochTime);
+      uint32_t get_URAlastAlarmSMSEPochTime();
+
+      void set_URAcurrentAlarmEPochTime(uint32_t new_currentAlarmEPochTime);
+      uint32_t get_URAcurrentAlarmEPochTime();
+
+      uint32_t get_URAallowedIntervalBetweenSMS();
+
+      bool ura_canSendSMS(uint32_t new_currentAlarmEPochTime);
+
+
+      
+
+
+      
+
+
    private:
       // enum RMSState {
       //    INIT = 0,
@@ -90,6 +121,16 @@ class rmsClass {
       static const uint8_t _SWQSleepPeriod = 10-1; //sec
       static const uint8_t _UWQSleepPeriod = 10-1; //sec
       static const uint8_t _FWQSleepPeriod = 10-1; //sec
+
+      alarmStruct _uraStruct;
+
+      void set_lastAlarmSMSEPochTime(alarmStruct& alarmStructArg, uint32_t new_lastAlarmSMSEPochTime);
+      uint32_t get_lastAlarmSMSEPochTime(alarmStruct& alarmStructArg);
+
+      void set_currentAlarmEPochTime(alarmStruct& alarmStructArg, uint32_t new_currentAlarmEPochTime);
+      uint32_t get_currentAlarmEPochTime(alarmStruct& alarmStructArg);
+
+      uint32_t get_allowedIntervalBetweenSMS(alarmStruct& alarmStructArg);
 
       
 

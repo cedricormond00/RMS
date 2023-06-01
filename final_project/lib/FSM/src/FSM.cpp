@@ -296,7 +296,7 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
 
 void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg){
     uint32_t currentTime = rtcClassArg.getEpoch();
-    ToggleLED(ORANGELED_PIN);
+    // ToggleLED(ORANGELED_PIN);
     debugDisplay = 1;
     // read water value
     EZO_getEzoORPReading(ezoClassArg);
@@ -314,6 +314,13 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
                         rmsClassArg.get_rmsState(),
                         URA_INPUTBIT,
                         dataFileName);
+    if (rmsClassArg.ura_canSendSMS(currentTime)){
+        ToggleLED(ORANGELED_PIN);
+    }
+    else{
+        ToggleLED(BLUELED_PIN);
+
+    }
 
 }
 
