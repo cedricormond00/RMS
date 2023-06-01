@@ -22,6 +22,7 @@ extern volatile bool bp; // true <=> button press
 
 #define SD_CHIPSELECT 4
 
+
 // I2C
 #define EZO_ADDRESS 98               //default I2C ID number for EZO ORP Circuit.
 
@@ -35,6 +36,11 @@ extern volatile bool bp; // true <=> button press
 // ATTENTION: refence must be a leap year!!
 #define DEFAULT_EPOCHTIME 1577836800 //01/01/2020 00:00:00
 #define DEFAULT_INITSLEEPPERIOD 10 // time at which the frist reading will occur
+
+// ML
+#define LOGIT_THRESHOLD 400
+
+
 // array assignment
 #define m_array_allLEDpin {BLUELED_PIN, REDLED_PIN, GREENLED_PIN, YELLOWLED_PIN, ORANGELED_PIN}
 

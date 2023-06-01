@@ -138,7 +138,7 @@ void loop() {
   //   Serial.println(triggeredInputEvent, BIN);
   // }
   
-  FSM_executeFunction(&EZO_ORP, rms, rtc);
+  FSM_executeFunction(EZO_ORP, rms, rtc);
   // Serial.print(rms.get_rmsState());
   // Serial.print("test");
 

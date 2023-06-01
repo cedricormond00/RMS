@@ -5,14 +5,14 @@
 
 #include "EZO.h"
 
-void EZO_getEzoORPReading(Ezo_board* classArgEZO){
-    classArgEZO->send_read_cmd();
+void EZO_getEzoORPReading(Ezo_board& ezoClassArg){
+    ezoClassArg.send_read_cmd();
     delay(815); // delay required for reading command
-    
+
     // TODO: eventually, will need to create my own fuction that only reads the values and that can then be used to store
-    receive_and_print_reading(*classArgEZO);
+    receive_and_print_reading(ezoClassArg);
 
     // put device to sleep
-    classArgEZO->send_cmd("Sleep");
+    ezoClassArg.send_cmd("Sleep");
 
 }

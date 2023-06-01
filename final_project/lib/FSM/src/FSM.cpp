@@ -170,7 +170,7 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
 }
 
 
-void FSM_executeFunction(Ezo_board* EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtcClassArg){
+void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtcClassArg){
     bool debug=true;
 
     uint8_t eventInputCode = rmsClassArg.get_inputEventCode();
@@ -216,7 +216,7 @@ void FSM_executeFunction(Ezo_board* EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
         Serial.print("milis after interrupt wakup: ");
         Serial.println(millis());
 
-        FSM_f_URA();
+        FSM_f_URA(EZO_ORP, rmsClassArg, rtcClassArg);
         Tool_setBitOff(&eventInputCode, URA_INPUTBIT); // because eventInputCode_ is already the address of the pointer
                                                     // I am now passing the correct pointer (uint8_t*) to the Tool_setBitOff
         
@@ -256,26 +256,17 @@ void FSM_executeFunction(Ezo_board* EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
 
 
 
-void FSM_f_WM_EZO(Ezo_board* ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg){
+void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg){
     rmsClassArg.set_wmReadEPochTime(rtcClassArg.getEpoch());
     Serial.print("rmsClassArg.get_wmReadEPochTime(): ");
     Serial.println(rmsClassArg.get_wmReadEPochTime());
     
     EZO_getEzoORPReading(ezoClassArg);
 
-    float orpValue = ezoClassArg->get_last_received_reading();
+    float orpValue = ezoClassArg.get_last_received_reading();
     rmsClassArg.set_orpReading(orpValue);
-    // TODO: allow the ORPValue threshold to be set at initialisation
-    // if (ORPValue > 400) {
-    //     rmsClassArg.set_rmsState(SWQ);
-    // }
-    // else 
-    // // TODO: need to deal with faulty reading as well
-    // {
-    //     rmsClassArg.set_rmsState(UWQ);
-    // }
 
-    RMSState newState = FSM_decideState(orpValue);
+    RMSState newState = FSM_decideState(ezoClassArg);
     rmsClassArg.set_rmsState(newState);
 
     // rmsClassArg.set_nextWakeUpEPochTime(rmsClassArg.get_wakeUpEPochTime()+rmsClassArg.get_sleepPeriod());
@@ -300,22 +291,55 @@ void FSM_f_WM_EZO(Ezo_board* ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
 
 
 
-void FSM_f_URA(){
+void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg){
+    uint32_t currentTime = rtcClassArg.getEpoch();
     ToggleLED(ORANGELED_PIN);
     debugDisplay = 1;
+    // read water value
+    EZO_getEzoORPReading(ezoClassArg);
+
+    float orpValue = ezoClassArg.get_last_received_reading();
+    rmsClassArg.set_orpReading(orpValue);
+
+    RMSState newState = FSM_decideState(ezoClassArg);
+
+    rmsClassArg.set_rmsState(newState);
+
+    //store value
+    Data_saveDataPointToDataFile(currentTime,
+                        rmsClassArg.get_orpReading(),
+                        rmsClassArg.get_rmsState(),
+                        URA_INPUTBIT,
+                        dataFileName);
 
 }
 
 
-
-RMSState FSM_decideState(float orpValue){
+RMSState FSM_decideState(Ezo_board& ezoORPClassArg){
     RMSState state = UWQ;
-    if (orpValue > 400) {
+    if (ezoORPClassArg.get_error() == Ezo_board::SUCCESS){
+        state = FSM_implementMLDecision(ezoORPClassArg);
+
+    }
+    else {
+        state = FWQ;
+    }
+    return state;
+}
+
+RMSState FSM_implementMLDecision(Ezo_board& ezoORPClassArg){
+    // TODO: find a better way to easily tune the threshold
+    // TODO: allow the ORPValue threshold to be set at initialisation
+
+    RMSState state = UWQ;
+    float orpValue = ezoORPClassArg.get_last_received_reading();
+    if (orpValue > LOGIT_THRESHOLD) {
         state = SWQ;
     }
-    else if (orpValue <= 400){
+    else if (orpValue <= LOGIT_THRESHOLD){
         state = UWQ;
     }
+
     // TODO: need to deal with faulty reading as well
     return state;
 }
