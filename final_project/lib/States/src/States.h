@@ -83,9 +83,27 @@ class rmsClass {
 
       bool ura_canSendSMS(uint32_t new_currentAlarmEPochTime);
 
+      //WM
+      void set_wmLastAlarmSMSEPochTime(uint32_t new_lastAlarmSMSEPochTime);
+      uint32_t get_wmLastAlarmSMSEPochTime();
 
+      void set_wmCurrentAlarmEPochTime(uint32_t new_currentAlarmEPochTime);
+      uint32_t get_wmCurrentAlarmEPochTime();
+
+      uint32_t get_wmAllowedIntervalBetweenSMS();
+
+      bool wm_canSendSMS(uint32_t new_currentAlarmEPochTime);
+
+
+      // file management
+      /*add a file cursor to know where was the further most away timestamp*/
       
+      struct measHistoryStruct {
+         uint8_t n_SWQ;
+         uint8_t n_UWQ;
+         uint8_t n_FWQ;
 
+      };
 
       
 
@@ -123,6 +141,7 @@ class rmsClass {
       static const uint8_t _FWQSleepPeriod = 10-1; //sec
 
       alarmStruct _uraStruct;
+      alarmStruct _wmStruct;
 
       void set_lastAlarmSMSEPochTime(alarmStruct& alarmStructArg, uint32_t new_lastAlarmSMSEPochTime);
       uint32_t get_lastAlarmSMSEPochTime(alarmStruct& alarmStructArg);

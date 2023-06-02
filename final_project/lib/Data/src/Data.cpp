@@ -10,6 +10,8 @@
 
 #include "RTC.h"
 
+
+
 bool Data_saveDataPointToDataFile(uint32_t ePochTime,
                                 float orpValue,
                                 RMSState evaluatedState,
@@ -58,16 +60,19 @@ bool Data_saveDataPointToDataFile(uint32_t ePochTime,
     return success;
 }
 
-bool Data_populateHeaderRowToFile(String rowNames[],
-                                uint8_t numberOfRows,
+bool Data_populateHeaderRowToFile(String colNames[],
+                                uint8_t numberOfCols,
                                 char fileName[]){
     bool success = true;
     
     File file = SD.open(fileName, FILE_WRITE);
     if (file) {
-        for (int i=0; i<numberOfRows; i++){
-            file.print(rowNames[i]);
-            file.print(",");
+        for (int i=0; i<numberOfCols; i++){
+            file.print(colNames[i]);
+            if (i<numberOfCols-1){
+                file.print(",");
+            }
+            
         }
         file.println();
         file.close();

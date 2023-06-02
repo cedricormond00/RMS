@@ -18,6 +18,7 @@
 #include "RTC.h"
 #include "Data.h"
 #include "EZO.h"
+#include "SMS.h"
 
 bool debugDisplay = 1;
 
@@ -232,25 +233,6 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
         }
     }
 
-    // if (*eventInputCode_ & BUP_INPUTBIT){
-    //     // Serial.println("in if");
-    //     if (debug){
-    //         Serial.println("in FSM_executeFunction, BUP");
-    //         Serial.print("event Input Code before update: ");
-    //         Serial.print(*eventInputCode_, BIN);
-    //         Serial.print(", ");
-    //         Serial.println(*eventInputCode_);
-    //     }
-    //     // FSM_BUPMONITORINGFUNCTION;
-    //     Tool_setBitOff(eventInputCode_, BUP_INPUTBIT); // because eventInputCode_ is already the address of the pointer
-    //                                                 // I am now passing the correct pointer (uint8_t*) to the Tool_setBitOff
-    //     if (debug){
-    //         Serial.print("event Input Code after update: ");
-    //         Serial.print(*eventInputCode_, BIN);
-    //         Serial.print(", ");
-    //         Serial.println(*eventInputCode_);
-    //     }
-    // }
     rmsClassArg.set_inputEventCode(eventInputCode);
     if (debug){
         // Serial.println("");
@@ -260,7 +242,9 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
 
 
 void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg){
-    rmsClassArg.set_wmReadEPochTime(rtcClassArg.getEpoch());
+    uint32_t currentTime = rtcClassArg.getEpoch();
+
+    rmsClassArg.set_wmReadEPochTime(currentTime);
     Serial.print("rmsClassArg.get_wmReadEPochTime(): ");
     Serial.println(rmsClassArg.get_wmReadEPochTime());
     
@@ -289,6 +273,13 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
                         rmsClassArg.get_rmsState(),
                         WM_INPUTBIT,
                         dataFileName);
+    if (rmsClassArg.get_rmsState() == UWQ || rmsClassArg.get_rmsState() == FWQ){
+        if (rmsClassArg.wm_canSendSMS(currentTime)){
+            // perform thecount of UWQ/FWQ/SWQ eventsS
+            SMS_sendWM(rmsClassArg);
+        }
+    }
+
 }
 
 
@@ -316,10 +307,10 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
                         dataFileName);
     if (rmsClassArg.ura_canSendSMS(currentTime)){
         ToggleLED(ORANGELED_PIN);
+        SMS_sendURA(rmsClassArg);
     }
     else{
         ToggleLED(BLUELED_PIN);
-
     }
 
 }

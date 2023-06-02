@@ -13,7 +13,7 @@ rmsClass::alarmStruct::alarmStruct(uint32_t lastAlarmSMSEPochTime_initVal = 0,
     allowedIntervalBetweenSMS = allowedIntervalBetweenSMS_initVal;
 }
 
-rmsClass::rmsClass():_uraStruct(0,0,20){
+rmsClass::rmsClass() : _uraStruct(0,0,SMS_HW_URA), _wmStruct(0,0,SMS_HW_WQ){
     _rmsState = INIT;
     _inputEventCode = 0b0;
     _sleepPeriod = _UWQSleepPeriod; //or 0 to start with
@@ -211,6 +211,39 @@ bool rmsClass::ura_canSendSMS(uint32_t new_currentAlarmEPochTime){
     return canSendSMS;
 }
 
+
+//WM
+void rmsClass::set_wmLastAlarmSMSEPochTime(uint32_t new_lastAlarmSMSEPochTime){
+    set_lastAlarmSMSEPochTime(_wmStruct, new_lastAlarmSMSEPochTime);
+}
+
+uint32_t rmsClass::get_wmLastAlarmSMSEPochTime(){
+    return get_lastAlarmSMSEPochTime(_wmStruct);
+}
+
+void rmsClass::set_wmCurrentAlarmEPochTime(uint32_t new_currentAlarmEPochTime){
+    set_currentAlarmEPochTime(_wmStruct, new_currentAlarmEPochTime);
+}
+
+uint32_t rmsClass::get_wmCurrentAlarmEPochTime(){
+    return get_currentAlarmEPochTime(_wmStruct);
+}
+
+uint32_t rmsClass::get_wmAllowedIntervalBetweenSMS(){
+    return get_allowedIntervalBetweenSMS(_wmStruct);
+}
+
+bool rmsClass::wm_canSendSMS(uint32_t new_currentAlarmEPochTime){
+    bool canSendSMS = true;
+    set_wmCurrentAlarmEPochTime(new_currentAlarmEPochTime);
+    if (get_wmCurrentAlarmEPochTime()-get_wmLastAlarmSMSEPochTime() > get_wmAllowedIntervalBetweenSMS()){
+        set_wmLastAlarmSMSEPochTime(get_wmCurrentAlarmEPochTime());
+    }
+    else {
+        canSendSMS = false;
+    }
+    return canSendSMS;
+}
 
 
 

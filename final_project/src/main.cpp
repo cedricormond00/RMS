@@ -108,9 +108,9 @@ void setup() {
     Data_removeFile(dataFileName);
 
     //initialise first row
-    uint8_t numberOfRows = 5;
-    String rownames[numberOfRows] = {"ActionEPochTimeStamp", "actionTimeStamp", "orpValue", "State", "inputEvent"};
-    Data_populateHeaderRowToFile(rownames, numberOfRows, dataFileName);
+    uint8_t numberOfCols = 6;
+    String colNames[numberOfCols] = {"readEPochTimeStamp", "readTimeStamp", "orpValue", "State", "inputEvent", "triggeredInputEvent"};
+    Data_populateHeaderRowToFile(colNames, numberOfCols, dataFileName);
   }
   
     

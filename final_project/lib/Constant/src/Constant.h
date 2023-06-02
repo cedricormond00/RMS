@@ -11,6 +11,13 @@
 extern volatile bool bp; // true <=> button press
 // #endif
 
+// RMS number
+#define RMS_ID 20
+
+// SMSWindow
+#define SMS_HW_WQ 20
+#define SMS_HW_URA 20
+
 // pin assignment
 #define BLUELED_PIN 21
 #define REDLED_PIN 0
