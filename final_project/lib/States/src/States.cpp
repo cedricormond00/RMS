@@ -148,6 +148,7 @@ void rmsClass::set_sleepPeriod(){
     default:
         break;
     }
+    return 0;
  }
 
 
@@ -243,6 +244,65 @@ bool rmsClass::wm_canSendSMS(uint32_t new_currentAlarmEPochTime){
         canSendSMS = false;
     }
     return canSendSMS;
+}
+
+
+// History
+void rmsClass::set_stateHistoryCount(RMSState stateOfInterest, uint8_t countState){
+    switch(stateOfInterest){
+        case(SWQ):
+            _stateHistoryStruct.n_SWQ = countState;
+        case(UWQ):
+            _stateHistoryStruct.n_UWQ = countState;
+        case(FWQ):
+            _stateHistoryStruct.n_FWQ = countState;
+    }
+}
+uint8_t rmsClass::get_stateHistoryCount(RMSState stateOfInterest){
+    switch(stateOfInterest){
+        case(SWQ):
+            return _stateHistoryStruct.n_SWQ;
+        case(UWQ):
+            return _stateHistoryStruct.n_UWQ;
+        case(FWQ):
+            return _stateHistoryStruct.n_FWQ;
+        default:
+            Serial.println("Not a valid state");
+            return 255;
+    }
+}
+uint8_t rmsClass::get_totalStateChanges(){
+    updateTotalStateChanges();
+    return _stateHistoryStruct.n_meas;
+}
+
+uint8_t rmsClass::updateTotalStateChanges(){
+    _stateHistoryStruct.n_meas = _stateHistoryStruct.n_SWQ +
+                                _stateHistoryStruct.n_UWQ +
+                                _stateHistoryStruct.n_FWQ;
+    return _stateHistoryStruct.n_meas;
+}
+
+
+void rmsClass::set_stateHistoryPercentage(RMSState stateOfInterest){
+    switch(stateOfInterest){
+        case(SWQ):
+            _stateHistoryStruct.p_SWQ = _stateHistoryStruct.n_SWQ/get_totalStateChanges();
+        case(UWQ):
+            _stateHistoryStruct.p_UWQ = _stateHistoryStruct.n_UWQ/get_totalStateChanges();
+        case(FWQ):
+            _stateHistoryStruct.p_FWQ = _stateHistoryStruct.n_FWQ/get_totalStateChanges();
+    }
+}
+uint8_t rmsClass::get_stateHistoryPercentage(RMSState stateOfInterest){
+    switch(stateOfInterest){
+        case(SWQ):
+            return _stateHistoryStruct.p_SWQ; 
+        case(UWQ):
+            return _stateHistoryStruct.p_UWQ;
+        case(FWQ):
+            return _stateHistoryStruct.p_FWQ;
+    }
 }
 
 

@@ -26,6 +26,12 @@ void SMS_sendWM(rmsClass& rmsClassArg){
     Serial.println(rmsClassArg.get_rmsState());
     Serial.print("Last ORP reading: ");
     Serial.println(rmsClassArg.get_orpReading());
+    Serial.print("SWQ percentage");
+    Serial.println(rmsClassArg.get_stateHistoryPercentage(SWQ));
+    Serial.print("UWQ percentage");
+    Serial.println(rmsClassArg.get_stateHistoryPercentage(UWQ));
+    Serial.print("FWQ percentage");
+    Serial.println(rmsClassArg.get_stateHistoryPercentage(FWQ));
     /*TODO: add the percentage of other reading*/
     
     Serial.println("---");

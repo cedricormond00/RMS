@@ -98,12 +98,24 @@ class rmsClass {
       // file management
       /*add a file cursor to know where was the further most away timestamp*/
       
-      struct measHistoryStruct {
+      struct stateHistoryStruct {
          uint8_t n_SWQ;
          uint8_t n_UWQ;
          uint8_t n_FWQ;
-
+         uint8_t n_meas;
+         float p_SWQ;
+         float p_UWQ;
+         float p_FWQ;
       };
+
+      void set_stateHistoryCount(RMSState stateOfInterest, uint8_t countState);
+      uint8_t get_stateHistoryCount(RMSState stateOfInterest);
+
+      uint8_t get_totalStateChanges();
+
+      void set_stateHistoryPercentage(RMSState stateOfInterest);
+      uint8_t get_stateHistoryPercentage(RMSState stateOfInterest);
+
 
       
 
@@ -151,6 +163,12 @@ class rmsClass {
 
       uint32_t get_allowedIntervalBetweenSMS(alarmStruct& alarmStructArg);
 
+      stateHistoryStruct _stateHistoryStruct;
+
+      uint8_t updateTotalStateChanges();
+
+
+      
       
 
 

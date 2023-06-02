@@ -2,7 +2,14 @@
 #ifndef DATA_H // include guard
 #define DATA_H
 
+#include <Arduino.h>
+
 #include "States.h"
+
+bool Data_updateStateHistory(rmsClass& rmsClassArg, char dataFileName[]);
+
+String getValue(String data, char separator, int index);
+
 
 bool Data_saveDataPointToDataFile(uint32_t ePochTime,
                                 float orpValue,

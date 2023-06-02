@@ -9,8 +9,74 @@
 #include "States.h"
 
 #include "RTC.h"
+#include "States.h"
 
+bool Data_updateStateHistory(rmsClass& rmsClassArg, char dataFileName[]){
 
+    // Define time frame in milliseconds
+    uint32_t timeFrame = SMS_HW_WQ;  // Example: 1 minute
+
+    // Get current epoch timestamp
+    uint32_t currentEPochTimestamp = rmsClassArg.get_wmReadEPochTime();
+
+    File dataFile;
+
+    if (!SD.begin()) {
+    // Handle SD card initialization error
+    }
+
+    // Open data file
+    dataFile = SD.open(dataFileName);
+    if (!dataFile) {
+        // Handle file opening error
+    }
+
+    // Reset the file cursor to the beginning
+    dataFile.seek(1);
+
+    // Start counting
+    int rowCount = 0;
+
+    while (dataFile.available()) {
+        // Read a line from the file
+        String line = dataFile.readStringUntil('\n');
+
+        // Split the line into columns
+        String timestamp = getValue(line, ',', 0);
+
+        // Parse the timestamp and convert it to an unsigned long
+        uint32_t rowTimestamp = timestamp.toInt();
+
+    // Check if the row timestamp falls within the desired time frame
+    if ((currentEPochTimestamp - rowTimestamp) <= timeFrame) {
+        // Split the line into columns
+        String state = getValue(line, ',', 3);
+
+        // Parse the row and convert it to an unsigned long
+        RMSState rowState = static_cast<RMSState>(state.toInt());
+
+        rmsClassArg.set_stateHistoryCount(rowState, rmsClassArg.get_stateHistoryCount(rowState)+1);
+
+        
+    }
+}
+}
+/*helper function to retrieve a certain column from a .csv file*/
+String getValue(String data, char separator, int index) {
+  int found = 0;
+  int strIndex[] = {0, -1};
+  int maxIndex = data.length() - 1;
+
+  for (int i = 0; i <= maxIndex && found <= index; i++) {
+    if (data.charAt(i) == separator || i == maxIndex) {
+      found++;
+      strIndex[0] = strIndex[1] + 1;
+      strIndex[1] = (i == maxIndex) ? i + 1 : i;
+    }
+  }
+
+  return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
+}
 
 bool Data_saveDataPointToDataFile(uint32_t ePochTime,
                                 float orpValue,

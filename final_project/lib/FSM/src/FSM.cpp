@@ -276,7 +276,24 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
     if (rmsClassArg.get_rmsState() == UWQ || rmsClassArg.get_rmsState() == FWQ){
         if (rmsClassArg.wm_canSendSMS(currentTime)){
             // perform thecount of UWQ/FWQ/SWQ eventsS
+            Data_updateStateHistory(rmsClassArg, dataFileName);
+            Serial.print("rmsClassArg.get_stateHistoryCount(UWQ)");
+
+            Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
+            Serial.print("rmsClassArg.get_totalStateChanges()");
+
+            Serial.println(rmsClassArg.get_totalStateChanges());
+            
+            //update percentage:
+            rmsClassArg.set_stateHistoryPercentage(SWQ);
+            rmsClassArg.set_stateHistoryPercentage(UWQ);
+            rmsClassArg.set_stateHistoryPercentage(FWQ);
+
             SMS_sendWM(rmsClassArg);
+            //TODO:  create a reset function
+            rmsClassArg.set_stateHistoryCount(SWQ, 0);
+            rmsClassArg.set_stateHistoryCount(UWQ, 0);
+            rmsClassArg.set_stateHistoryCount(FWQ, 0);
         }
     }
 
