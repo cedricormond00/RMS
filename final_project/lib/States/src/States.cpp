@@ -237,28 +237,8 @@ uint32_t rmsClass::get_wmAllowedIntervalBetweenSMS(){
 bool rmsClass::wm_canSendSMS(uint32_t new_currentAlarmEPochTime){
     bool canSendSMS = true;
     set_wmCurrentAlarmEPochTime(new_currentAlarmEPochTime);
-    Serial.print("get_wmCurrentAlarmEPochTime(): ");
-    Serial.println(get_wmCurrentAlarmEPochTime());
-    Serial.print("get_wmLastAlarmEPochTime(): ");
-    Serial.println(get_wmCurrentAlarmEPochTime());
-    Serial.print("Time difference: ");
-    Serial.println(get_wmCurrentAlarmEPochTime()-get_wmLastAlarmSMSEPochTime());
-    Serial.print("Allowed interval: ");
-    Serial.println(get_wmAllowedIntervalBetweenSMS());
-    Serial.print("inSendingHistoryWindow: ");
-    Serial.println(_wmStruct.inSendingHistoryWindow);
-
-    if ((get_wmCurrentAlarmEPochTime()-get_wmLastAlarmSMSEPochTime() > get_wmAllowedIntervalBetweenSMS())
-        && _wmStruct.inSendingHistoryWindow){
-        // if(_wmStruct.inSendingHistoryWindow){
+    if (get_wmCurrentAlarmEPochTime()-get_wmLastAlarmSMSEPochTime() > get_wmAllowedIntervalBetweenSMS()){
         set_wmLastAlarmSMSEPochTime(get_wmCurrentAlarmEPochTime());
-        if (get_rmsState() == SWQ){
-            // TODO: can change the criteria here
-            _wmStruct.inSendingHistoryWindow = false; // the last reading was SWQ, so stop sending SMSs
-        }
-        else {
-            _wmStruct.inSendingHistoryWindow = true; 
-        }
     }
     else {
         canSendSMS = false;
@@ -272,19 +252,10 @@ void rmsClass::set_stateHistoryCount(RMSState stateOfInterest, uint8_t countStat
     switch(stateOfInterest){
         case(SWQ):
             _stateHistoryStruct.n_SWQ = countState;
-            updateTotalStateChanges(); //redundant
-            set_stateHistoryPercentage(SWQ);
-            break;
         case(UWQ):
             _stateHistoryStruct.n_UWQ = countState;
-            updateTotalStateChanges(); //redundant
-            set_stateHistoryPercentage(UWQ);
-            break;
         case(FWQ):
             _stateHistoryStruct.n_FWQ = countState;
-            updateTotalStateChanges(); //redundant
-            set_stateHistoryPercentage(FWQ);
-            break;
     }
 }
 uint8_t rmsClass::get_stateHistoryCount(RMSState stateOfInterest){
@@ -305,69 +276,32 @@ uint8_t rmsClass::get_totalStateChanges(){
     return _stateHistoryStruct.n_meas;
 }
 
-void rmsClass::updateTotalStateChanges(){
+uint8_t rmsClass::updateTotalStateChanges(){
     _stateHistoryStruct.n_meas = _stateHistoryStruct.n_SWQ +
                                 _stateHistoryStruct.n_UWQ +
                                 _stateHistoryStruct.n_FWQ;
+    return _stateHistoryStruct.n_meas;
 }
 
 
 void rmsClass::set_stateHistoryPercentage(RMSState stateOfInterest){
     switch(stateOfInterest){
         case(SWQ):
-            _stateHistoryStruct.p_SWQ = static_cast<float>(_stateHistoryStruct.n_SWQ)/static_cast<float>(get_totalStateChanges());
-            break;
+            _stateHistoryStruct.p_SWQ = _stateHistoryStruct.n_SWQ/get_totalStateChanges();
         case(UWQ):
-            _stateHistoryStruct.p_UWQ = static_cast<float>(_stateHistoryStruct.n_UWQ)/static_cast<float>(get_totalStateChanges());
-            break;
+            _stateHistoryStruct.p_UWQ = _stateHistoryStruct.n_UWQ/get_totalStateChanges();
         case(FWQ):
-            _stateHistoryStruct.p_FWQ = static_cast<float>(_stateHistoryStruct.n_FWQ)/static_cast<float>(get_totalStateChanges());
-            break;
+            _stateHistoryStruct.p_FWQ = _stateHistoryStruct.n_FWQ/get_totalStateChanges();
     }
 }
-float rmsClass::get_stateHistoryPercentage(RMSState stateOfInterest){
+uint8_t rmsClass::get_stateHistoryPercentage(RMSState stateOfInterest){
     switch(stateOfInterest){
         case(SWQ):
-            set_stateHistoryPercentage(SWQ);
             return _stateHistoryStruct.p_SWQ; 
         case(UWQ):
-            set_stateHistoryPercentage(UWQ);
             return _stateHistoryStruct.p_UWQ;
         case(FWQ):
-            set_stateHistoryPercentage(FWQ);
             return _stateHistoryStruct.p_FWQ;
-        default:
-            Serial.print("Not a valid state");
-            return 2;
-    }
-}
-
-void rmsClass::reset_History(){
-    set_stateHistoryCount(SWQ, 0);
-    set_stateHistoryCount(UWQ, 0);
-    set_stateHistoryCount(FWQ, 0);
-
-    updateTotalStateChanges(); //redundant, because this is done in the other function
-
-    set_stateHistoryPercentage(SWQ);
-    set_stateHistoryPercentage(UWQ);
-    set_stateHistoryPercentage(FWQ);
-}
-
-void rmsClass::set_inHistoryWindow(){
-    RMSState currentState = get_rmsState();
-    switch(currentState){
-        case(SWQ):
-            break;
-        case(UWQ):
-            _wmStruct.inSendingHistoryWindow = true;
-            break;
-        case(FWQ):
-            _wmStruct.inSendingHistoryWindow = true;
-            break;
-        default:
-            Serial.print("No state defined, no trigger");
-
     }
 }
 

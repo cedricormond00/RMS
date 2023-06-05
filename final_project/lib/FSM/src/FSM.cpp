@@ -76,6 +76,7 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
         // // -> artificially use current time
         // if (Tool_isBitOn(*triggeredInputEvent, 0b11111110) || Tool_isBitOn(rmsClassArg.get_inputEventCode(), 0b11111110)){ //alarm occured when the device was not asleep
         //     rmsClassArg.set_wmWakeUpEPochTime(currentTime); //+1
+
         //     Serial.print("Alarm match occured when device awake: ");
         //     Serial.print("rmsClassArg.get_wmWakeUpEPochTime(): ");
         //     Serial.println(rmsClassArg.get_wmWakeUpEPochTime());
@@ -83,6 +84,7 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
         // // alarm occured when the device was asleep
         // // -> use the time at which the device wokeup
         // else{ 
+
         //     rmsClassArg.set_wmWakeUpEPochTime(rmsClassArg.get_wakeUpEPochTime());
         //     Serial.print("Alarm match occured when device asleep: ");
         //     Serial.print("rmsClassArg.get_wmWakeUpEPochTime(): ");
@@ -107,6 +109,7 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
             Serial.print(", ");
             Serial.println(*triggeredInputEvent);
         }
+
     }
 
     if (Tool_isBitOn(*triggeredInputEvent, URA_INPUTBIT)) 
@@ -239,21 +242,19 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
 
 
 void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg){
-    
     uint32_t currentTime = rtcClassArg.getEpoch();
+
     rmsClassArg.set_wmReadEPochTime(currentTime);
     Serial.print("rmsClassArg.get_wmReadEPochTime(): ");
     Serial.println(rmsClassArg.get_wmReadEPochTime());
     
     EZO_getEzoORPReading(ezoClassArg);
+
     float orpValue = ezoClassArg.get_last_received_reading();
     rmsClassArg.set_orpReading(orpValue);
 
     RMSState newState = FSM_decideState(ezoClassArg);
     rmsClassArg.set_rmsState(newState);
-
-    // decide whether or not to send SMSs
-    rmsClassArg.set_inHistoryWindow();
 
     // rmsClassArg.set_nextWakeUpEPochTime(rmsClassArg.get_wakeUpEPochTime()+rmsClassArg.get_sleepPeriod());
     // This solution would allow to minisme this drift. However, it would probably require to add a check to ensure the next wakup alarm time is later then the present time
@@ -272,32 +273,28 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
                         rmsClassArg.get_rmsState(),
                         WM_INPUTBIT,
                         dataFileName);
-    // if (rmsClassArg.get_rmsState() == UWQ || rmsClassArg.get_rmsState() == FWQ){
-    if (rmsClassArg.wm_canSendSMS(currentTime)){
-        // perform thecount of UWQ/FWQ/SWQ eventsS
-        Data_updateStateHistory(rmsClassArg, dataFileName);
-        Serial.print("rmsClassArg.get_stateHistoryCount(UWQ)");
-        Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
-        
-        Serial.print("rmsClassArg.get_totalStateChanges()");
-        Serial.println(rmsClassArg.get_totalStateChanges());
-        
-        //update percentage:
-        rmsClassArg.set_stateHistoryPercentage(SWQ);
-        rmsClassArg.set_stateHistoryPercentage(UWQ);
-        rmsClassArg.set_stateHistoryPercentage(FWQ);
-        float testFloat = 2/3;
-        Serial.println(testFloat);
+    if (rmsClassArg.get_rmsState() == UWQ || rmsClassArg.get_rmsState() == FWQ){
+        if (rmsClassArg.wm_canSendSMS(currentTime)){
+            // perform thecount of UWQ/FWQ/SWQ eventsS
+            Data_updateStateHistory(rmsClassArg, dataFileName);
+            Serial.print("rmsClassArg.get_stateHistoryCount(UWQ)");
 
-        SMS_sendWM(rmsClassArg);
-        //TODO:  create a reset function
-        rmsClassArg.reset_History();
+            Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
+            Serial.print("rmsClassArg.get_totalStateChanges()");
 
-        Serial.print("rmsClassArg.get_stateHistoryCount(UWQ)");
-        Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
-        Serial.print("rmsClassArg.get_totalStateChanges()");
-        Serial.println(rmsClassArg.get_totalStateChanges());
-    // }
+            Serial.println(rmsClassArg.get_totalStateChanges());
+            
+            //update percentage:
+            rmsClassArg.set_stateHistoryPercentage(SWQ);
+            rmsClassArg.set_stateHistoryPercentage(UWQ);
+            rmsClassArg.set_stateHistoryPercentage(FWQ);
+
+            SMS_sendWM(rmsClassArg);
+            //TODO:  create a reset function
+            rmsClassArg.set_stateHistoryCount(SWQ, 0);
+            rmsClassArg.set_stateHistoryCount(UWQ, 0);
+            rmsClassArg.set_stateHistoryCount(FWQ, 0);
+        }
     }
 
 }
@@ -307,11 +304,11 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
 
 void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg){
     uint32_t currentTime = rtcClassArg.getEpoch();
-
+    // ToggleLED(ORANGELED_PIN);
     debugDisplay = 1;
-
     // read water value
     EZO_getEzoORPReading(ezoClassArg);
+
     float orpValue = ezoClassArg.get_last_received_reading();
     rmsClassArg.set_orpReading(orpValue);
 
@@ -332,6 +329,7 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
     else{
         ToggleLED(BLUELED_PIN);
     }
+
 }
 
 
@@ -339,6 +337,7 @@ RMSState FSM_decideState(Ezo_board& ezoORPClassArg){
     RMSState state = UWQ;
     if (ezoORPClassArg.get_error() == Ezo_board::SUCCESS){
         state = FSM_implementMLDecision(ezoORPClassArg);
+
     }
     else {
         state = FWQ;
