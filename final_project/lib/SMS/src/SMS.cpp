@@ -17,6 +17,7 @@ void SMS_sendURA(rmsClass& rmsClassArg){
 }
 
 void SMS_sendWM(rmsClass& rmsClassArg){
+    char buf[40];
     Serial.println("");
     Serial.println("---");
     Serial.print("RMS ");
@@ -26,12 +27,13 @@ void SMS_sendWM(rmsClass& rmsClassArg){
     Serial.println(rmsClassArg.get_rmsState());
     Serial.print("Last ORP reading: ");
     Serial.println(rmsClassArg.get_orpReading());
+    // sprintf(buf, "SWQ percentage %f", rmsClassArg.get_stateHistoryPercentage(SWQ));
     Serial.print("SWQ percentage");
-    Serial.println(rmsClassArg.get_stateHistoryPercentage(SWQ));
+    Serial.println(rmsClassArg.get_stateHistoryPercentage(SWQ),2);
     Serial.print("UWQ percentage");
-    Serial.println(rmsClassArg.get_stateHistoryPercentage(UWQ));
+    Serial.println(rmsClassArg.get_stateHistoryPercentage(UWQ),2);
     Serial.print("FWQ percentage");
-    Serial.println(rmsClassArg.get_stateHistoryPercentage(FWQ));
+    Serial.println(rmsClassArg.get_stateHistoryPercentage(FWQ),2);
     /*TODO: add the percentage of other reading*/
     
     Serial.println("---");

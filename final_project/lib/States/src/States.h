@@ -64,6 +64,7 @@ class rmsClass {
          uint32_t lastAlarmSMSEPochTime;
          uint32_t currentAlarmEPochTime; 
          uint32_t allowedIntervalBetweenSMS;
+         bool inSendingHistoryWindow = true; //informs whether we are in a continuous sending window from the WaterMontioring
 
          //constructor
          alarmStruct(uint32_t lastAlarmSMSEPochTime_initVal, 
@@ -114,8 +115,11 @@ class rmsClass {
       uint8_t get_totalStateChanges();
 
       void set_stateHistoryPercentage(RMSState stateOfInterest);
-      uint8_t get_stateHistoryPercentage(RMSState stateOfInterest);
+      float get_stateHistoryPercentage(RMSState stateOfInterest);
 
+      void reset_History();
+
+      void set_inHistoryWindow();
 
       
 
@@ -165,7 +169,10 @@ class rmsClass {
 
       stateHistoryStruct _stateHistoryStruct;
 
-      uint8_t updateTotalStateChanges();
+      void updateTotalStateChanges();
+
+   
+
 
 
       
