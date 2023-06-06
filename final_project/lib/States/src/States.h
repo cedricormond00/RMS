@@ -120,11 +120,8 @@ class rmsClass {
       uint8_t get_totalStateChanges();
 
       void set_stateHistoryPercentage(RMSState stateOfInterest);
-      float get_stateHistoryPercentage(RMSState stateOfInterest);
+      uint8_t get_stateHistoryPercentage(RMSState stateOfInterest);
 
-      void reset_History();
-
-      void set_inHistoryWindow();
 
       
 
@@ -174,9 +171,7 @@ class rmsClass {
 
       stateHistoryStruct _stateHistoryStruct;
 
-      void updateTotalStateChanges();
-
-   
+      uint8_t updateTotalStateChanges();
 
 
 

@@ -76,6 +76,7 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
         // // -> artificially use current time
         // if (Tool_isBitOn(*triggeredInputEvent, 0b11111110) || Tool_isBitOn(rmsClassArg.get_inputEventCode(), 0b11111110)){ //alarm occured when the device was not asleep
         //     rmsClassArg.set_wmWakeUpEPochTime(currentTime); //+1
+
         //     Serial.print("Alarm match occured when device awake: ");
         //     Serial.print("rmsClassArg.get_wmWakeUpEPochTime(): ");
         //     Serial.println(rmsClassArg.get_wmWakeUpEPochTime());
@@ -83,6 +84,7 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
         // // alarm occured when the device was asleep
         // // -> use the time at which the device wokeup
         // else{ 
+
         //     rmsClassArg.set_wmWakeUpEPochTime(rmsClassArg.get_wakeUpEPochTime());
         //     Serial.print("Alarm match occured when device asleep: ");
         //     Serial.print("rmsClassArg.get_wmWakeUpEPochTime(): ");
@@ -107,6 +109,7 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
             Serial.print(", ");
             Serial.println(*triggeredInputEvent);
         }
+
     }
 
     if (Tool_isBitOn(*triggeredInputEvent, URA_INPUTBIT)) 
@@ -239,13 +242,14 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
 
 
 void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg){
-    
     uint32_t currentTime = rtcClassArg.getEpoch();
+
     rmsClassArg.set_wmReadEPochTime(currentTime);
     Serial.print("rmsClassArg.get_wmReadEPochTime(): ");
     Serial.println(rmsClassArg.get_wmReadEPochTime());
     
     EZO_getEzoORPReading(ezoClassArg);
+
     float orpValue = ezoClassArg.get_last_received_reading();
     rmsClassArg.set_orpReading(orpValue);
 
@@ -304,11 +308,11 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
 
 void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg){
     uint32_t currentTime = rtcClassArg.getEpoch();
-
+    // ToggleLED(ORANGELED_PIN);
     debugDisplay = 1;
-
     // read water value
     EZO_getEzoORPReading(ezoClassArg);
+
     float orpValue = ezoClassArg.get_last_received_reading();
     rmsClassArg.set_orpReading(orpValue);
 
@@ -329,6 +333,7 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
     else{
         ToggleLED(BLUELED_PIN);
     }
+
 }
 
 // void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, uint32_t currentTime){
@@ -433,6 +438,7 @@ RMSState FSM_decideState(Ezo_board& ezoORPClassArg){
     RMSState state = UWQ;
     if (ezoORPClassArg.get_error() == Ezo_board::SUCCESS){
         state = FSM_implementMLDecision(ezoORPClassArg);
+
     }
     else {
         state = FWQ;
