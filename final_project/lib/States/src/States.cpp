@@ -252,12 +252,18 @@ void rmsClass::set_stateHistoryCount(RMSState stateOfInterest, uint8_t countStat
     switch(stateOfInterest){
         case(SWQ):
             _stateHistoryStruct.n_SWQ = countState;
+            updateTotalStateChanges(); //redundant
+            set_stateHistoryPercentage(SWQ);
             break;
         case(UWQ):
             _stateHistoryStruct.n_UWQ = countState;
+            updateTotalStateChanges(); //redundant
+            set_stateHistoryPercentage(UWQ);
             break;
         case(FWQ):
             _stateHistoryStruct.n_FWQ = countState;
+            updateTotalStateChanges(); //redundant
+            set_stateHistoryPercentage(FWQ);
             break;
     }
 }
@@ -290,27 +296,27 @@ uint8_t rmsClass::updateTotalStateChanges(){
 void rmsClass::set_stateHistoryPercentage(RMSState stateOfInterest){
     switch(stateOfInterest){
         case(SWQ):
-            _stateHistoryStruct.p_SWQ = _stateHistoryStruct.n_SWQ/get_totalStateChanges();
+            _stateHistoryStruct.p_SWQ = static_cast<float>(_stateHistoryStruct.n_SWQ)/static_cast<float>(get_totalStateChanges());
             break;
         case(UWQ):
-            _stateHistoryStruct.p_UWQ = _stateHistoryStruct.n_UWQ/get_totalStateChanges();
+            _stateHistoryStruct.p_UWQ = static_cast<float>(_stateHistoryStruct.n_UWQ)/static_cast<float>(get_totalStateChanges());
             break;
         case(FWQ):
-            _stateHistoryStruct.p_FWQ = _stateHistoryStruct.n_FWQ/get_totalStateChanges();
+            _stateHistoryStruct.p_FWQ = static_cast<float>(_stateHistoryStruct.n_FWQ)/static_cast<float>(get_totalStateChanges());
             break;
     }
 }
-uint8_t rmsClass::get_stateHistoryPercentage(RMSState stateOfInterest){
+float rmsClass::get_stateHistoryPercentage(RMSState stateOfInterest){
     switch(stateOfInterest){
         case(SWQ):
+            set_stateHistoryPercentage(SWQ);
             return _stateHistoryStruct.p_SWQ; 
-            break;
         case(UWQ):
+            set_stateHistoryPercentage(UWQ);
             return _stateHistoryStruct.p_UWQ;
-            break;
         case(FWQ):
+            set_stateHistoryPercentage(FWQ);
             return _stateHistoryStruct.p_FWQ;
-            break;
         default:
             Serial.print("Not a valid state");
             return 2;

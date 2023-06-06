@@ -76,7 +76,6 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
         // // -> artificially use current time
         // if (Tool_isBitOn(*triggeredInputEvent, 0b11111110) || Tool_isBitOn(rmsClassArg.get_inputEventCode(), 0b11111110)){ //alarm occured when the device was not asleep
         //     rmsClassArg.set_wmWakeUpEPochTime(currentTime); //+1
-
         //     Serial.print("Alarm match occured when device awake: ");
         //     Serial.print("rmsClassArg.get_wmWakeUpEPochTime(): ");
         //     Serial.println(rmsClassArg.get_wmWakeUpEPochTime());
@@ -84,7 +83,6 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
         // // alarm occured when the device was asleep
         // // -> use the time at which the device wokeup
         // else{ 
-
         //     rmsClassArg.set_wmWakeUpEPochTime(rmsClassArg.get_wakeUpEPochTime());
         //     Serial.print("Alarm match occured when device asleep: ");
         //     Serial.print("rmsClassArg.get_wmWakeUpEPochTime(): ");
@@ -242,6 +240,7 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
 
 
 void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg){
+    
     uint32_t currentTime = rtcClassArg.getEpoch();
 
     rmsClassArg.set_wmReadEPochTime(currentTime);
@@ -333,7 +332,6 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
     else{
         ToggleLED(BLUELED_PIN);
     }
-
 }
 
 // void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, uint32_t currentTime){
@@ -346,28 +344,22 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
 //         // if (rmsClassArg.get_wmAlarmSituation()>1){//to save time
 //             // perform thecount of UWQ/FWQ/SWQ eventsS
 //             Data_updateStateHistory(rmsClassArg, dataFileName);
-
 //             Serial.print("rmsClassArg.get_stateHistoryCount(UWQ)");
 //             Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
 //             Serial.print("rmsClassArg.get_totalStateChanges()");
-//             Serial.println(rmsClassArg.get_totalStateChanges());
-            
+//             Serial.println(rmsClassArg.get_totalStateChanges());   
 //             //update percentage:
 //             rmsClassArg.set_stateHistoryPercentage(SWQ);
 //             rmsClassArg.set_stateHistoryPercentage(UWQ);
 //             rmsClassArg.set_stateHistoryPercentage(FWQ);
-
 //             SMS_wmSend(rmsClassArg);
-
 //             rmsClassArg.reset_History();
-
 //             Serial.print("rmsClassArg.get_stateHistoryCount(UWQ)");
 //             Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
 //             Serial.print("rmsClassArg.get_totalStateChanges()");
 //             Serial.println(rmsClassArg.get_totalStateChanges());
 //         // }
 //     }
-    
 // }
 
 void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, uint32_t currentTime){

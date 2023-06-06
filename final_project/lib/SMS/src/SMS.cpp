@@ -61,9 +61,9 @@ void SMS_wmHistoryWindow(rmsClass& rmsClassArg){
     Serial.print("Last ORP reading: ");
     Serial.println(rmsClassArg.get_orpReading());
     Serial.print("SWQ percentage");
-    Serial.println(rmsClassArg.get_stateHistoryPercentage(SWQ));
+    Serial.println(rmsClassArg.get_stateHistoryPercentage(SWQ),2);
     Serial.print("UWQ percentage");
-    Serial.println(rmsClassArg.get_stateHistoryPercentage(UWQ));
+    Serial.println(rmsClassArg.get_stateHistoryPercentage(UWQ),2);
     Serial.print("FWQ percentage");
     Serial.println(rmsClassArg.get_stateHistoryPercentage(FWQ),2);
     Serial.println("---");
