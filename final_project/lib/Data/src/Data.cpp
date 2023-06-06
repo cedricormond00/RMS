@@ -34,8 +34,8 @@ bool Data_updateStateHistory(rmsClass& rmsClassArg, char dataFileName[]){
     // Reset the file cursor to the beginning
     dataFile.seek(1);
 
-    // Start counting
-    int rowCount = 0;
+    // // Start counting
+    // int rowCount = 0;
 
     while (dataFile.available()) {
         // Read a line from the file

@@ -12,9 +12,21 @@ uint8_t dummyVar = 0;
 
 void RTC_init(RTCZero& rtc){
     rtc.begin();
+
     rtc.setEpoch(1577836800); // Jan 1, 2020
     // rtc.setDate(01, 01, 2020);
     // rtc.setTime(0, 0, 0);
+
+    // while (Serial.available()) {
+    //     Serial.read();  // Clear any existing data from the serial buffer
+    // }
+    // Serial.println("GET_EPOCH");  // Send a command to the computer to request the epoch time
+    // while (!Serial.available()) {
+    //     ;  // Wait for the response from the computer
+    // }
+    // uint32_t epochTime = Serial.parseFloat();  // Read the epoch time from the serial connection
+    // rtc.setEpoch(epochTime);  // Set the obtained epoch time
+
     rtc.enableAlarm(rtc.MATCH_YYMMDDHHMMSS);
     rtc.attachInterrupt(RTC_callbackAlarmMatch);
 

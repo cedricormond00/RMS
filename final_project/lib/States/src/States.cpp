@@ -252,10 +252,13 @@ void rmsClass::set_stateHistoryCount(RMSState stateOfInterest, uint8_t countStat
     switch(stateOfInterest){
         case(SWQ):
             _stateHistoryStruct.n_SWQ = countState;
+            break;
         case(UWQ):
             _stateHistoryStruct.n_UWQ = countState;
+            break;
         case(FWQ):
             _stateHistoryStruct.n_FWQ = countState;
+            break;
     }
 }
 uint8_t rmsClass::get_stateHistoryCount(RMSState stateOfInterest){
@@ -288,20 +291,26 @@ void rmsClass::set_stateHistoryPercentage(RMSState stateOfInterest){
     switch(stateOfInterest){
         case(SWQ):
             _stateHistoryStruct.p_SWQ = _stateHistoryStruct.n_SWQ/get_totalStateChanges();
+            break;
         case(UWQ):
             _stateHistoryStruct.p_UWQ = _stateHistoryStruct.n_UWQ/get_totalStateChanges();
+            break;
         case(FWQ):
             _stateHistoryStruct.p_FWQ = _stateHistoryStruct.n_FWQ/get_totalStateChanges();
+            break;
     }
 }
 uint8_t rmsClass::get_stateHistoryPercentage(RMSState stateOfInterest){
     switch(stateOfInterest){
         case(SWQ):
             return _stateHistoryStruct.p_SWQ; 
+            break;
         case(UWQ):
             return _stateHistoryStruct.p_UWQ;
+            break;
         case(FWQ):
             return _stateHistoryStruct.p_FWQ;
+            break;
         default:
             Serial.print("Not a valid state");
             return 2;

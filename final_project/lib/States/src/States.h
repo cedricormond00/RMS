@@ -122,6 +122,8 @@ class rmsClass {
       void set_stateHistoryPercentage(RMSState stateOfInterest);
       uint8_t get_stateHistoryPercentage(RMSState stateOfInterest);
 
+      void reset_History();
+
 
       
 
