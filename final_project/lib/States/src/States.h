@@ -97,6 +97,9 @@ class rmsClass {
 
       bool wm_canSendSMS(uint32_t new_currentAlarmEPochTime);
 
+      void update_wmAlarmSituation(uint32_t new_currentAlarmEPochTime);
+      void set_wmAlarmSituation(uint8_t new_wmAlarmSituation);
+      uint8_t get_wmAlarmSituation();
 
       // file management
       /*add a file cursor to know where was the further most away timestamp*/

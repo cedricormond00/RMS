@@ -1,9 +1,11 @@
 #include <Arduino.h>
 
-#include "Constant.h"
-#include "States.h"
+#include "SMS.h"
 
-void SMS_sendURA(rmsClass& rmsClassArg){
+#include "Constant.h"
+
+
+void SMS_uraSend(rmsClass& rmsClassArg){
     Serial.println("");
     Serial.println("---");
     Serial.print("RMS ");
@@ -16,8 +18,25 @@ void SMS_sendURA(rmsClass& rmsClassArg){
     Serial.println("---");
 }
 
-void SMS_sendWM(rmsClass& rmsClassArg){
-    char buf[40];
+void SMS_wmSend(rmsClass& rmsClassArg){
+    if (rmsClassArg.get_wmAlarmSituation() == 1){
+        SMS_wmImmediate(rmsClassArg);
+        rmsClassArg.set_wmAlarmSituation(2);
+    }
+    else if (rmsClassArg.get_wmAlarmSituation() == 2){
+        SMS_wmHistoryWindow(rmsClassArg);
+    }
+    else if (rmsClassArg.get_wmAlarmSituation() == 3){
+        SMS_wmHistoryWindow(rmsClassArg);
+        rmsClassArg.set_wmAlarmSituation(0);
+    }
+    // else if (rmsClassArg.get_wmAlarmSituation() == 1){
+    //     SMS_immediateWM(rmsClassArg);
+    //     rmsClassArg.set_wmAlarmSituation(2);
+    // }
+}
+
+void SMS_wmImmediate(rmsClass& rmsClassArg){
     Serial.println("");
     Serial.println("---");
     Serial.print("RMS ");
@@ -27,14 +46,25 @@ void SMS_sendWM(rmsClass& rmsClassArg){
     Serial.println(rmsClassArg.get_rmsState());
     Serial.print("Last ORP reading: ");
     Serial.println(rmsClassArg.get_orpReading());
-    // sprintf(buf, "SWQ percentage %f", rmsClassArg.get_stateHistoryPercentage(SWQ));
+    Serial.println("Update will come in at regular interval until a SWQ is detected at the end of the History Window");
+    Serial.println("---");
+}
+
+void SMS_wmHistoryWindow(rmsClass& rmsClassArg){
+    Serial.println("");
+    Serial.println("---");
+    Serial.print("RMS ");
+    Serial.println(RMS_ID);
+    Serial.println("WQ situation");
+    Serial.print("Current State: ");
+    Serial.println(rmsClassArg.get_rmsState());
+    Serial.print("Last ORP reading: ");
+    Serial.println(rmsClassArg.get_orpReading());
     Serial.print("SWQ percentage");
     Serial.println(rmsClassArg.get_stateHistoryPercentage(SWQ),2);
     Serial.print("UWQ percentage");
     Serial.println(rmsClassArg.get_stateHistoryPercentage(UWQ),2);
     Serial.print("FWQ percentage");
     Serial.println(rmsClassArg.get_stateHistoryPercentage(FWQ),2);
-    /*TODO: add the percentage of other reading*/
-    
     Serial.println("---");
 }

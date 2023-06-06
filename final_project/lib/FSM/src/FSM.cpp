@@ -252,8 +252,8 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
     RMSState newState = FSM_decideState(ezoClassArg);
     rmsClassArg.set_rmsState(newState);
 
-    // decide whether or not to send SMSs
-    rmsClassArg.set_inHistoryWindow();
+    // // decide whether or not to send SMSs
+    // rmsClassArg.set_inHistoryWindow();
 
     // rmsClassArg.set_nextWakeUpEPochTime(rmsClassArg.get_wakeUpEPochTime()+rmsClassArg.get_sleepPeriod());
     // This solution would allow to minisme this drift. However, it would probably require to add a check to ensure the next wakup alarm time is later then the present time
@@ -272,37 +272,34 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
                         rmsClassArg.get_rmsState(),
                         WM_INPUTBIT,
                         dataFileName);
+    FSM_multipleAlarmManagement(rmsClassArg, currentTime);
     // if (rmsClassArg.get_rmsState() == UWQ || rmsClassArg.get_rmsState() == FWQ){
-    if (rmsClassArg.wm_canSendSMS(currentTime)){
-        // perform thecount of UWQ/FWQ/SWQ eventsS
-        Data_updateStateHistory(rmsClassArg, dataFileName);
-        Serial.print("rmsClassArg.get_stateHistoryCount(UWQ)");
-        Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
+    // if (rmsClassArg.wm_canSendSMS(currentTime)){
+    //     // perform thecount of UWQ/FWQ/SWQ eventsS
+    //     Data_updateStateHistory(rmsClassArg, dataFileName);
+    //     Serial.print("rmsClassArg.get_stateHistoryCount(UWQ)");
+    //     Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
         
-        Serial.print("rmsClassArg.get_totalStateChanges()");
-        Serial.println(rmsClassArg.get_totalStateChanges());
+    //     Serial.print("rmsClassArg.get_totalStateChanges()");
+    //     Serial.println(rmsClassArg.get_totalStateChanges());
         
-        //update percentage:
-        rmsClassArg.set_stateHistoryPercentage(SWQ);
-        rmsClassArg.set_stateHistoryPercentage(UWQ);
-        rmsClassArg.set_stateHistoryPercentage(FWQ);
-        float testFloat = 2/3;
-        Serial.println(testFloat);
+    //     //update percentage:
+    //     rmsClassArg.set_stateHistoryPercentage(SWQ);
+    //     rmsClassArg.set_stateHistoryPercentage(UWQ);
+    //     rmsClassArg.set_stateHistoryPercentage(FWQ);
+    //     float testFloat = 2/3;
+    //     Serial.println(testFloat);
 
-        SMS_sendWM(rmsClassArg);
-        //TODO:  create a reset function
-        rmsClassArg.reset_History();
+    //     SMS_wmSend(rmsClassArg);
+    //     //TODO:  create a reset function
+    //     rmsClassArg.reset_History();
 
-        Serial.print("rmsClassArg.get_stateHistoryCount(UWQ)");
-        Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
-        Serial.print("rmsClassArg.get_totalStateChanges()");
-        Serial.println(rmsClassArg.get_totalStateChanges());
+    //     Serial.print("rmsClassArg.get_stateHistoryCount(UWQ)");
+    //     Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
+    //     Serial.print("rmsClassArg.get_totalStateChanges()");
+    //     Serial.println(rmsClassArg.get_totalStateChanges());
     // }
-    }
-
 }
-
-
 
 
 void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg){
@@ -327,13 +324,110 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
                         dataFileName);
     if (rmsClassArg.ura_canSendSMS(currentTime)){
         ToggleLED(ORANGELED_PIN);
-        SMS_sendURA(rmsClassArg);
+        SMS_uraSend(rmsClassArg);
     }
     else{
         ToggleLED(BLUELED_PIN);
     }
 }
 
+// void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, uint32_t currentTime){
+//     Serial.print("AlarmSituation beofre update: ");
+//     Serial.println(rmsClassArg.get_wmAlarmSituation());
+//     rmsClassArg.update_wmAlarmSituation(currentTime);
+//     Serial.print("AlarmSituation after update: ");
+//     Serial.println(rmsClassArg.get_wmAlarmSituation());
+//     if (rmsClassArg.get_wmAlarmSituation()>0){
+//         // if (rmsClassArg.get_wmAlarmSituation()>1){//to save time
+//             // perform thecount of UWQ/FWQ/SWQ eventsS
+//             Data_updateStateHistory(rmsClassArg, dataFileName);
+
+//             Serial.print("rmsClassArg.get_stateHistoryCount(UWQ)");
+//             Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
+//             Serial.print("rmsClassArg.get_totalStateChanges()");
+//             Serial.println(rmsClassArg.get_totalStateChanges());
+            
+//             //update percentage:
+//             rmsClassArg.set_stateHistoryPercentage(SWQ);
+//             rmsClassArg.set_stateHistoryPercentage(UWQ);
+//             rmsClassArg.set_stateHistoryPercentage(FWQ);
+
+//             SMS_wmSend(rmsClassArg);
+
+//             rmsClassArg.reset_History();
+
+//             Serial.print("rmsClassArg.get_stateHistoryCount(UWQ)");
+//             Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
+//             Serial.print("rmsClassArg.get_totalStateChanges()");
+//             Serial.println(rmsClassArg.get_totalStateChanges());
+//         // }
+//     }
+    
+// }
+
+void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, uint32_t currentTime){
+    rmsClassArg.set_wmCurrentAlarmEPochTime(currentTime);
+
+    Serial.print("get_wmCurrentAlarmEPochTime(): ");
+    Serial.println(rmsClassArg.get_wmCurrentAlarmEPochTime());
+    Serial.print("get_wmLastAlarmEPochTime(): ");
+    Serial.println(rmsClassArg.get_wmLastAlarmSMSEPochTime());
+    Serial.print("Time difference: ");
+    Serial.println(rmsClassArg.get_wmCurrentAlarmEPochTime()-rmsClassArg.get_wmLastAlarmSMSEPochTime());
+    Serial.print("Allowed interval: ");
+    Serial.println(rmsClassArg.get_wmAllowedIntervalBetweenSMS());
+    Serial.print("second condition: ");
+    bool test = (rmsClassArg.get_wmCurrentAlarmEPochTime()-rmsClassArg.get_wmLastAlarmSMSEPochTime() > rmsClassArg.get_wmAllowedIntervalBetweenSMS());
+    Serial.println (test);
+    Serial.print("AlarmSituation beofre update: ");
+    Serial.println(rmsClassArg.get_wmAlarmSituation());
+
+
+    if ((rmsClassArg.get_wmAlarmSituation() == 0) 
+    && (rmsClassArg.get_rmsState() == UWQ || rmsClassArg.get_rmsState() == FWQ)){
+        
+        rmsClassArg.set_wmLastAlarmSMSEPochTime(rmsClassArg.get_wmCurrentAlarmEPochTime());
+        
+        rmsClassArg.set_wmAlarmSituation(1);
+        
+        SMS_wmSend(rmsClassArg);
+    }
+    else if ((rmsClassArg.get_wmAlarmSituation() == 2) 
+    && (rmsClassArg.get_wmCurrentAlarmEPochTime()-rmsClassArg.get_wmLastAlarmSMSEPochTime() > rmsClassArg.get_wmAllowedIntervalBetweenSMS())){
+        
+        rmsClassArg.set_wmLastAlarmSMSEPochTime(rmsClassArg.get_wmCurrentAlarmEPochTime());
+        
+        rmsClassArg.set_wmAlarmSituation(2);
+        
+        // perform thecount of UWQ/FWQ/SWQ eventsS
+        Data_updateStateHistory(rmsClassArg, dataFileName);
+        Serial.print("rmsClassArg.get_stateHistoryCount(UWQ)");
+        Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
+        Serial.print("rmsClassArg.get_totalStateChanges()");
+        Serial.println(rmsClassArg.get_totalStateChanges());
+
+        //update percentage:
+        rmsClassArg.set_stateHistoryPercentage(SWQ);
+        rmsClassArg.set_stateHistoryPercentage(UWQ);
+        rmsClassArg.set_stateHistoryPercentage(FWQ);
+
+        if (rmsClassArg.get_rmsState() == SWQ){ // THIS is where we can tune the settings to stop the alarm sending
+            rmsClassArg.set_wmAlarmSituation(3);
+        }
+
+        SMS_wmSend(rmsClassArg);
+
+        rmsClassArg.reset_History();
+        
+        Serial.print("rmsClassArg.get_stateHistoryCount(UWQ)");
+        Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
+        Serial.print("rmsClassArg.get_totalStateChanges()");
+        Serial.println(rmsClassArg.get_totalStateChanges());
+    }
+    Serial.print("AlarmSituation after update: ");
+    Serial.println(rmsClassArg.get_wmAlarmSituation());
+    
+}
 
 RMSState FSM_decideState(Ezo_board& ezoORPClassArg){
     RMSState state = UWQ;

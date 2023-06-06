@@ -22,6 +22,7 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
 RMSState FSM_decideState(Ezo_board& ezoORPClassArg);
 RMSState FSM_implementMLDecision(Ezo_board& ezoORPClassArg);
 
+void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, uint32_t currentTime);
 
 
 // void FSM_getEzoWaterReading(Ezo_board* classArg);
