@@ -65,7 +65,9 @@ class rmsClass {
          uint32_t currentAlarmEPochTime; 
          uint32_t allowedIntervalBetweenSMS;
          bool inSendingHistoryWindow = true; //informs whether we are in a continuous sending window from the WaterMontioring
-
+         uint8_t alarmSituation = 0;   /* 0 = first UWQ / FWQ -> go straight to sending SMS
+                                          1 = collate samples over HW. -> once the HW time has elapsed, go to send an SMS: If at that time, the last reading is an SWQ, go to send final SMS 
+                                          2 = if the final reading was SWQ (from HW collating) -> rthen set alarmsituation to 0 */
          //constructor
          alarmStruct(uint32_t lastAlarmSMSEPochTime_initVal, 
                      uint32_t currentAlarmEPochTime_initVal, 
