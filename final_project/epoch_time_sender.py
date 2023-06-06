@@ -2,7 +2,7 @@ import time
 import serial
 
 BAUD_RATE = 9600
-SERIAL_PORT = "/dev/cu.usbmodem1422301"  # Replace with the appropriate serial port on your computer
+SERIAL_PORT = "/dev/cu.usbmodem1422401"  # Replace with the appropriate serial port on your computer
 
 # Open the serial connection
 ser = serial.Serial(SERIAL_PORT, BAUD_RATE)
@@ -10,6 +10,7 @@ ser.flushInput()
 
 while True:
     if ser.inWaiting() > 0:
+        print("waiting")
         # Read the incoming data from the Arduino
         received_data = ser.readline().decode().strip()
         

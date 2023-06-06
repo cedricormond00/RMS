@@ -10,13 +10,18 @@
 
 uint8_t dummyVar = 0;
 
+// uint32_t currentEpochTime = ;
+
+
 void RTC_init(RTCZero& rtc){
     rtc.begin();
 
+    //MANUAL OPTION
     rtc.setEpoch(1577836800); // Jan 1, 2020
     // rtc.setDate(01, 01, 2020);
     // rtc.setTime(0, 0, 0);
 
+    //SERIAL OPTION
     // while (Serial.available()) {
     //     Serial.read();  // Clear any existing data from the serial buffer
     // }
@@ -26,6 +31,9 @@ void RTC_init(RTCZero& rtc){
     // }
     // uint32_t epochTime = Serial.parseFloat();  // Read the epoch time from the serial connection
     // rtc.setEpoch(epochTime);  // Set the obtained epoch time
+
+    // PREPROCESSING OPTION
+    // rtc.setEpoch(currentEpochTime);
 
     rtc.enableAlarm(rtc.MATCH_YYMMDDHHMMSS);
     rtc.attachInterrupt(RTC_callbackAlarmMatch);
