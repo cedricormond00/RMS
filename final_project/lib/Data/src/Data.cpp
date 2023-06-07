@@ -59,9 +59,9 @@ bool Data_updateStateHistory(rmsClass& rmsClassArg, char dataFileName[]){
         // Read a line from the file
         String line = dataFile.readStringUntil('\n');
         
-        Serial.print("just reading lines");
-        Serial.print("line string");
-        Serial.println(line);
+        // Serial.print("just reading lines");
+        // Serial.print("line string");
+        // Serial.println(line);
 
         // Split the line into columns
         String timestamp = getValue(line, ',', 0);

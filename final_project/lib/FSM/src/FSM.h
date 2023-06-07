@@ -18,7 +18,7 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
 
 void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg);
 void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg);
-
+void FSM_f_HB(rmsClass& rmsClassArg);
 RMSState FSM_decideState(Ezo_board& ezoORPClassArg);
 RMSState FSM_implementMLDecision(Ezo_board& ezoORPClassArg);
 

@@ -167,6 +167,16 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
             debugDisplay = 0;
         }
     }
+    if (Tool_isBitOn(*triggeredInputEvent, HB_INPUTBIT)){
+        Tool_setBitOn(&eventInputCode, HB_INPUTBIT);// code for WM function
+
+        // reset the triggered input event tracker
+        Tool_setBitOff(triggeredInputEvent, HB_INPUTBIT);
+
+        //Set a new time for the hbAlarmtrigger
+
+        hbEPochTime = RTC_updateHBEPochTime(hbEPochTime);
+    }
 
     rmsClassArg.set_inputEventCode(eventInputCode);
 }
@@ -224,6 +234,30 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
         
         if (debug){
 
+            Serial.print("event Input Code after update: ");
+            Serial.print(eventInputCode, BIN);
+            Serial.print(", ");
+            Serial.println(eventInputCode);
+        }
+    }
+    if (Tool_isBitOn(eventInputCode, HB_INPUTBIT)){
+        // Serial.println("in if");
+        if (debug){
+            Serial.println("in FSM_executeFunction, HB");
+            Serial.print("Current unix time = ");
+            Serial.println(rtcClassArg.getEpoch());
+            Serial.print("event Input Code before update: ");
+            Serial.print(eventInputCode, BIN);
+            Serial.print(", ");
+            Serial.println(eventInputCode);
+        }
+
+
+        FSM_f_HB(rmsClassArg);
+        Tool_setBitOff(&eventInputCode, HB_INPUTBIT); // because eventInputCode_ is already the address of the pointer
+                                                    // I am now passing the correct pointer (uint8_t*) to the Tool_setBitOff
+        
+        if (debug){
             Serial.print("event Input Code after update: ");
             Serial.print(eventInputCode, BIN);
             Serial.print(", ");
@@ -329,6 +363,10 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
     }
 }
 
+void FSM_f_HB(rmsClass& rmsClassArg){
+    SMS_hbSend(rmsClassArg);
+    ToggleLED(BLUELED_PIN);
+}
 // void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, uint32_t currentTime){
 //     Serial.print("AlarmSituation beofre update: ");
 //     Serial.println(rmsClassArg.get_wmAlarmSituation());

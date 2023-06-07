@@ -27,3 +27,4 @@ RTCZero rtc; // Define the RTCZero object
 uint32_t alarmMatchEPochTime = 0; 
 
 RTC_DS3231 rtcDS3231;
+uint32_t hbEPochTime = 0;

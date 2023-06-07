@@ -31,7 +31,7 @@ extern RTCZero rtc;
 extern uint32_t alarmMatchEPochTime;
 
 extern RTC_DS3231 rtcDS3231;
-
+extern uint32_t hbEPochTime;
 
 
 #endif // GLOBALS_H

@@ -18,6 +18,11 @@ void RTC_printTime(RTCZero& rtcClassArg);
 */
 void RTC_callbackAlarmMatch();
 
+uint32_t RTC_findNext9AMEPochTime(uint32_t currentEPochTime);
+uint32_t RTC_updateHBEPochTime(uint32_t hbEPochTime);
+
+
+
 void RTC_getTimeInText(uint32_t ePochTime, char* buf);
 
 

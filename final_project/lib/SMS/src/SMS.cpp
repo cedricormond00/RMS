@@ -3,6 +3,9 @@
 #include "SMS.h"
 
 #include "Constant.h"
+#include "Global.h"
+
+#include "RTC.h"
 
 
 void SMS_uraSend(rmsClass& rmsClassArg){
@@ -15,6 +18,24 @@ void SMS_uraSend(rmsClass& rmsClassArg){
     Serial.println(rmsClassArg.get_rmsState());
     Serial.print("Last ORP reading: ");
     Serial.println(rmsClassArg.get_orpReading());
+    Serial.println("---");
+}
+
+
+void SMS_hbSend(rmsClass& rmsClassArg){
+    char buf[40];
+    Serial.println("");
+    Serial.println("---");
+    Serial.print("RMS ");
+    Serial.println(RMS_ID);
+    Serial.println("HB");
+    Serial.print("Current State: ");
+    Serial.println(rmsClassArg.get_rmsState());
+    Serial.print("Last ORP reading: ");
+    Serial.println(rmsClassArg.get_orpReading());
+    Serial.print("Current Time: ");
+    RTC_getTimeInText(rtc.getEpoch(), buf);
+    Serial.println(buf);
     Serial.println("---");
 }
 

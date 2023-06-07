@@ -45,6 +45,9 @@ void RTC_init(void){
   rtc.enableAlarm(rtc.MATCH_YYMMDDHHMMSS);
   rtc.attachInterrupt(RTC_callbackAlarmMatch);
 
+  //configure next 9AM HB alarm time
+  hbEPochTime = RTC_findNext9AMEPochTime(now.unixtime());
+
 }
 
 void RTC_updateInternalRTCToCurrentTime(void){
@@ -60,8 +63,37 @@ void RTC_callbackAlarmMatch(){
   // Tool_setBitOff(&triggeredInputEvent, ~WM_INPUTBIT);
   Tool_setBitOn(&triggeredInputEvent, WM_INPUTBIT);
   alarmMatchEPochTime = rtc.getEpoch();
+  if (alarmMatchEPochTime >= hbEPochTime){
+    Tool_setBitOn(&triggeredInputEvent, HB_INPUTBIT);
+  }
 }
 
+uint32_t RTC_findNext9AMEPochTime(uint32_t currentEPochTime){
+  // Convert the given epoch time to a tm structure
+  tmElements_t targetTime;
+  breakTime(currentEPochTime, targetTime);
+
+  // Increment the date by one day if the current time is after 9 AM
+  if (targetTime.Hour >= 17) {
+    currentEPochTime += 24 * 60 * 60; // Add 24 hours in seconds
+  }
+
+  // break down the updated (by 24hours) currentEpochTime
+  breakTime(currentEPochTime, targetTime);
+
+  // Set the time to 9AM on the targetTime
+  targetTime.Hour = 17;
+  targetTime.Minute = 0;
+  targetTime.Second = 0;
+
+  //Convert the resulting time to epOchTime
+  uint32_t next9AMEPochtTime = makeTime(targetTime);
+  return next9AMEPochtTime;
+}
+
+uint32_t RTC_updateHBEPochTime(uint32_t hbEPochTime){
+  return hbEPochTime+24*60*60;
+}
 
 /* convert the time stamp into readable form */
 void RTC_getTimeInText(uint32_t ePochTime, char* buf){
