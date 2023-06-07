@@ -1,48 +1,61 @@
+#include <Arduino.h>
 #include <TimeLib.h>
 
-
-#include "RTC.h"
 #include "Constant.h"
 #include "Global.h"
-#include "Tool.h"
+
+#include "RTC.h"
 
 #include "States.h"
 
-uint8_t dummyVar = 0;
+#include "Tool.h"
+
 
 // uint32_t currentEpochTime = ;
 
 
-void RTC_init(RTCZero& rtc){
-    rtc.begin();
+void RTC_init(void){
 
-    //MANUAL OPTION
-    rtc.setEpoch(1577836800); // Jan 1, 2020
-    // rtc.setDate(01, 01, 2020);
-    // rtc.setTime(0, 0, 0);
+  rtc.begin();
+  rtcDS3231.begin();
 
-    //SERIAL OPTION
-    // while (Serial.available()) {
-    //     Serial.read();  // Clear any existing data from the serial buffer
-    // }
-    // Serial.println("GET_EPOCH");  // Send a command to the computer to request the epoch time
-    // while (!Serial.available()) {
-    //     ;  // Wait for the response from the computer
-    // }
-    // uint32_t epochTime = Serial.parseFloat();  // Read the epoch time from the serial connection
-    // rtc.setEpoch(epochTime);  // Set the obtained epoch time
+  //assuming the rtcDS3231 had already been initialised
+  DateTime now = rtcDS3231.now();
 
-    // PREPROCESSING OPTION
-    // rtc.setEpoch(currentEpochTime);
+  //using external RTC OPTION
+  rtc.setEpoch(now.unixtime()); 
 
-    rtc.enableAlarm(rtc.MATCH_YYMMDDHHMMSS);
-    rtc.attachInterrupt(RTC_callbackAlarmMatch);
+  //MANUAL OPTION
+  // rtc.setEpoch(1577836800); // Jan 1, 2020
+  // rtc.setDate(01, 01, 2020);
+  // rtc.setTime(0, 0, 0);
+  //SERIAL OPTION
+  // while (Serial.available()) {
+  //     Serial.read();  // Clear any existing data from the serial buffer
+  // }
+  // Serial.println("GET_EPOCH");  // Send a command to the computer to request the epoch time
+  // while (!Serial.available()) {
+  //     ;  // Wait for the response from the computer
+  // }
+  // uint32_t epochTime = Serial.parseFloat();  // Read the epoch time from the serial connection
+  // rtc.setEpoch(epochTime);  // Set the obtained epoch time
+  // PREPROCESSING OPTION
+  // rtc.setEpoch(currentEpochTime);
+
+  rtc.enableAlarm(rtc.MATCH_YYMMDDHHMMSS);
+  rtc.attachInterrupt(RTC_callbackAlarmMatch);
 
 }
 
-// void RTC_callbackAlarmMatch(RMSClass& rmsClassArg, RTCZero& rtcClassArg){
+void RTC_updateInternalRTCToCurrentTime(void){
+  //assuming the rtcDS3231 had already been initialised
+  DateTime now = rtcDS3231.now();
+
+  //using external RTC OPTION
+  rtc.setEpoch(now.unixtime()); 
+}
+
 void RTC_callbackAlarmMatch(){
-  
   // //when match alarm, set all other bits to zero
   // Tool_setBitOff(&triggeredInputEvent, ~WM_INPUTBIT);
   Tool_setBitOn(&triggeredInputEvent, WM_INPUTBIT);
@@ -98,5 +111,4 @@ void RTC_printTime(RTCZero& rtcClassArg){
   RTC_print2digits(rtcClassArg.getSeconds());
 
   Serial.println();
-
 }

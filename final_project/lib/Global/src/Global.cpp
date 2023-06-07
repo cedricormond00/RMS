@@ -25,3 +25,5 @@ char dataFileName[13] = {"dataFile.csv"};
 RTCZero rtc; // Define the RTCZero object
 
 uint32_t alarmMatchEPochTime = 0; 
+
+RTC_DS3231 rtcDS3231;

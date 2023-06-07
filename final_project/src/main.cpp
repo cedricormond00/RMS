@@ -94,7 +94,7 @@ void setup() {
   
   
   // RTC  
-  RTC_init(rtc);
+  RTC_init();
 
 
   //SD
@@ -201,7 +201,15 @@ void loop() {
       break;
 
     case FWQ:
-      rmsState = SWQ;
+      // rmsState = SWQ;
+      digitalWrite(REDLED_PIN, HIGH);
+      digitalWrite(GREENLED_PIN, LOW);
+      // wakePeriod = 10000; // 20 sec
+      //wake every 2 minutes (2*60*1000ms = 120000)
+
+
+      LP_goToLowPowerConsumption(rms, rtc, &triggeredInputEvent);
+      FSM_updateInputEventCode(rms, rtc, &triggeredInputEvent);
       break;
 
     case SLEEP:

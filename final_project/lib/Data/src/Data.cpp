@@ -131,15 +131,15 @@ bool Data_saveDataPointToDataFile(uint32_t ePochTime,
         dataFile.print(buf);
         dataFile.print(",");
         
-        dataFile.print(orpValue,2);
-        dataFile.print(",");
-        
         if (evaluatedState == FWQ){
-            dataFile.print("NA");
+            dataFile.print("nan");
         }
         else{
-            dataFile.print(evaluatedState);
+            dataFile.print(orpValue,2);
         }
+        dataFile.print(",");
+
+        dataFile.print(evaluatedState);
         dataFile.print(",");
         
         dataFile.print(inputEventCodeBit, BIN);

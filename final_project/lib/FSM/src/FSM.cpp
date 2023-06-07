@@ -257,7 +257,6 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
 
     // // decide whether or not to send SMSs
     // rmsClassArg.set_inHistoryWindow();
-
     // rmsClassArg.set_nextWakeUpEPochTime(rmsClassArg.get_wakeUpEPochTime()+rmsClassArg.get_sleepPeriod());
     // This solution would allow to minisme this drift. However, it would probably require to add a check to ensure the next wakup alarm time is later then the present time
     // TODO: add a check to ensure the next wakeup alarm is later then the present time
@@ -282,21 +281,17 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
     //     Data_updateStateHistory(rmsClassArg, dataFileName);
     //     Serial.print("rmsClassArg.get_stateHistoryCount(UWQ)");
     //     Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
-        
     //     Serial.print("rmsClassArg.get_totalStateChanges()");
     //     Serial.println(rmsClassArg.get_totalStateChanges());
-        
     //     //update percentage:
     //     rmsClassArg.set_stateHistoryPercentage(SWQ);
     //     rmsClassArg.set_stateHistoryPercentage(UWQ);
     //     rmsClassArg.set_stateHistoryPercentage(FWQ);
     //     float testFloat = 2/3;
     //     Serial.println(testFloat);
-
     //     SMS_wmSend(rmsClassArg);
     //     //TODO:  create a reset function
     //     rmsClassArg.reset_History();
-
     //     Serial.print("rmsClassArg.get_stateHistoryCount(UWQ)");
     //     Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
     //     Serial.print("rmsClassArg.get_totalStateChanges()");

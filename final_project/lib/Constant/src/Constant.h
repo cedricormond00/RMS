@@ -32,6 +32,7 @@ extern volatile bool bp; // true <=> button press
 
 // I2C
 #define EZO_ADDRESS 98               //default I2C ID number for EZO ORP Circuit.
+// #define RTCDS3231_Address 
 
 // event input 
 #define WM_INPUTBIT 0b1

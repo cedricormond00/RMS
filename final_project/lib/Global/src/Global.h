@@ -5,6 +5,8 @@
 #define GLOBAL_H
 
 #include <RTCZero.h>
+#include <RTClib.h>
+
 /** \brief include all global variable declaration that must be used in separate files
  * \remark the global variable declaration is done in Global.c
 */
@@ -27,6 +29,8 @@ extern char dataFileName[13];
 
 extern RTCZero rtc;
 extern uint32_t alarmMatchEPochTime;
+
+extern RTC_DS3231 rtcDS3231;
 
 
 
