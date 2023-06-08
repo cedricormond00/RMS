@@ -387,6 +387,43 @@ uint8_t rmsClass::get_wmAlarmSituation(){
 //             Serial.print("No state defined, no trigger");
 //     }
 // }
+void rmsClass::set_powerStructBatteryVoltage(float new_batteryVoltage){
+    _powerStruct.batteryVoltage = new_batteryVoltage;
+}
+void rmsClass::set_powerStructMember(uint8_t memberIndex, float new_value){
+    switch (memberIndex) {
+        case 1:
+            _powerStruct.batteryVoltage = new_value;
+            break;
+        case 2:
+            _powerStruct.chargeStatus = static_cast<uint8_t>(new_value);
+            break;
+        case 3:
+            if (new_value == 0 || new_value == 1) {
+                _powerStruct.onBattery = static_cast<bool>(new_value);
+            } else {
+                Serial.println("inputed value for memberIndex = 3 was not 1 or 0");
+                // Handle error: value is not 1 or 0
+                // You can throw an exception, print an error message, etc.
+            }
+        default:
+            // Handle error or take no action
+            break;
+    }
+}
 
+auto rmsClass::get_powerStructMember(uint8_t memberIndex){
+    switch (memberIndex) {
+        case 1:
+            return _powerStruct.batteryVoltage ;
+        case 2:
+            return _powerStruct.chargeStatus ;
+        case 3:
+            return _powerStruct.onBattery;
+        default:
+            // Handle error or return a default value
+            return 0;
+    }
+}
 
 

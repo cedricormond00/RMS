@@ -19,6 +19,7 @@
 #include "Data.h"
 #include "EZO.h"
 #include "SMS.h"
+#include "Battery.h"
 
 bool debugDisplay = 1;
 
@@ -303,12 +304,19 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
     // should be added literaly just before going to sleep
     //TODO: CHECK THIS IS BUG PROOF WITH THE COMMENT BEFORE GOING TO SLEEP
     rtcClassArg.setAlarmEpoch(rmsClassArg.get_nextWakeUpEPochTime());
+    // check battery health
+    rmsClassArg.set_powerStructBatteryVoltage(Battery_getBatteryVoltage());
+
     Data_saveDataPointToDataFile(rmsClassArg.get_wmReadEPochTime(),
                         rmsClassArg.get_orpReading(),
                         rmsClassArg.get_rmsState(),
                         WM_INPUTBIT,
+                        rmsClassArg.get_powerStructMember(1),
                         dataFileName);
     FSM_multipleAlarmManagement(rmsClassArg, currentTime);
+
+    
+
     // if (rmsClassArg.get_rmsState() == UWQ || rmsClassArg.get_rmsState() == FWQ){
     // if (rmsClassArg.wm_canSendSMS(currentTime)){
     //     // perform thecount of UWQ/FWQ/SWQ eventsS
@@ -348,11 +356,27 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
 
     rmsClassArg.set_rmsState(newState);
 
+    Serial.print("Battery Voltage from function: ");
+    Serial.print(Battery_getBatteryVoltage());
+
+
+    // check battery health
+    rmsClassArg.set_powerStructBatteryVoltage(Battery_getBatteryVoltage());
+
+    Serial.print("Battery Voltage from struct: ");
+    Serial.println(rmsClassArg.get_powerStructMember(1));
+    // Serial.println(rmsClassArg.get_powerStructMember(1));
+    // Serial.println(rmsClassArg.get_powerStructMember(2));
+    // Serial.println(rmsClassArg.get_powerStructMember(3));
+
+
     //store value
     Data_saveDataPointToDataFile(currentTime,
                         rmsClassArg.get_orpReading(),
                         rmsClassArg.get_rmsState(),
                         URA_INPUTBIT,
+                        //TODO: could automatically have the gwetter request the new battery voltage
+                        rmsClassArg.get_powerStructMember(1),
                         dataFileName);
     if (rmsClassArg.ura_canSendSMS(currentTime)){
         ToggleLED(ORANGELED_PIN);

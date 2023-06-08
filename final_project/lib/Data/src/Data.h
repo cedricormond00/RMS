@@ -14,8 +14,9 @@ String getValue(String data, char separator, int index);
 bool Data_saveDataPointToDataFile(uint32_t ePochTime,
                                 float orpValue,
                                 RMSState evaluatedState,
-                                uint8_t inputEventCodeBit, 
-                                char datafilename[]);
+                                uint8_t inputEventCodeBit,
+                                float batteryVoltage,
+                                char dataFileName[]);
 
 bool Data_populateHeaderRowToFile(String rowNames[],
                                 uint8_t numberOfRows,

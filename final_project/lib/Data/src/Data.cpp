@@ -118,6 +118,7 @@ bool Data_saveDataPointToDataFile(uint32_t ePochTime,
                                 float orpValue,
                                 RMSState evaluatedState,
                                 uint8_t inputEventCodeBit,
+                                float batteryVoltage,
                                 char dataFileName[]){
     bool success = true;
     char buf[256];
@@ -143,12 +144,12 @@ bool Data_saveDataPointToDataFile(uint32_t ePochTime,
         dataFile.print(",");
         
         dataFile.print(inputEventCodeBit, BIN);
-
         dataFile.print(",");
+
         dataFile.print(triggeredInputEvent, BIN);
-
+        dataFile.print(",");       
         
-
+        dataFile.print(batteryVoltage, 2);
 
         dataFile.println();
         

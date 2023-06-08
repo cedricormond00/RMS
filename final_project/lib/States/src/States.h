@@ -124,6 +124,17 @@ class rmsClass {
 
       void reset_History();
 
+      struct powerStruct {
+         float batteryVoltage;
+         uint8_t chargeStatus;
+         bool onBattery;
+      };
+
+      void set_powerStructBatteryVoltage(float new_batteryVoltage);
+      void set_powerStructMember(uint8_t memberIndex, float new_batteryVoltage);
+      uint8_t get_powerStructMember(uint8_t memberIndex);
+
+
 
       
 
@@ -175,12 +186,7 @@ class rmsClass {
 
       uint8_t updateTotalStateChanges();
 
-
-
-      
-      
-
-
+      powerStruct _powerStruct;
 
 };
 
