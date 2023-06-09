@@ -131,8 +131,10 @@ class rmsClass {
       };
 
       void set_powerStructBatteryVoltage(float new_batteryVoltage);
-      void set_powerStructMember(uint8_t memberIndex, float new_batteryVoltage);
-      uint8_t get_powerStructMember(uint8_t memberIndex);
+      float get_powerStructBatteryVoltage();
+
+      // void set_powerStructMember(uint8_t memberIndex, float new_batteryVoltage);
+      // uint8_t get_powerStructMember(uint8_t memberIndex);
 
 
 

@@ -58,8 +58,10 @@ uint32_t initWakeUpTime = 0; //TODO: find a better way to define the first time 
 void setup() {
   Serial.begin(9600);
   //wait for serial monitor
-  while (!Serial);
+  // while (!Serial);
 
+  delay(2000);
+  
   //print my class info
   Serial.print("rmsState class instance, stae: ");
   Serial.println(rms.get_rmsState());
@@ -141,7 +143,7 @@ void loop() {
   FSM_executeFunction(EZO_ORP, rms, rtc);
   // Serial.print(rms.get_rmsState());
   // Serial.print("test");
-
+  delay(500);
   switch(rms.get_rmsState()){
     
 

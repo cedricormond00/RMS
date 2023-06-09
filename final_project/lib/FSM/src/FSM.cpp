@@ -311,7 +311,7 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
                         rmsClassArg.get_orpReading(),
                         rmsClassArg.get_rmsState(),
                         WM_INPUTBIT,
-                        rmsClassArg.get_powerStructMember(1),
+                        rmsClassArg.get_powerStructBatteryVoltage(),
                         dataFileName);
     FSM_multipleAlarmManagement(rmsClassArg, currentTime);
 
@@ -364,7 +364,7 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
     rmsClassArg.set_powerStructBatteryVoltage(Battery_getBatteryVoltage());
 
     Serial.print("Battery Voltage from struct: ");
-    Serial.println(rmsClassArg.get_powerStructMember(1));
+    Serial.println(rmsClassArg.get_powerStructBatteryVoltage());
     // Serial.println(rmsClassArg.get_powerStructMember(1));
     // Serial.println(rmsClassArg.get_powerStructMember(2));
     // Serial.println(rmsClassArg.get_powerStructMember(3));
@@ -376,7 +376,7 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
                         rmsClassArg.get_rmsState(),
                         URA_INPUTBIT,
                         //TODO: could automatically have the gwetter request the new battery voltage
-                        rmsClassArg.get_powerStructMember(1),
+                        rmsClassArg.get_powerStructBatteryVoltage(),
                         dataFileName);
     if (rmsClassArg.ura_canSendSMS(currentTime)){
         ToggleLED(ORANGELED_PIN);

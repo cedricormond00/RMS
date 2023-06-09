@@ -55,7 +55,7 @@ void LP_goToLowPowerConsumption(rmsClass& rmsClassArg, RTCZero& rtcClassArg, vol
 
             rmsClassArg.set_toSleepEPochTime(toSleepEPochTime);
             Serial.println("to sleep now");
-            // LowPower.sleep();
+            LowPower.sleep();
         }
 
         // store time at which device woke up
