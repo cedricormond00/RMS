@@ -130,7 +130,7 @@ bool Data_saveDataPointToDataFile(uint32_t ePochTime,
     
     if (dataFile) {
         Serial.println("writing to SD");
-        
+
         dataFile.print(ePochTime);
         dataFile.print(",");
         
@@ -244,7 +244,9 @@ void Data_stringTime(uint32_t ePochTime, char* buf){
   breakTime(ePochTime, timeInfo);
 
   // Format the time components into the provided buffer
-  sprintf(buf, "%2d%02d%02d", timeInfo.Year + 1970 - 2000, timeInfo.Month, timeInfo.Day);//, timeInfo.Hour, timeInfo.Minute, timeInfo.Second);
+//   sprintf(buf, "%2d%02d%02d", timeInfo.Year + 1970, timeInfo.Month, timeInfo.Day);//, timeInfo.Hour, timeInfo.Minute, timeInfo.Second);
+
+  sprintf(buf, "%1d%02d%02d", timeInfo.Year + 1970 - 2020, timeInfo.Month, timeInfo.Day);//, timeInfo.Hour, timeInfo.Minute, timeInfo.Second);
   // sprintf(buf, "%4d%02d%02d%02d%02d%02d", timeInfo.Year + 1970, timeInfo.Month, timeInfo.Day, timeInfo.Hour, timeInfo.Minute, timeInfo.Second);
 }
 

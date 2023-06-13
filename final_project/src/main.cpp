@@ -45,7 +45,7 @@ Ezo_board EZO_ORP = Ezo_board(EZO_ADDRESS, "ORP_EZO");       //create an ORP cir
 
 RMSState rmsState = INIT;
 
-char dataFileName[12] = {"df.csv"};
+char dataFileName[13] = "df.csv";
 
 
 uint32_t initWakeUpTime = 0; //TODO: find a better way to define the first time interval for intialisation
@@ -115,11 +115,11 @@ void setup() {
     // create a filnemane as 
     // check for preexisting filename
 
-    // Data_createValidDataFileName(dataFileName);
+    Data_createValidDataFileName(dataFileName);
     // check for preexisting filename and remove preexisting file
     
     // Best would be to just create a new if dfile doesn't exist yet, and keep previous file
-    Data_removeFile(dataFileName);
+    // Data_removeFile(dataFileName);
     
     // Serial.print("DatafileName: ");
     // csvcsSerial.println(dataFileName);
