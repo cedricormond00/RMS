@@ -187,7 +187,7 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
 }
 
 
-void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtcClassArg){
+void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtcClassArg, char dataFileName[]){
     bool debug=true;
     // Serial.print("SystemStatusRegister: ");
     // Serial.println(PMIC.readSystemStatusRegister(), BIN);
@@ -206,7 +206,7 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
 
         }
 
-        FSM_f_WM_EZO(EZO_ORP, rmsClassArg, rtcClassArg);
+        FSM_f_WM_EZO(EZO_ORP, rmsClassArg, rtcClassArg, dataFileName);
 
         Tool_setBitOff(&eventInputCode, WM_INPUTBIT); // because eventInputCode_ is already the address of the pointer
                                                     // I am now passing the correct pointer (uint8_t*) to the Tool_setBitOff
@@ -235,7 +235,7 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
         Serial.print("milis after interrupt wakup: ");
         Serial.println(millis());
 
-        FSM_f_URA(EZO_ORP, rmsClassArg, rtcClassArg);
+        FSM_f_URA(EZO_ORP, rmsClassArg, rtcClassArg, dataFileName);
         Tool_setBitOff(&eventInputCode, URA_INPUTBIT); // because eventInputCode_ is already the address of the pointer
                                                     // I am now passing the correct pointer (uint8_t*) to the Tool_setBitOff
         
@@ -280,7 +280,7 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
 
 
 
-void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg){
+void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg, char dataFileName[]){
     
     uint32_t currentTime = rtcClassArg.getEpoch();
 
@@ -336,8 +336,8 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
     // Serial.print("rmsClassArg.get_powerStructChargeStatus: ");
     // Serial.println(rmsClassArg.get_powerStructChargeStatus(), BIN);
     
-    Serial.print("DatafileName: ");
-    Serial.println(dataFileName);
+    // Serial.print("DatafileName: ");
+    // Serial.println(dataFileName);
     Data_saveDataPointToDataFile(rmsClassArg.get_wmReadEPochTime(),
                         rmsClassArg.get_orpReading(),
                         rmsClassArg.get_rmsState(),
@@ -347,7 +347,7 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
                         PMIC.readSystemStatusRegister(),
                         rmsClassArg.get_powerStructChargeStatus(),
                         dataFileName);
-    FSM_multipleAlarmManagement(rmsClassArg, currentTime);
+    FSM_multipleAlarmManagement(rmsClassArg, currentTime, dataFileName);
 
     
 
@@ -376,7 +376,7 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
 }
 
 
-void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg){
+void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg, char dataFileName[]){
     uint32_t currentTime = rtcClassArg.getEpoch();
     // ToggleLED(ORANGELED_PIN);
     debugDisplay = 1;
@@ -460,7 +460,7 @@ void FSM_f_HB(rmsClass& rmsClassArg){
 //     }
 // }
 
-void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, uint32_t currentTime){
+void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, uint32_t currentTime, char dataFileName[]){
     rmsClassArg.set_wmCurrentAlarmEPochTime(currentTime);
 
     Serial.print("get_wmCurrentAlarmEPochTime(): ");

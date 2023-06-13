@@ -45,7 +45,11 @@ Ezo_board EZO_ORP = Ezo_board(EZO_ADDRESS, "ORP_EZO");       //create an ORP cir
 
 RMSState rmsState = INIT;
 
+char dataFileName[12] = {"df.csv"};
+
+
 uint32_t initWakeUpTime = 0; //TODO: find a better way to define the first time interval for intialisation
+
 
 // uint16_t WMTC_limit = 5; // Upper timer limit for action to be triggered
 // uint8_t inputEventCode = 0b0;
@@ -160,7 +164,7 @@ void loop() {
   //   Serial.println(triggeredInputEvent, BIN);
   // }
   
-  FSM_executeFunction(EZO_ORP, rms, rtc);
+  FSM_executeFunction(EZO_ORP, rms, rtc, dataFileName);
   // Serial.print(rms.get_rmsState());
   // Serial.print("test");
   delay(500);
