@@ -2,6 +2,8 @@
 #include <SD.h>
 #include <SPI.h>
 
+#include <TimeLib.h>
+
 #include "Data.h"
 
 #include "Constant.h"
@@ -119,6 +121,8 @@ bool Data_saveDataPointToDataFile(uint32_t ePochTime,
                                 RMSState evaluatedState,
                                 uint8_t inputEventCodeBit,
                                 float batteryVoltage,
+                                bool isPowerSourceStable,
+                                uint8_t chargeStatus,
                                 char dataFileName[]){
     bool success = true;
     char buf[256];
@@ -150,6 +154,12 @@ bool Data_saveDataPointToDataFile(uint32_t ePochTime,
         dataFile.print(",");       
         
         dataFile.print(batteryVoltage, 2);
+        dataFile.print(",");   
+
+        dataFile.print(isPowerSourceStable, BIN);
+        dataFile.print(",");
+
+        dataFile.print(chargeStatus, BIN);
 
         dataFile.println();
         
@@ -186,6 +196,43 @@ bool Data_populateHeaderRowToFile(String colNames[],
     file.close();  
     return success;
 }
+
+/* Filename convention:
+ *  dataXXXX.txt where XXXX is a sequential number. This function finds the lowest
+ *  XXXX index and creates a file name. If XXXX = 9999 exists, filename is set to NULL
+ */
+bool Data_createValidDataFileName(char datafilename[]){
+    bool success = true;
+    char timeStampString[8];
+    // uint32_t currentEpochTimeTime = rtc.getEpoch();
+    Data_stringTime(rtc.getEpoch(), timeStampString);
+    Serial.print("timeStampString: ");
+    Serial.println(timeStampString);
+    //create the filename string
+    sprintf(datafilename, "%s.csv", timeStampString);
+    Serial.print("datafilename: ");
+    Serial.println(datafilename);
+    return success;
+}
+
+
+/* convert the time stamp into readable form */
+void Data_stringTime(uint32_t ePochTime, char* buf){
+  // // Convert the epoch time to time_t
+  // time_t time = ePochTime;
+
+  // uint32_t time = ePochTime;
+
+  // Convert the timestamp to a tm structure
+  tmElements_t timeInfo;
+  breakTime(ePochTime, timeInfo);
+
+  // Format the time components into the provided buffer
+  sprintf(buf, "%4d%02d%02d", timeInfo.Year + 1970, timeInfo.Month, timeInfo.Day);//, timeInfo.Hour, timeInfo.Minute, timeInfo.Second);
+  // sprintf(buf, "%4d%02d%02d%02d%02d%02d", timeInfo.Year + 1970, timeInfo.Month, timeInfo.Day, timeInfo.Hour, timeInfo.Minute, timeInfo.Second);
+}
+
+
 
 bool Data_removeFile(char fileName[]){
     bool success = true;

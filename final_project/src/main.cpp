@@ -2,7 +2,7 @@
 #include <RTCZero.h>
 
 #include <Ezo_i2c.h> //include the EZO I2C library from https://github.com/Atlas-Scientific/Ezo_I2c_lib
-
+#include <Arduino_PMIC.h>
 
 #include "Constant.h"
 #include "Global.h"
@@ -34,11 +34,12 @@
 // instance of Real Time Clock
 // RTCZero rtc;
 
+// local variables
+
+
 // define state machine
 rmsClass rms;
 
-
-// local variables
 // define EZO peripheral
 Ezo_board EZO_ORP = Ezo_board(EZO_ADDRESS, "ORP_EZO");       //create an ORP circuit object, who's address is 98 and name is "ORP_EZO"
 
@@ -61,17 +62,8 @@ void setup() {
   // while (!Serial);
 
   delay(2000);
-  
-  //print my class info
-  Serial.print("rmsState class instance, stae: ");
-  Serial.println(rms.get_rmsState());
 
-  // initialise 
-  // i2c
-  I2c_init();
-
-
-  // LED pins
+    // LED pins
   pinMode(BLUELED_PIN, OUTPUT);
   pinMode(REDLED_PIN, OUTPUT);
   pinMode(GREENLED_PIN, OUTPUT);
@@ -84,17 +76,24 @@ void setup() {
   digitalWrite(ORANGELED_PIN, LOW);
 
   pinMode(BUTTON_PIN, INPUT);
+  
+  //print my class info
+  Serial.print("rmsState class instance, stae: ");
+  Serial.println(rms.get_rmsState());
 
-  // // timer
-  // Timer_tc4_init16bit(timeIncrement, timeIncrementType);
-  // Serial.println("TC4 init completed");
+  // initialise 
+  // i2c
+  I2c_init();
+
+  // PMIC
+  if (!PMIC.begin()) {
+    Serial.println("Failed to initialize PMIC!");
+    while (1);
+  }
 
   // configure LowPower: tell what to do in case of ecxternal interrupt
   LP_setupURAInterrupt();
 
-
-  
-  
   // RTC  
   RTC_init();
 
@@ -106,13 +105,34 @@ void setup() {
 
   // Sd card
   if (SDIsInit){
-    // remove preexisting file
+    // // remove preexisting file
+    // Data_removeFile(dataFileName);
+
+    // create a filnemane as 
+    // check for preexisting filename
+
+    // Data_createValidDataFileName(dataFileName);
+    // check for preexisting filename and remove preexisting file
+    
+    // Best would be to just create a new if dfile doesn't exist yet, and keep previous file
     Data_removeFile(dataFileName);
+    
+    // Serial.print("DatafileName: ");
+    // csvcsSerial.println(dataFileName);
 
     //initialise first row
-    uint8_t numberOfCols = 7;
-    String colNames[numberOfCols] = {"readEPochTimeStamp", "readTimeStamp", "orpValue", "State", "inputEvent", "triggeredInputEvent", "BatteryVoltage"};
-    Data_populateHeaderRowToFile(colNames, numberOfCols, dataFileName);
+    uint8_t numberOfCols = 9;
+    String colNames[numberOfCols] = {"readEPochTimeStamp",
+                                  "readTimeStamp", 
+                                  "orpValue", 
+                                  "State", 
+                                  "inputEvent", 
+                                  "triggeredInputEvent", 
+                                  "BatteryVoltage",
+                                  "isPowerSourceStable",
+                                  "chargeStatus"};
+    Serial.print("Successfully created a file? ");
+    Serial.print(Data_populateHeaderRowToFile(colNames, numberOfCols, dataFileName));
   }
   
     

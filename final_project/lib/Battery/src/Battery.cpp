@@ -31,9 +31,13 @@
 #include <Arduino.h>
 
 // Include the library for the BQ24195 IC
-#include <BQ24195.h>
+#include <Arduino_PMIC.h>
+#include <ArduinoLowPower.h>
 
 #include "Battery.h"
+
+int usb_mode = UNKNOWN_MODE;
+
 
 
 //define the resistor values in the voltage divider
@@ -83,4 +87,14 @@ float Battery_getBatteryVoltage(void){
 uint8_t Battery_getBatteryPercentage(uint8_t batteryVoltage){
     uint8_t batteryPercentage = (batteryVoltage - batteryEmptyVoltage) * (100) / (batteryFullVoltage - batteryEmptyVoltage);    //custom float friendly map function
     return batteryPercentage;
+}
+
+bool Battery_getIsStablePowerSupply(){
+    uint8_t vBusStatus = PMIC.isPowerGood();
+    return vBusStatus;
+}
+
+uint8_t Battery_getChargeStatus(){
+    uint8_t vBusStatus = PMIC.chargeStatus();
+    return vBusStatus;
 }

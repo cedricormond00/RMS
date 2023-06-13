@@ -126,12 +126,18 @@ class rmsClass {
 
       struct powerStruct {
          float batteryVoltage;
+         uint8_t usbMode;
          uint8_t chargeStatus;
-         bool onBattery;
       };
 
       void set_powerStructBatteryVoltage(float new_batteryVoltage);
       float get_powerStructBatteryVoltage();
+
+      void set_powerStructStablePowerSupply(uint8_t new_usbMode);
+      uint8_t get_powerStructStablePowerSupply();
+
+      void set_powerStructChargeStatus(uint8_t new_chargeStatus);
+      uint8_t get_powerStructChargeStatus();
 
       // void set_powerStructMember(uint8_t memberIndex, float new_batteryVoltage);
       // uint8_t get_powerStructMember(uint8_t memberIndex);

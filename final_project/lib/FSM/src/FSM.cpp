@@ -21,6 +21,9 @@
 #include "SMS.h"
 #include "Battery.h"
 
+#include <Arduino_PMIC.h>
+
+
 bool debugDisplay = 1;
 
 
@@ -135,10 +138,11 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
                 ToggleLED(YELLOWLED_PIN);
                 previousMillis = currentMillis;
             }
+            // CONFIG: can change the delay
             if (currentMillis>=(millisOnExternalWakeUp + 3000)){
                 digitalWrite(YELLOWLED_PIN, LOW);
                 //inform the RMS the URA function may be performed
-                Tool_setBitOn(&eventInputCode, URA_INPUTBIT);// code for UserraisedAlarm function
+                Tool_setBitOn(&eventInputCode, URA_INPUTBIT);
                 Tool_setBitOff(&eventInputCode, URA_WAIT_INPUTBIT);
 
                 // reset the triggered input event tracker
@@ -185,6 +189,8 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
 
 void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtcClassArg){
     bool debug=true;
+    // Serial.print("SystemStatusRegister: ");
+    // Serial.println(PMIC.readSystemStatusRegister(), BIN);
 
     uint8_t eventInputCode = rmsClassArg.get_inputEventCode();
     if (Tool_isBitOn(eventInputCode, WM_INPUTBIT)){
@@ -305,13 +311,41 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
     //TODO: CHECK THIS IS BUG PROOF WITH THE COMMENT BEFORE GOING TO SLEEP
     rtcClassArg.setAlarmEpoch(rmsClassArg.get_nextWakeUpEPochTime());
     // check battery health
-    rmsClassArg.set_powerStructBatteryVoltage(Battery_getBatteryVoltage());
-
+    FSM_setPowerSituation(rmsClassArg);
+    // rmsClassArg.set_powerStructBatteryVoltage(Battery_getBatteryVoltage());
+    // rmsClassArg.set_powerStructUSBMode(Battery_getPowerSource());
+    // rmsClassArg.set_powerStructChargeStatus(Battery_getChargeStatus());
+    // Serial.println("PowerSituation");
+    // Serial.print("isBattConnected?: ");
+    // Serial.println(PMIC.isBattConnected(), BIN);
+    // PMIC.enableDPDM();
+    // Serial.print("usbMode(): ");
+    // // Serial.println(PMIC.USBmode());
+    // Serial.println("value from Battery function");
+    // Serial.print("Battery_getBatteryVoltage: ");
+    // Serial.println(Battery_getBatteryVoltage());
+    // Serial.print("Battery_getPowerSource: ");
+    // Serial.println(Battery_getPowerSource(), BIN);
+    // Serial.print("Battery_getChargeStatus: ");
+    // Serial.println(Battery_getChargeStatus(), BIN);
+    // Serial.println("value from powerStruct function");
+    // Serial.print("rmsClassArg.get_powerStructBatteryVoltage: ");
+    // Serial.println(rmsClassArg.get_powerStructBatteryVoltage());
+    // Serial.print("rmsClassArg.get_powerStructUSBMode: ");
+    // Serial.println(rmsClassArg.get_powerStructUSBMode(), BIN);
+    // Serial.print("rmsClassArg.get_powerStructChargeStatus: ");
+    // Serial.println(rmsClassArg.get_powerStructChargeStatus(), BIN);
+    
+    Serial.print("DatafileName: ");
+    Serial.println(dataFileName);
     Data_saveDataPointToDataFile(rmsClassArg.get_wmReadEPochTime(),
                         rmsClassArg.get_orpReading(),
                         rmsClassArg.get_rmsState(),
                         WM_INPUTBIT,
                         rmsClassArg.get_powerStructBatteryVoltage(),
+                        // rmsClassArg.get_powerStructUSBMode(),
+                        PMIC.readSystemStatusRegister(),
+                        rmsClassArg.get_powerStructChargeStatus(),
                         dataFileName);
     FSM_multipleAlarmManagement(rmsClassArg, currentTime);
 
@@ -361,7 +395,7 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
 
 
     // check battery health
-    rmsClassArg.set_powerStructBatteryVoltage(Battery_getBatteryVoltage());
+    FSM_setPowerSituation(rmsClassArg);
 
     Serial.print("Battery Voltage from struct: ");
     Serial.println(rmsClassArg.get_powerStructBatteryVoltage());
@@ -377,6 +411,9 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
                         URA_INPUTBIT,
                         //TODO: could automatically have the gwetter request the new battery voltage
                         rmsClassArg.get_powerStructBatteryVoltage(),
+                        // rmsClassArg.get_powerStructUSBMode(),
+                        PMIC.isPowerGood(),                    
+                        rmsClassArg.get_powerStructChargeStatus(),
                         dataFileName);
     if (rmsClassArg.ura_canSendSMS(currentTime)){
         ToggleLED(ORANGELED_PIN);
@@ -391,6 +428,10 @@ void FSM_f_HB(rmsClass& rmsClassArg){
     SMS_hbSend(rmsClassArg);
     ToggleLED(BLUELED_PIN);
 }
+
+// void FSM_f_BUP(rmsClass& rmsClassArg){
+//     if (rmsClassArg.get_powerStructStablePowerSupply())
+// }
 // void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, uint32_t currentTime){
 //     Serial.print("AlarmSituation beofre update: ");
 //     Serial.println(rmsClassArg.get_wmAlarmSituation());
@@ -511,7 +552,30 @@ RMSState FSM_implementMLDecision(Ezo_board& ezoORPClassArg){
     // TODO: need to deal with faulty reading as well
     return state;
 }
-        
+
+
+void FSM_setPowerSituation(rmsClass& rmsClassArg){
+    // CHeck battery health, and store into the RMS State class
+    rmsClassArg.set_powerStructBatteryVoltage(Battery_getBatteryVoltage());
+    rmsClassArg.set_powerStructStablePowerSupply(Battery_getIsStablePowerSupply());
+    rmsClassArg.set_powerStructChargeStatus(Battery_getChargeStatus());
+    Serial.println("PowerSituation");
+    Serial.println("value from Battery function");
+    Serial.print("Battery_getBatteryVoltage: ");
+    Serial.println(Battery_getIsStablePowerSupply());
+    Serial.print("Battery_getStablePowerSupply: ");
+    Serial.println(Battery_getIsStablePowerSupply());
+    Serial.print("Battery_getChargeStatus: ");
+    Serial.println(Battery_getChargeStatus());
+    Serial.println("value from powerStruct function");
+    Serial.print("rmsClassArg.get_powerStructBatteryVoltage: ");
+    Serial.println(rmsClassArg.get_powerStructBatteryVoltage());
+    Serial.print("rmsClassArg.get_powerStructUSBMode: ");
+    Serial.println(rmsClassArg.get_powerStructStablePowerSupply());
+    Serial.print("rmsClassArg.get_powerStructChargeStatus: ");
+    Serial.println(rmsClassArg.get_powerStructChargeStatus());
+
+}
 
 
 

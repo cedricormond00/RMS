@@ -390,9 +390,22 @@ uint8_t rmsClass::get_wmAlarmSituation(){
 void rmsClass::set_powerStructBatteryVoltage(float new_batteryVoltage){
     _powerStruct.batteryVoltage = new_batteryVoltage;
 }
-
 float rmsClass::get_powerStructBatteryVoltage(){
     return _powerStruct.batteryVoltage;
+}
+
+void rmsClass::set_powerStructStablePowerSupply(uint8_t new_usbMode){
+     _powerStruct.usbMode = new_usbMode;
+}
+uint8_t rmsClass::get_powerStructStablePowerSupply(){
+    return _powerStruct.usbMode;
+}
+
+void rmsClass::set_powerStructChargeStatus(uint8_t new_chargeStatus){
+     _powerStruct.chargeStatus = new_chargeStatus;
+}
+uint8_t rmsClass::get_powerStructChargeStatus(){
+    return _powerStruct.chargeStatus;
 }
 
 // void rmsClass::set_powerStructMember(uint8_t memberIndex, float new_value){

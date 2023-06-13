@@ -74,6 +74,7 @@ uint32_t RTC_findNext9AMEPochTime(uint32_t currentEPochTime){
   breakTime(currentEPochTime, targetTime);
 
   // Increment the date by one day if the current time is after 9 AM
+  // CONFIG: set the time at which the first HB should occur
   if (targetTime.Hour >= 17) {
     currentEPochTime += 24 * 60 * 60; // Add 24 hours in seconds
   }
@@ -92,32 +93,22 @@ uint32_t RTC_findNext9AMEPochTime(uint32_t currentEPochTime){
 }
 
 uint32_t RTC_updateHBEPochTime(uint32_t hbEPochTime){
+  // CONFIG: tune how often we want a HB
   return hbEPochTime+24*60*60;
 }
 
 /* convert the time stamp into readable form */
 void RTC_getTimeInText(uint32_t ePochTime, char* buf){
-  // // Convert the epoch time to time_t
-  // time_t time = ePochTime;
-
-  // uint32_t time = ePochTime;
-
   // Convert the timestamp to a tm structure
   tmElements_t timeInfo;
   breakTime(ePochTime, timeInfo);
 
   // Format the time components into the provided buffer
   sprintf(buf, "%4d-%02d-%02d %02d:%02d:%02d", timeInfo.Year + 1970, timeInfo.Month, timeInfo.Day, timeInfo.Hour, timeInfo.Minute, timeInfo.Second);
-
+  // sprintf(buf, "%4d%02d%02d%02d%02d%02d", timeInfo.Year + 1970, timeInfo.Month, timeInfo.Day, timeInfo.Hour, timeInfo.Minute, timeInfo.Second);
 }
 
 
-void RTC_print2digits(int number) {
-  if (number < 10) {
-    Serial.print("0");
-  }
-  Serial.print(number);
-}
 
 
 void RTC_printTime(RTCZero& rtcClassArg){
@@ -136,11 +127,11 @@ void RTC_printTime(RTCZero& rtcClassArg){
   Serial.print("\t");
 
   // ...and time
-  RTC_print2digits(rtcClassArg.getHours());
+  Tools_print2digits(rtcClassArg.getHours());
   Serial.print(":");
-  RTC_print2digits(rtcClassArg.getMinutes());
+  Tools_print2digits(rtcClassArg.getMinutes());
   Serial.print(":");
-  RTC_print2digits(rtcClassArg.getSeconds());
+  Tools_print2digits(rtcClassArg.getSeconds());
 
   Serial.println();
 }

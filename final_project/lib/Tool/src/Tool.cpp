@@ -2,6 +2,12 @@
 
 #include "Tool.h"
 
+void Tools_print2digits(int number) {
+  if (number < 10) {
+    Serial.print("0");
+  }
+  Serial.print(number);
+}
 
 uint16_t Tool_16bitNextPow2(uint16_t v_)
 {

@@ -6,6 +6,9 @@
 // #pragma once
 
 // Function prototype
+
+void Tools_print2digits(int number);
+
 /** \brief obtains the next power of two, for a 16 bit integer
  * \param v_ = input 16 bit integer
 */

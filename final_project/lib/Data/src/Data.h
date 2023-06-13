@@ -16,12 +16,16 @@ bool Data_saveDataPointToDataFile(uint32_t ePochTime,
                                 RMSState evaluatedState,
                                 uint8_t inputEventCodeBit,
                                 float batteryVoltage,
+                                bool isPowerSourceStable,
+                                uint8_t chargeStatus,
                                 char dataFileName[]);
 
 bool Data_populateHeaderRowToFile(String rowNames[],
                                 uint8_t numberOfRows,
                                 char dataFileName[]);        
 
+bool Data_createValidDataFileName(char datafilename[]);
+void Data_stringTime(uint32_t ePochTime, char* buf);
 
 bool Data_removeFile(char dataFileName[]);
 

@@ -25,7 +25,7 @@ extern volatile uint8_t triggeredInputEvent;
 extern volatile unsigned long millisOnExternalWakeUp;
 extern volatile unsigned long previousMillis;
 
-extern char dataFileName[13];
+extern char dataFileName[12];
 
 extern RTCZero rtc;
 extern uint32_t alarmMatchEPochTime;

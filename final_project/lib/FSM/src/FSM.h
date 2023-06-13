@@ -24,6 +24,8 @@ RMSState FSM_implementMLDecision(Ezo_board& ezoORPClassArg);
 
 void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, uint32_t currentTime);
 
+void FSM_setPowerSituation(rmsClass& rmsClassArg);
+
 
 // void FSM_getEzoWaterReading(Ezo_board* classArg);
 
