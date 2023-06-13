@@ -129,6 +129,8 @@ bool Data_saveDataPointToDataFile(uint32_t ePochTime,
     File dataFile = SD.open(dataFileName, FILE_WRITE);
     
     if (dataFile) {
+        Serial.println("writing to SD");
+        
         dataFile.print(ePochTime);
         dataFile.print(",");
         
@@ -209,7 +211,21 @@ bool Data_createValidDataFileName(char datafilename[]){
     Serial.print("timeStampString: ");
     Serial.println(timeStampString);
     //create the filename string
-    sprintf(datafilename, "%s.csv", timeStampString);
+    // sprintf(datafilename, "%s.csv", timeStampString);
+    
+    uint16_t i = 0;
+    for(i = 0; i< 86400; i++){
+      sprintf(datafilename, "%s_%01d.csv",timeStampString, i);
+      if( !SD.exists(datafilename) ){
+         break;      
+      }
+    }
+    if(i == 86400){
+        datafilename = NULL;
+        success = false;
+        /* error flag */
+    }
+
     Serial.print("datafilename: ");
     Serial.println(datafilename);
     return success;
@@ -228,7 +244,7 @@ void Data_stringTime(uint32_t ePochTime, char* buf){
   breakTime(ePochTime, timeInfo);
 
   // Format the time components into the provided buffer
-  sprintf(buf, "%4d%02d%02d", timeInfo.Year + 1970, timeInfo.Month, timeInfo.Day);//, timeInfo.Hour, timeInfo.Minute, timeInfo.Second);
+  sprintf(buf, "%2d%02d%02d", timeInfo.Year + 1970 - 2000, timeInfo.Month, timeInfo.Day);//, timeInfo.Hour, timeInfo.Minute, timeInfo.Second);
   // sprintf(buf, "%4d%02d%02d%02d%02d%02d", timeInfo.Year + 1970, timeInfo.Month, timeInfo.Day, timeInfo.Hour, timeInfo.Minute, timeInfo.Second);
 }
 

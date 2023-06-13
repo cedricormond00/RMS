@@ -90,8 +90,8 @@ uint8_t Battery_getBatteryPercentage(uint8_t batteryVoltage){
 }
 
 bool Battery_getIsStablePowerSupply(){
-    uint8_t vBusStatus = PMIC.isPowerGood();
-    return vBusStatus;
+    bool isPowerGood = PMIC.isPowerGood();
+    return isPowerGood;
 }
 
 uint8_t Battery_getChargeStatus(){

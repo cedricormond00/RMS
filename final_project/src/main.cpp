@@ -63,7 +63,7 @@ uint32_t initWakeUpTime = 0; //TODO: find a better way to define the first time 
 void setup() {
   Serial.begin(9600);
   //wait for serial monitor
-  // while (!Serial);
+  while (!Serial);
 
   delay(2000);
 

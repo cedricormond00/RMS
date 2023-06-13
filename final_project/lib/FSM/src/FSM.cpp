@@ -336,17 +336,22 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
     // Serial.print("rmsClassArg.get_powerStructChargeStatus: ");
     // Serial.println(rmsClassArg.get_powerStructChargeStatus(), BIN);
     
-    // Serial.print("DatafileName: ");
-    // Serial.println(dataFileName);
-    Data_saveDataPointToDataFile(rmsClassArg.get_wmReadEPochTime(),
+    Serial.print("DatafileName: ");
+    Serial.println(dataFileName);
+    bool writeSuccess = Data_saveDataPointToDataFile(rmsClassArg.get_wmReadEPochTime(),
                         rmsClassArg.get_orpReading(),
                         rmsClassArg.get_rmsState(),
                         WM_INPUTBIT,
                         rmsClassArg.get_powerStructBatteryVoltage(),
                         // rmsClassArg.get_powerStructUSBMode(),
-                        PMIC.readSystemStatusRegister(),
+                        rmsClassArg.get_powerStructStablePowerSupply(),
                         rmsClassArg.get_powerStructChargeStatus(),
                         dataFileName);
+    Serial.print("dataFileName: ");
+    Serial.println(dataFileName);
+    Serial.print("Was the write a success? ");
+    Serial.println(writeSuccess);
+
     FSM_multipleAlarmManagement(rmsClassArg, currentTime, dataFileName);
 
     
@@ -405,16 +410,21 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
 
 
     //store value
-    Data_saveDataPointToDataFile(currentTime,
+    Serial.print("dataFileName: ");
+    Serial.println(dataFileName);
+    bool writeSuccess = Data_saveDataPointToDataFile(rmsClassArg.get_wmReadEPochTime(),
                         rmsClassArg.get_orpReading(),
                         rmsClassArg.get_rmsState(),
                         URA_INPUTBIT,
-                        //TODO: could automatically have the gwetter request the new battery voltage
                         rmsClassArg.get_powerStructBatteryVoltage(),
                         // rmsClassArg.get_powerStructUSBMode(),
-                        PMIC.isPowerGood(),                    
+                        rmsClassArg.get_powerStructStablePowerSupply(),
                         rmsClassArg.get_powerStructChargeStatus(),
                         dataFileName);
+    Serial.print("dataFileName: ");
+    Serial.println(dataFileName);
+    Serial.print("Was the write a success? ");
+    Serial.println(writeSuccess);
     if (rmsClassArg.ura_canSendSMS(currentTime)){
         ToggleLED(ORANGELED_PIN);
         SMS_uraSend(rmsClassArg);
@@ -562,18 +572,18 @@ void FSM_setPowerSituation(rmsClass& rmsClassArg){
     Serial.println("PowerSituation");
     Serial.println("value from Battery function");
     Serial.print("Battery_getBatteryVoltage: ");
-    Serial.println(Battery_getIsStablePowerSupply());
+    Serial.println(Battery_getBatteryVoltage());
     Serial.print("Battery_getStablePowerSupply: ");
-    Serial.println(Battery_getIsStablePowerSupply());
+    Serial.println(Battery_getIsStablePowerSupply(), BIN);
     Serial.print("Battery_getChargeStatus: ");
-    Serial.println(Battery_getChargeStatus());
+    Serial.println(Battery_getChargeStatus(), BIN);
     Serial.println("value from powerStruct function");
     Serial.print("rmsClassArg.get_powerStructBatteryVoltage: ");
     Serial.println(rmsClassArg.get_powerStructBatteryVoltage());
     Serial.print("rmsClassArg.get_powerStructUSBMode: ");
-    Serial.println(rmsClassArg.get_powerStructStablePowerSupply());
+    Serial.println(rmsClassArg.get_powerStructStablePowerSupply(), BIN);
     Serial.print("rmsClassArg.get_powerStructChargeStatus: ");
-    Serial.println(rmsClassArg.get_powerStructChargeStatus());
+    Serial.println(rmsClassArg.get_powerStructChargeStatus(), BIN);
 
 }
 
