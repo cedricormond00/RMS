@@ -48,6 +48,12 @@ extern volatile bool bp; // true <=> button press
 // ML
 #define LOGIT_THRESHOLD 400
 
+//BUP
+#define CRITICAL_EL_LIMIT 5
+#define LOW_EL_LIMIT 20
+
+
+
 
 // array assignment
 #define m_array_allLEDpin {BLUELED_PIN, REDLED_PIN, GREENLED_PIN, YELLOWLED_PIN, ORANGELED_PIN}

@@ -124,17 +124,26 @@ class rmsClass {
 
       void reset_History();
 
+      enum BatteryEnergyLevelState{
+         criticalEL,
+         lowEL,
+         sufficientEL
+      };
+
       struct powerStruct {
          float batteryVoltage;
-         uint8_t usbMode;
+         bool isStablePowerSupply;
          uint8_t chargeStatus;
+         BatteryEnergyLevelState batteryELState;
       };
 
       void set_powerStructBatteryVoltage(float new_batteryVoltage);
       float get_powerStructBatteryVoltage();
 
-      void set_powerStructStablePowerSupply(uint8_t new_usbMode);
-      uint8_t get_powerStructStablePowerSupply();
+      BatteryEnergyLevelState get_powerStructBatteryELState();
+
+      void set_powerStructStablePowerSupply(bool new_isStablePowerSupply);
+      bool get_powerStructStablePowerSupply();
 
       void set_powerStructChargeStatus(uint8_t new_chargeStatus);
       uint8_t get_powerStructChargeStatus();

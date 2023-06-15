@@ -210,6 +210,8 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
 
         Tool_setBitOff(&eventInputCode, WM_INPUTBIT); // because eventInputCode_ is already the address of the pointer
                                                     // I am now passing the correct pointer (uint8_t*) to the Tool_setBitOff
+        //We now want to check the battery situation
+        Tool_setBitOn(&eventInputCode, BUP_INPUTBIT);
 
         if (debug){
             Serial.println("");
@@ -271,7 +273,10 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
             Serial.println(eventInputCode);
         }
     }
-
+    if (Tool_isBitOn(eventInputCode, BUP_INPUTBIT)){
+        FSM_f_BUP(rmsClassArg);
+        Tool_setBitOff(&eventInputCode, BUP_INPUTBIT);
+    }
     rmsClassArg.set_inputEventCode(eventInputCode);
     if (debug){
         // Serial.println("");
@@ -338,14 +343,17 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
     
     Serial.print("DatafileName: ");
     Serial.println(dataFileName);
-    bool writeSuccess = Data_saveDataPointToDataFile(rmsClassArg.get_wmReadEPochTime(),
-                        rmsClassArg.get_orpReading(),
-                        rmsClassArg.get_rmsState(),
+    // bool writeSuccess = Data_saveDataPointToDataFile(rmsClassArg.get_wmReadEPochTime(),
+    //                     rmsClassArg.get_orpReading(),
+    //                     rmsClassArg.get_rmsState(),
+    //                     WM_INPUTBIT,
+    //                     rmsClassArg.get_powerStructBatteryVoltage(),
+    //                     // rmsClassArg.get_powerStructUSBMode(),
+    //                     rmsClassArg.get_powerStructStablePowerSupply(),
+    //                     rmsClassArg.get_powerStructChargeStatus(),
+    //                     dataFileName);
+    bool writeSuccess = Data_saveDataPointToDataFile(rmsClassArg,
                         WM_INPUTBIT,
-                        rmsClassArg.get_powerStructBatteryVoltage(),
-                        // rmsClassArg.get_powerStructUSBMode(),
-                        rmsClassArg.get_powerStructStablePowerSupply(),
-                        rmsClassArg.get_powerStructChargeStatus(),
                         dataFileName);
     Serial.print("dataFileName: ");
     Serial.println(dataFileName);
@@ -412,14 +420,17 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
     //store value
     Serial.print("dataFileName: ");
     Serial.println(dataFileName);
-    bool writeSuccess = Data_saveDataPointToDataFile(rmsClassArg.get_wmReadEPochTime(),
-                        rmsClassArg.get_orpReading(),
-                        rmsClassArg.get_rmsState(),
+    // bool writeSuccess = Data_saveDataPointToDataFile(rmsClassArg.get_wmReadEPochTime(),
+    //                     rmsClassArg.get_orpReading(),
+    //                     rmsClassArg.get_rmsState(),
+    //                     URA_INPUTBIT,
+    //                     rmsClassArg.get_powerStructBatteryVoltage(),
+    //                     // rmsClassArg.get_powerStructUSBMode(),
+    //                     rmsClassArg.get_powerStructStablePowerSupply(),
+    //                     rmsClassArg.get_powerStructChargeStatus(),
+    //                     dataFileName);
+    bool writeSuccess = Data_saveDataPointToDataFile(rmsClassArg,
                         URA_INPUTBIT,
-                        rmsClassArg.get_powerStructBatteryVoltage(),
-                        // rmsClassArg.get_powerStructUSBMode(),
-                        rmsClassArg.get_powerStructStablePowerSupply(),
-                        rmsClassArg.get_powerStructChargeStatus(),
                         dataFileName);
     Serial.print("dataFileName: ");
     Serial.println(dataFileName);
@@ -439,6 +450,24 @@ void FSM_f_HB(rmsClass& rmsClassArg){
     ToggleLED(BLUELED_PIN);
 }
 
+void FSM_f_BUP(rmsClass& rmsClassArg){
+    if (!rmsClassArg.get_powerStructStablePowerSupply()){
+        if(rmsClassArg.get_powerStructBatteryELState() == rmsClassArg.criticalEL){
+            rtc.disableAlarm();
+            rtc.detachInterrupt();
+            detachInterrupt(BUTTON_PIN);
+            // update rmsPowerState --> do this in FSM_setPowerSituation
+            // LowPower.attachInterruptWakeup(digitalPinToInterrupt(PIN_PA27))
+            // attach interrupt from BQ24195L
+
+
+
+            // send SMS to deepSleep
+
+        }
+    }
+
+}
 // void FSM_f_BUP(rmsClass& rmsClassArg){
 //     if (rmsClassArg.get_powerStructStablePowerSupply())
 // }
@@ -552,6 +581,7 @@ RMSState FSM_implementMLDecision(Ezo_board& ezoORPClassArg){
 
     RMSState state = UWQ;
     float orpValue = ezoORPClassArg.get_last_received_reading();
+    // CONFIG
     if (orpValue > LOGIT_THRESHOLD) {
         state = SWQ;
     }

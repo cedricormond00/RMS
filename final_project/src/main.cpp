@@ -125,15 +125,16 @@ void setup() {
     // csvcsSerial.println(dataFileName);
 
     //initialise first row
-    uint8_t numberOfCols = 9;
+    uint8_t numberOfCols = 10;
     String colNames[numberOfCols] = {"readEPochTimeStamp",
                                   "readTimeStamp", 
                                   "orpValue", 
                                   "State", 
                                   "inputEvent", 
                                   "triggeredInputEvent", 
-                                  "BatteryVoltage",
                                   "isPowerSourceStable",
+                                  "BatteryVoltage",
+                                  "BatteryELState",
                                   "chargeStatus"};
     Serial.print("Successfully created a file? ");
     Serial.print(Data_populateHeaderRowToFile(colNames, numberOfCols, dataFileName));
@@ -239,7 +240,10 @@ void loop() {
       break;
 
     case SLEEP:
-      rmsState = SWQ;
+      // LP_goToDeepSleep(rms);
+
+
+
       break;
 
     

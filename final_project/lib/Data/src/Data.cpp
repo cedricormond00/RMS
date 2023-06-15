@@ -99,6 +99,7 @@ bool Data_updateStateHistory(rmsClass& rmsClassArg, char dataFileName[]){
     return success;
 }
 
+
 /*helper function to retrieve a certain column from a .csv file*/
 String getValue(String data, char separator, int index) {
   int found = 0;
@@ -116,12 +117,29 @@ String getValue(String data, char separator, int index) {
   return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
 
+bool Data_saveDataPointToDataFile(rmsClass& rmsClassArg,
+                                uint8_t inputEventCodeBit,
+                                char dataFileName[]){
+
+    bool success = Data_saveDataPointToDataFile(rmsClassArg.get_wmReadEPochTime(),
+                        rmsClassArg.get_orpReading(),
+                        rmsClassArg.get_rmsState(),
+                        inputEventCodeBit,
+                        rmsClassArg.get_powerStructStablePowerSupply(),
+                        rmsClassArg.get_powerStructBatteryVoltage(),
+                        rmsClassArg.get_powerStructBatteryELState(),                        
+                        rmsClassArg.get_powerStructChargeStatus(),
+                        dataFileName);
+    return success;
+}
+
 bool Data_saveDataPointToDataFile(uint32_t ePochTime,
                                 float orpValue,
                                 RMSState evaluatedState,
                                 uint8_t inputEventCodeBit,
+                                bool isPowerSourceStable, 
                                 float batteryVoltage,
-                                bool isPowerSourceStable,
+                                rmsClass::BatteryEnergyLevelState battELState,
                                 uint8_t chargeStatus,
                                 char dataFileName[]){
     bool success = true;
@@ -155,11 +173,14 @@ bool Data_saveDataPointToDataFile(uint32_t ePochTime,
         dataFile.print(triggeredInputEvent, BIN);
         dataFile.print(",");       
         
+        dataFile.print(isPowerSourceStable, BIN);
+        dataFile.print(",");
+
         dataFile.print(batteryVoltage, 2);
         dataFile.print(",");   
 
-        dataFile.print(isPowerSourceStable, BIN);
-        dataFile.print(",");
+        dataFile.print(battELState);
+        dataFile.print(",");   
 
         dataFile.print(chargeStatus, BIN);
 

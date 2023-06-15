@@ -5,6 +5,8 @@
 #include "States.h"
 
 #include "LowPower.h"
+#include "RTC.h"
+
 #include "Constant.h"
 // requires the global triggeredInputEvent
 #include "Global.h"
@@ -87,3 +89,10 @@ void LP_callbackURA(){
     millisOnExternalWakeUp = millis();
 }
 
+
+void LP_gotToDeepSleep(rmsClass& rmsClassArg){
+    LowPower.deepSleep();
+    rmsClassArg.set_rmsState(INIT);
+    RTC_init();
+    LP_setupURAInterrupt();
+}

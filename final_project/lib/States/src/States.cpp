@@ -4,6 +4,8 @@
 #include "States.h"
 #include "Constant.h"
 
+#include "Battery.h"
+
 // Implement the constructor for the struct
 rmsClass::alarmStruct::alarmStruct(uint32_t lastAlarmSMSEPochTime_initVal = 0, 
                      uint32_t currentAlarmEPochTime_initVal = 0, 
@@ -389,16 +391,32 @@ uint8_t rmsClass::get_wmAlarmSituation(){
 // }
 void rmsClass::set_powerStructBatteryVoltage(float new_batteryVoltage){
     _powerStruct.batteryVoltage = new_batteryVoltage;
+    uint8_t batteryPercentage = Battery_getBatteryPercentage(_powerStruct.batteryVoltage);
+    if (batteryPercentage>LOW_EL_LIMIT){
+        _powerStruct.batteryELState = sufficientEL;
+    }
+    else if ((LOW_EL_LIMIT >= batteryPercentage) && (batteryPercentage > CRITICAL_EL_LIMIT)){
+        _powerStruct.batteryELState = lowEL;
+    }
+    else if (CRITICAL_EL_LIMIT >= batteryPercentage){
+        _powerStruct.batteryELState = criticalEL;
+    }
 }
+
 float rmsClass::get_powerStructBatteryVoltage(){
     return _powerStruct.batteryVoltage;
 }
 
-void rmsClass::set_powerStructStablePowerSupply(uint8_t new_usbMode){
-     _powerStruct.usbMode = new_usbMode;
+rmsClass::BatteryEnergyLevelState rmsClass::get_powerStructBatteryELState(){
+    return _powerStruct.batteryELState;
 }
-uint8_t rmsClass::get_powerStructStablePowerSupply(){
-    return _powerStruct.usbMode;
+
+
+void rmsClass::set_powerStructStablePowerSupply(bool new_isStablePowerSupply){
+     _powerStruct.isStablePowerSupply = new_isStablePowerSupply;
+}
+bool rmsClass::get_powerStructStablePowerSupply(){
+    return _powerStruct.isStablePowerSupply;
 }
 
 void rmsClass::set_powerStructChargeStatus(uint8_t new_chargeStatus){

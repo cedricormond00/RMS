@@ -10,13 +10,17 @@ bool Data_updateStateHistory(rmsClass& rmsClassArg, char dataFileName[]);
 
 String getValue(String data, char separator, int index);
 
+bool Data_saveDataPointToDataFile(rmsClass& rmsClassArg,
+                                uint8_t inputEventCodeBit,
+                                char dataFileName[]);
 
 bool Data_saveDataPointToDataFile(uint32_t ePochTime,
                                 float orpValue,
                                 RMSState evaluatedState,
                                 uint8_t inputEventCodeBit,
-                                float batteryVoltage,
                                 bool isPowerSourceStable,
+                                float batteryVoltage,
+                                rmsClass::BatteryEnergyLevelState battELState,
                                 uint8_t chargeStatus,
                                 char dataFileName[]);
 
