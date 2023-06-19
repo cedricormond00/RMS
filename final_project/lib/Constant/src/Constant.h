@@ -17,6 +17,7 @@ extern volatile bool bp; // true <=> button press
 // SMSWindow
 #define SMS_HW_WQ 20
 #define SMS_HW_URA 20
+#define SMS_HW_BUP 20
 
 // pin assignment
 #define BLUELED_PIN 21
@@ -52,7 +53,8 @@ extern volatile bool bp; // true <=> button press
 #define CRITICAL_EL_LIMIT 5
 #define LOW_EL_LIMIT 20
 
-
+//URA
+#define URA_PRESS_DURATION 3000
 
 
 // array assignment

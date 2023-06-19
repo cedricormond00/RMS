@@ -194,6 +194,9 @@ void loop() {
 
       rms.set_inputEventCode(0b1);
 
+      // put rms.set_inputEventCode(0b1); in the setup loop
+      // init_smsPowerStruct(initWakeUpTime);
+
       
 
     case SWQ: 
@@ -240,7 +243,11 @@ void loop() {
       break;
 
     case SLEEP:
-      // LP_goToDeepSleep(rms);
+      digitalWrite(REDLED_PIN, HIGH);
+      digitalWrite(GREENLED_PIN, LOW);
+      digitalWrite(BLUELED_PIN, LOW);
+      
+      LP_goToDeepSleep(rms);
 
 
 

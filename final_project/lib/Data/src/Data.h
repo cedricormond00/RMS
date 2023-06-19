@@ -29,6 +29,9 @@ bool Data_populateHeaderRowToFile(String rowNames[],
                                 char dataFileName[]);        
 
 bool Data_createValidDataFileName(char datafilename[]);
+
+void Data_printFile(const char *filename);
+
 void Data_stringTime(uint32_t ePochTime, char* buf);
 
 bool Data_removeFile(char dataFileName[]);

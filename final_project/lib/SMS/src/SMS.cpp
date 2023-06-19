@@ -89,3 +89,58 @@ void SMS_wmHistoryWindow(rmsClass& rmsClassArg){
     Serial.println(rmsClassArg.get_stateHistoryPercentage(FWQ),2);
     Serial.println("---");
 }
+
+void SMS_BUPSendIsStablePowerSupply(rmsClass& rmsClassArg){
+    if(rmsClassArg.get_smsPowerStructIsStablePowerSupply()){
+        /*TODO: could add a further test to ensure that the energy level of the battery is sufficiently high.
+        if it is, then send this sms. Ohterwise, dont send the sms, and wait for the next test to send both info at the same time
+        */
+        Serial.println("---");
+        Serial.print("RMS ");
+        Serial.println(RMS_ID);
+        Serial.println("BUP situation");
+        Serial.println("power source switched from mains to external battery");
+        Serial.println("---");
+    }
+    else{
+        
+        Serial.println("---");
+        Serial.print("RMS ");
+        Serial.println(RMS_ID);
+        Serial.println("BUP situation back to normal");
+        Serial.println("power source switched from external battery to mains");
+        Serial.println("---");
+    }
+}
+
+void SMS_BUPSendEnergyLevel(rmsClass& rmsClassArg){
+
+    switch(rmsClassArg.get_powerStructBatteryELState())
+    {
+    case rmsClass::criticalEL :
+        Serial.println("---");
+        Serial.print("RMS ");
+        Serial.println(RMS_ID);
+        Serial.println("Critical Energy Level reached");
+        Serial.println("Device will go to deepsleep");
+        Serial.println("---");
+        break;
+    case rmsClass::lowEL :
+        Serial.println("---");
+        Serial.print("RMS ");
+        Serial.println(RMS_ID);
+        Serial.println("Low Energy Level reached");
+        // Serial.println("Device will soon go to deepsleep");
+        Serial.println("---");
+        break;
+    case rmsClass::sufficientEL :
+        Serial.println("---");
+        Serial.print("RMS ");
+        Serial.println(RMS_ID);
+        Serial.println("Sufficient Energy Level reached");
+        Serial.println("---");
+        break;
+    default:
+        break;
+    }
+}

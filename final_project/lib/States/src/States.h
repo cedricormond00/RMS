@@ -136,7 +136,6 @@ class rmsClass {
          uint8_t chargeStatus;
          BatteryEnergyLevelState batteryELState;
       };
-
       void set_powerStructBatteryVoltage(float new_batteryVoltage);
       float get_powerStructBatteryVoltage();
 
@@ -147,6 +146,28 @@ class rmsClass {
 
       void set_powerStructChargeStatus(uint8_t new_chargeStatus);
       uint8_t get_powerStructChargeStatus();
+
+      struct smsPowerStruct{
+         // variables to contain the status of the last sent SMS
+         BatteryEnergyLevelState batteryEnergyLevelState;
+         bool isStablePowerSupply;
+
+         uint32_t energyLevelStateSMSSentEPochTime;
+         uint32_t isStablePowerSupplySMSSentEPochTime;
+      };
+      /*Initailasisze the sms status for power struct*/
+      void init_smsPowerStruct(uint32_t ePochTime);
+
+      void set_smsPowerStructBatteryEnergyLevelState(BatteryEnergyLevelState new_batteryELState, uint32_t ePochTime);
+      BatteryEnergyLevelState get_smsPowerStructBatteryEnergyLevelState();
+
+      void set_smsPowerStructIsStablePowerSupply(bool new_isStablePowerSupply, uint32_t ePochTime);
+      bool get_smsPowerStructIsStablePowerSupply();
+
+      uint32_t get_smsPowerStructEnergyLevelSMSSentEPochTime();
+      uint32_t get_smsPowerStructIsStablePowerSupplySMSSentEPochTime();
+
+
 
       // void set_powerStructMember(uint8_t memberIndex, float new_batteryVoltage);
       // uint8_t get_powerStructMember(uint8_t memberIndex);
@@ -204,6 +225,8 @@ class rmsClass {
       uint8_t updateTotalStateChanges();
 
       powerStruct _powerStruct;
+
+      smsPowerStruct _smsPowerStruct;
 
 };
 

@@ -389,6 +389,8 @@ uint8_t rmsClass::get_wmAlarmSituation(){
 //             Serial.print("No state defined, no trigger");
 //     }
 // }
+
+// Power struct
 void rmsClass::set_powerStructBatteryVoltage(float new_batteryVoltage){
     _powerStruct.batteryVoltage = new_batteryVoltage;
     uint8_t batteryPercentage = Battery_getBatteryPercentage(_powerStruct.batteryVoltage);
@@ -424,6 +426,39 @@ void rmsClass::set_powerStructChargeStatus(uint8_t new_chargeStatus){
 }
 uint8_t rmsClass::get_powerStructChargeStatus(){
     return _powerStruct.chargeStatus;
+}
+
+//smsPowerStruct
+
+void rmsClass::init_smsPowerStruct(uint32_t ePochTime){
+    set_smsPowerStructBatteryEnergyLevelState(get_powerStructBatteryELState(), ePochTime);
+    set_smsPowerStructIsStablePowerSupply(get_powerStructStablePowerSupply(), ePochTime);
+    // _smsPowerStruct.batteryEnergyLevelState = get_powerStructBatteryELState();
+    // _smsPowerStruct.isStablePowerSupply = get_powerStructStablePowerSupply();
+}
+
+void rmsClass::set_smsPowerStructBatteryEnergyLevelState(BatteryEnergyLevelState new_batteryELState, uint32_t ePochTime){
+    _smsPowerStruct.batteryEnergyLevelState = new_batteryELState;
+    _smsPowerStruct.energyLevelStateSMSSentEPochTime = ePochTime;
+}
+rmsClass::BatteryEnergyLevelState rmsClass::get_smsPowerStructBatteryEnergyLevelState(){
+    return _smsPowerStruct.batteryEnergyLevelState;
+}
+
+void rmsClass::set_smsPowerStructIsStablePowerSupply(bool new_isStablePowerSupply, uint32_t ePochTime){
+    _smsPowerStruct.isStablePowerSupply = new_isStablePowerSupply;
+    _smsPowerStruct.isStablePowerSupplySMSSentEPochTime = ePochTime;
+}
+bool rmsClass::get_smsPowerStructIsStablePowerSupply(){
+    return _smsPowerStruct.isStablePowerSupply;
+}
+
+uint32_t rmsClass::get_smsPowerStructEnergyLevelSMSSentEPochTime(){
+    return _smsPowerStruct.energyLevelStateSMSSentEPochTime;
+}
+
+uint32_t rmsClass::get_smsPowerStructIsStablePowerSupplySMSSentEPochTime(){
+    return _smsPowerStruct.isStablePowerSupplySMSSentEPochTime;
 }
 
 // void rmsClass::set_powerStructMember(uint8_t memberIndex, float new_value){

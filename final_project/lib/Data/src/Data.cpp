@@ -235,7 +235,7 @@ bool Data_createValidDataFileName(char datafilename[]){
     // sprintf(datafilename, "%s.csv", timeStampString);
     
     uint16_t i = 0;
-    for(i = 0; i< 86400; i++){
+    for(i = 0; i< 99; i++){ //24*60*60 = 86400)
       sprintf(datafilename, "%s_%01d.csv",timeStampString, i);
       if( !SD.exists(datafilename) ){
          break;      
@@ -320,4 +320,23 @@ bool Data_SDCard_init( void ){
     Serial.println("card initialized.");
 
     return success;
+}
+
+// Prints the content of a file to the Serial
+void Data_printFile(const char *filename) {
+    // Open file for reading
+    File file = SD.open(filename);
+    if (!file) {
+        Serial.println(F("Failed to read file"));
+        return;
+    }
+
+    // Extract each characters by one by one
+    while (file.available()) {
+        Serial.print((char)file.read());
+    }
+    Serial.println();
+
+    // Close the file (File's destructor doesn't close the file)
+    file.close();
 }

@@ -21,11 +21,6 @@
         │           |        |
         ▼           ▼        ▼ 
 
-
-
-  Author: Ali Jahangiri & Karl Soderby
-
-  Last Edit: 9th August 2022
 */
 
 #include <Arduino.h>
@@ -35,6 +30,8 @@
 #include <ArduinoLowPower.h>
 
 #include "Battery.h"
+#include "Tool.h"
+#include "States.h"
 
 int usb_mode = UNKNOWN_MODE;
 
@@ -97,4 +94,57 @@ bool Battery_getIsStablePowerSupply(){
 uint8_t Battery_getChargeStatus(){
     uint8_t vBusStatus = PMIC.chargeStatus();
     return vBusStatus;
+}
+
+void Battery_runInitSequence(rmsClass& rmsClassArg){
+    Serial.println("Checking powerSupply");
+
+    rmsClassArg.set_powerStructStablePowerSupply(Battery_getIsStablePowerSupply());
+    if (!rmsClassArg.get_powerStructStablePowerSupply())
+    {
+        Serial.print("NO stable power supply.");
+    }
+    else{
+        Serial.println("Stable power supply");
+    }
+        
+    rmsClassArg.set_powerStructChargeStatus(Battery_getChargeStatus());
+    if (rmsClassArg.get_powerStructChargeStatus() == 0)
+    {
+        //TODO: could maybe make this a state instead
+        Serial.println("Battery not connected");
+        Serial.println("Please connect immediately a battery");
+        rmsClassArg.set_rmsState(BATTERY_NOTCONNECTED);
+        return;
+    }
+    else{
+        Serial.println("Battery connected");
+        switch (rmsClassArg.get_powerStructChargeStatus())
+            {
+            case 0b010000:
+                Serial.println("Battery precharging");
+                break;
+            case 0b100000:
+                Serial.println("Battery fast charging");
+                break;
+            case 0b110000:
+                Serial.println("Battery charge termination done");
+                break;
+            default:
+                break;
+            }
+        rmsClassArg.set_powerStructBatteryVoltage(Battery_getBatteryVoltage());
+        Serial.print("Battery voltage: ");
+        Serial.println (rmsClassArg.get_powerStructBatteryVoltage());
+        Serial.print("Battery percentage: ");
+        Serial.println(Battery_getBatteryPercentage(rmsClassArg.get_powerStructBatteryVoltage()));
+        if (rmsClassArg.get_powerStructBatteryELState() == rmsClass::criticalEL 
+        && !rmsClassArg.get_powerStructStablePowerSupply()){
+            Serial.println("Critical battery energy level.");
+            Serial.println("please ensure the device is connected to a stable power supply, anfd the battery is sufficiently charged");
+            rmsClassArg.set_rmsState(BATTERY_LOW);
+            return;
+        }
+    }
+
 }

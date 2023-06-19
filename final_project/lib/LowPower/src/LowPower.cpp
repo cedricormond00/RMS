@@ -90,9 +90,24 @@ void LP_callbackURA(){
 }
 
 
-void LP_gotToDeepSleep(rmsClass& rmsClassArg){
+void LP_goToDeepSleep(rmsClass& rmsClassArg){
+    
+    LowPower.attachInterruptWakeup(digitalPinToInterrupt(PMIC_IRQ_PIN), LP_callbackDeepSleep, RISING);
+
+    Serial.println("Going to deepSleep");
+
     LowPower.deepSleep();
+
+    Serial.println("woke up from deepSleep");
+    detachInterrupt(digitalPinToInterrupt(PMIC_IRQ_PIN));
+
     rmsClassArg.set_rmsState(INIT);
+    //TODO: send SM wokeup from deeplsleep: 
     RTC_init();
     LP_setupURAInterrupt();
+}
+
+void LP_callbackDeepSleep(){
+    Serial.println("in LP_callBackDeepSleep");
+
 }

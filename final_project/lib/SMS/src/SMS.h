@@ -7,6 +7,10 @@
 void SMS_uraSend(rmsClass& rmsClassArg);
 void SMS_wmSend(rmsClass& rmsClassArg);
 void SMS_hbSend(rmsClass& rmsClassArg);
+void SMS_BUPSendEnergyLevel(rmsClass& rmsClassArg);
+void SMS_BUPSendIsStablePowerSupply(rmsClass& rmsClassArg);
+
+
 
 void SMS_wmImmediate(rmsClass& rmsClassArg);
 void SMS_wmHistoryWindow(rmsClass& rmsClassArg);

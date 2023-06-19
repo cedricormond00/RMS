@@ -139,7 +139,7 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
                 previousMillis = currentMillis;
             }
             // CONFIG: can change the delay
-            if (currentMillis>=(millisOnExternalWakeUp + 3000)){
+            if (currentMillis>=(millisOnExternalWakeUp + URA_PRESS_DURATION)){
                 digitalWrite(YELLOWLED_PIN, LOW);
                 //inform the RMS the URA function may be performed
                 Tool_setBitOn(&eventInputCode, URA_INPUTBIT);
@@ -451,6 +451,24 @@ void FSM_f_HB(rmsClass& rmsClassArg){
 }
 
 void FSM_f_BUP(rmsClass& rmsClassArg){
+    uint32_t currentEpochTime = rmsClassArg.get_wmReadEPochTime();
+    if (rmsClassArg.get_smsPowerStructIsStablePowerSupply() != rmsClassArg.get_powerStructStablePowerSupply()){
+        SMS_BUPSendIsStablePowerSupply(rmsClassArg);
+
+        rmsClassArg.set_smsPowerStructIsStablePowerSupply(rmsClassArg.get_powerStructStablePowerSupply(), currentEpochTime);
+    }
+
+    if (currentEpochTime > rmsClassArg.get_smsPowerStructEnergyLevelSMSSentEPochTime() + SMS_HW_BUP
+    && !rmsClassArg.get_powerStructStablePowerSupply() ){
+        if (rmsClassArg.get_smsPowerStructBatteryEnergyLevelState() != rmsClassArg.get_powerStructBatteryELState()){
+            SMS_BUPSendEnergyLevel(rmsClassArg);
+
+            rmsClassArg.set_smsPowerStructBatteryEnergyLevelState(rmsClassArg.get_powerStructBatteryELState(), currentEpochTime);
+        }
+    }
+
+    // time comparison: current vs previous sms sent time using the HW
+        // check staus of current SMS sent vs real situation
     if (!rmsClassArg.get_powerStructStablePowerSupply()){
         if(rmsClassArg.get_powerStructBatteryELState() == rmsClassArg.criticalEL){
             rtc.disableAlarm();
@@ -596,6 +614,7 @@ RMSState FSM_implementMLDecision(Ezo_board& ezoORPClassArg){
 
 void FSM_setPowerSituation(rmsClass& rmsClassArg){
     // CHeck battery health, and store into the RMS State class
+    // this function also updates the energy level band
     rmsClassArg.set_powerStructBatteryVoltage(Battery_getBatteryVoltage());
     rmsClassArg.set_powerStructStablePowerSupply(Battery_getIsStablePowerSupply());
     rmsClassArg.set_powerStructChargeStatus(Battery_getChargeStatus());

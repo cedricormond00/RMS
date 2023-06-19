@@ -12,5 +12,7 @@ void LP_callbackURA();
 
 void LP_goToDeepSleep(rmsClass& rmsClassArg);
 
+void LP_callbackDeepSleep();
+
 
 #endif
