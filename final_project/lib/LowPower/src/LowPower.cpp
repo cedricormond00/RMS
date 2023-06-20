@@ -46,20 +46,30 @@ void LP_goToLowPowerConsumption(rmsClass& rmsClassArg, RTCZero& rtcClassArg, vol
         //     LowPower.sleep();
         // }
         
-        // one final check that no wm occured in the last few ms
-        if (*triggeredInputEvent == 0){
+        // ensure that the next wake up time is in the future
+        while( rmsClassArg.get_nextWakeUpEPochTime() <= rtcClassArg.getEpoch()){
         /* ToDO: add check to ensure the next wakeup time is in future compared to current time. 
         Else, either:
         - set next wakeup time in 1 sec
         - check why it is not appropriate
         - raise an error
         */
+            rmsClassArg.set_nextWakeUpEPochTime(rmsClassArg.get_nextWakeUpEPochTime()+10);
 
-            rmsClassArg.set_toSleepEPochTime(toSleepEPochTime);
+            
+        }
+        
+        rtcClassArg.setAlarmEpoch(rmsClassArg.get_nextWakeUpEPochTime());
+
+        // one final check that no wm occured in the last few ms
+        if (*triggeredInputEvent == 0){
+            
+            rmsClassArg.set_toSleepEPochTime(rtcClassArg.getEpoch());
             Serial.println("to sleep now");
             LowPower.sleep();
-        }
 
+        }
+    
         // store time at which device woke up
         wakeUpEpochTime = rtcClassArg.getEpoch();
         rmsClassArg.set_wakeUpEPochTime(wakeUpEpochTime);

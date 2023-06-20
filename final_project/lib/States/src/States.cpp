@@ -24,7 +24,7 @@ rmsClass::rmsClass() : _uraStruct(0,0,SMS_HW_URA), _wmStruct(0,0,SMS_HW_WQ){
 
 // _rmsState
 void rmsClass::set_rmsState(RMSState newState){
-    _previousRMSState = _rmsState;// store the previous state
+    // _previousRMSState = _rmsState;// store the previous state
     _rmsState = newState; // store the current updated state
 }
 
@@ -33,10 +33,10 @@ RMSState rmsClass::get_rmsState(){
 }
 
 
-// _previousRMSState
-RMSState rmsClass::get_previousRMSState(){
-    return _previousRMSState;
-}
+// // _previousRMSState
+// RMSState rmsClass::get_previousRMSState(){
+//     return _previousRMSState;
+// }
 
 
 // _inputEventCode

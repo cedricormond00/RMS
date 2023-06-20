@@ -23,10 +23,8 @@ bool RTC_init(void){
 
   // //assuming the rtcDS3231 had already been initialised
   // DateTime now = rtcDS3231.now();
-
   // //using external RTC OPTION
   // rtc.setEpoch(now.unixtime()); 
-
   //MANUAL OPTION
   // rtc.setEpoch(1577836800); // Jan 1, 2020
   // rtc.setDate(01, 01, 2020);

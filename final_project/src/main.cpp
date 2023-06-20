@@ -249,7 +249,7 @@ void loop() {
 
       Serial.print("rms.get_wakeUpEPochTime(): ");
       Serial.println(rms.get_wakeUpEPochTime());
-      rtc.setAlarmEpoch(rms.get_wakeUpEPochTime());
+      // rtc.setAlarmEpoch(rms.get_wakeUpEPochTime());
 
       // Serial.print("rms.get_wmWakeUpEPochTime(): ");
       // Serial.println(rms.get_wmWakeUpEPochTime());
@@ -260,9 +260,23 @@ void loop() {
       // put rms.set_inputEventCode(0b1); in the setup loop
       // init_smsPowerStruct(initWakeUpTime);
 
-      //TODO: ensure to check the next hb is checked to eb appropriate here:
-
+      /*TODO: ensure to check the next hb is checked to be in the future here:
+      update the HB time, if again it fails,
+      else:return an error and show the rror signal code: send the device into unknown error state
+      */
       
+      /*TODO: set inside the rms class
+      - the BUP -> power struct 
+      - time
+        - wake up
+        - wmWakeUp -> for future alarm 
+        - 
+      - input event code
+      - 
+      */
+    
+
+      break;
 
     case SWQ: 
       digitalWrite(REDLED_PIN, LOW);

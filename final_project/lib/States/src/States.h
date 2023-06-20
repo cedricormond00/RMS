@@ -38,7 +38,7 @@ class rmsClass {
       RMSState get_rmsState();
       void set_rmsState(RMSState newState);
 
-      RMSState get_previousRMSState();
+      // RMSState get_previousRMSState();
 
       uint8_t get_inputEventCode();
       void set_inputEventCode(uint8_t new_inputEventCode);
@@ -64,6 +64,7 @@ class rmsClass {
       uint32_t get_sleepPeriod();
       void set_sleepPeriod();
 
+      //TODO: set sleep period from SD card in a setup routine to set the rms machine to a known state
       uint8_t get_sleepPeriod(RMSState anyState);
 
 
@@ -193,15 +194,18 @@ class rmsClass {
       //    SLEEP
       // };
       enum RMSState _rmsState;
-      enum RMSState _previousRMSState;
+      // enum RMSState _previousRMSState;
 
       uint8_t _inputEventCode;
 
+      //useful for datalogging
       uint32_t _wmReadEPochTime;
+      // useful for computing the right time to wakeup
       uint32_t _wmWakeUpEPochTime;
+      // time when the device will next wakeup
+      uint32_t _nextWakeUpEPochTime; 
 
-      uint32_t _nextWakeUpEPochTime; //epoch time when the device will wakeup
-
+      // TODO: (DEL) I am not sure of the value of this variable. We could potentiially remove it. It may be useful for some checks
       uint32_t _wakeUpEPochTime;  // epoch time at wakup
       uint32_t _toSleepEPochTime; // epoch time when going to sleep
       uint32_t _sleepPeriod; // how long the device should go to sleep for (in sec)

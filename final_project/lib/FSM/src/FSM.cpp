@@ -64,6 +64,7 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
         }
         uint32_t currentTime = rtcClassArg.getEpoch();
         char buf[256];
+
         RTC_getTimeInText(currentTime, buf);
         
         Serial.print("Current unix time: ");
@@ -75,24 +76,13 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
         Serial.print("rmsClassArg.get_wmWakeUpEPochTime(): ");
         Serial.println(rmsClassArg.get_wmWakeUpEPochTime());
 
-        // // Check to see if the alarm match occured at a time when the device was not asleep
-        // // alarm occured when device not asleep 
-        // // -> artificially use current time
-        // if (Tool_isBitOn(*triggeredInputEvent, 0b11111110) || Tool_isBitOn(rmsClassArg.get_inputEventCode(), 0b11111110)){ //alarm occured when the device was not asleep
-        //     rmsClassArg.set_wmWakeUpEPochTime(currentTime); //+1
-        //     Serial.print("Alarm match occured when device awake: ");
-        //     Serial.print("rmsClassArg.get_wmWakeUpEPochTime(): ");
-        //     Serial.println(rmsClassArg.get_wmWakeUpEPochTime());
-        // }
-        // // alarm occured when the device was asleep
-        // // -> use the time at which the device wokeup
-        // else{ 
-        //     rmsClassArg.set_wmWakeUpEPochTime(rmsClassArg.get_wakeUpEPochTime());
-        //     Serial.print("Alarm match occured when device asleep: ");
-        //     Serial.print("rmsClassArg.get_wmWakeUpEPochTime(): ");
-        //     Serial.println(rmsClassArg.get_wmWakeUpEPochTime());
-        // }
 
+
+        /*
+        - Store the time at which the itnernal clock of the RMS matched the alarm
+        - This usually occurs when the devie is asleep, and hence wakes the device up
+        - Keeping this variable is very important: it allows to know at what time the device will need to wakeup next time
+        */
         rmsClassArg.set_wmWakeUpEPochTime(alarmMatchEPochTime);
 
 
@@ -289,6 +279,10 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
     
     uint32_t currentTime = rtcClassArg.getEpoch();
 
+    /* 
+    - Different time from the wakeUp time.
+    - Storing this value is useful for datalogging purpose
+    */
     rmsClassArg.set_wmReadEPochTime(currentTime);
     Serial.print("rmsClassArg.get_wmReadEPochTime(): ");
     Serial.println(rmsClassArg.get_wmReadEPochTime());
@@ -307,14 +301,15 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
     // This solution would allow to minisme this drift. However, it would probably require to add a check to ensure the next wakup alarm time is later then the present time
     // TODO: add a check to ensure the next wakeup alarm is later then the present time
 
-
+    // now we knwo the state the device is in, we can adjust for the appropriate sleep period
+    // TODO: add a check just before going to sleep that the next wakeup time is in the future
     rmsClassArg.set_nextWakeUpEPochTime(rmsClassArg.get_wmWakeUpEPochTime()+rmsClassArg.get_sleepPeriod());
     
-    // rmsClassArg.set_nextWakeUpEPochTime(rmsClassArg.get_wmReadEPochTime()+rmsClassArg.get_sleepPeriod());
 
     // should be added literaly just before going to sleep
     //TODO: CHECK THIS IS BUG PROOF WITH THE COMMENT BEFORE GOING TO SLEEP
-    rtcClassArg.setAlarmEpoch(rmsClassArg.get_nextWakeUpEPochTime());
+    // rtcClassArg.setAlarmEpoch(rmsClassArg.get_nextWakeUpEPochTime());
+    
     // check battery health
     FSM_setPowerSituation(rmsClassArg);
     // rmsClassArg.set_powerStructBatteryVoltage(Battery_getBatteryVoltage());
@@ -355,8 +350,6 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
     bool writeSuccess = Data_saveDataPointToDataFile(rmsClassArg,
                         WM_INPUTBIT,
                         dataFileName);
-    Serial.print("dataFileName: ");
-    Serial.println(dataFileName);
     Serial.print("Was the write a success? ");
     Serial.println(writeSuccess);
 
