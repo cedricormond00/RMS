@@ -54,6 +54,7 @@ class rmsClass {
       uint32_t get_wakeUpEPochTime();
       void set_wakeUpEPochTime(uint32_t new_WakeUpEPochTime);
 
+      //defined during the WM routine, since the next wakeup time depends on the RMSState
       uint32_t get_nextWakeUpEPochTime();
       void set_nextWakeUpEPochTime(uint32_t new_nextWakeUpEPochTime);
 
@@ -69,17 +70,17 @@ class rmsClass {
       //TODO: set sleep period from SD card in a setup routine to set the rms machine to a known state
       uint8_t get_sleepPeriod(RMSState anyState);
 
-      /*
-      Struct
-      Contains information regarding SMS sent in different scenario
-      Use cases include URA or WM SMS multialarm management
-      */
+      
       enum SMSState{
          NOANOMALIES = 0,
          FIRSTANOMALY,
          HWANOMALIES,
          NORMALOCCURENCE
       };
+      
+      /** \brief Struct containing the information regarding the SMS sent from a certain trigger
+       * \remarks Use cases include URA or WM SMS multialarm management
+      */
       struct alarmStruct{
          uint32_t lastAlarmSMSEPochTime;
          uint32_t currentAlarmEPochTime; 
@@ -89,11 +90,13 @@ class rmsClass {
                                           1 = collate samples over HW. -> once the HW time has elapsed, go to send an SMS: If at that time, the last reading is an SWQ, go to send final SMS 
                                           2 = if the final reading was SWQ (from HW collating) -> rthen set alarmsituation to 0 */
          //constructor
+         //TODO: isntead of using a constructor: set these up in the initialisation routine of rms
          alarmStruct(uint32_t lastAlarmSMSEPochTime_initVal, 
                      uint32_t currentAlarmEPochTime_initVal, 
                      uint32_t allowedIntervalBetweenSMS_initVal);
 
       };
+      
 
       //URA
       void set_URAlastAlarmSMSEPochTime(uint32_t new_lastAlarmSMSEPochTime);
@@ -144,12 +147,15 @@ class rmsClass {
 
       void reset_History();
 
+      // Battery 
       enum BatteryEnergyLevelState{
          criticalEL,
          lowEL,
          sufficientEL
       };
-
+      /** \brief struct to contain state of the battery
+       * \remarks this will be updated each time a WM or URA event occurs
+      */
       struct powerStruct {
          float batteryVoltage;
          bool isStablePowerSupply;
@@ -166,7 +172,10 @@ class rmsClass {
 
       void set_powerStructChargeStatus(uint8_t new_chargeStatus);
       uint8_t get_powerStructChargeStatus();
-
+      
+      /** \brief struct to contain information about sms sent about the battery
+       * \remarks this will be updated each time a WM or URA event occurs
+      */
       struct smsPowerStruct{
          // variables to contain the status of the last sent SMS
          BatteryEnergyLevelState batteryEnergyLevelState;
@@ -220,7 +229,10 @@ class rmsClass {
       // TODO: (DEL) I am not sure of the value of this variable. We could potentiially remove it. It may be useful for some checks
       uint32_t _wakeUpEPochTime;  // epoch time at wakup
       uint32_t _toSleepEPochTime; // epoch time when going to sleep
-      uint32_t _sleepPeriod; // how long the device should go to sleep for (in sec)
+      /* how long the device should go to sleep for (in sec)
+      this value depends on the rmsState
+      */
+      uint32_t _sleepPeriod; 
 
       float _orpReading = 0;
 

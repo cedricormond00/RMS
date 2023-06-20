@@ -266,14 +266,29 @@ void loop() {
       */
       
       /*TODO: set inside the rms class
-      - the BUP -> power struct 
+      - input event code
       - time
         - wake up
         - wmWakeUp -> for future alarm 
         - 
-      - input event code
+      - sleep period depending on rmsState
+        - value defined in the SD Card
+      - alarmStruct -> for both URA + WM
+        - allowedIntervalBetweenSMS_initVal); -> use the config file
+        (- lastAlarmSMSEPochTime_initVal, -> if equal to 0, set to now)
+        (- currentAlarmEPochTime_initVal, -> if equal to 0, set to now)
+        - -> setting to now prevents that the alarm gets triggered at start up
+        - alarmSituation (wm) -> set to NOANOMALIES
+      - stateHistoryStruct -
+        - simply call reset
+      - the BUP -> power struct 
+        - simply call FSM_setPowerSituation
+      - smsPowerStruct
+        - simply call init_smsPowerStruct (consider that we consider that the operator knows the state at init)
       - 
       */
+
+     //TODO: CONFIG : in rmsCLass: create a config function to set the _SWQSleepPerio
     
 
       break;
