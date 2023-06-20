@@ -43,7 +43,8 @@ const uint32_t R1 =  330000;       // resistor between battery terminal and SAMD
 const uint32_t R2 = 1000000;       // resistor between SAMD pin PB09 and ground
 
 // define voltage at which battery is full/empty
-const float batteryFullVoltage = 4.2;   //upper voltage limit for battery
+//TODO: maybe change to 4.0
+const float batteryFullVoltage = 4.11;   //upper voltage limit for battery
 const float batteryEmptyVoltage = 3.5;  //lower voltage limit for battery
 
 const float batteryCapacity = 2.9;            //set battery capacity in Ah
@@ -81,7 +82,7 @@ float Battery_getBatteryVoltage(void){
     return voltBat;
 }
 
-uint8_t Battery_getBatteryPercentage(uint8_t batteryVoltage){
+uint8_t Battery_getBatteryPercentage(float batteryVoltage){
     uint8_t batteryPercentage = (batteryVoltage - batteryEmptyVoltage) * (100) / (batteryFullVoltage - batteryEmptyVoltage);    //custom float friendly map function
     return batteryPercentage;
 }

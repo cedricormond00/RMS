@@ -83,6 +83,7 @@ void setup() {
     while (1);
   }
   
+  Serial.print(PMIC.getChargeVoltage());
 
   // delay(2000);
 
