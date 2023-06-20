@@ -35,6 +35,8 @@ class rmsClass {
    public:
       rmsClass();
       
+      // getter and setter function of rms
+
       RMSState get_rmsState();
       void set_rmsState(RMSState newState);
 
@@ -67,7 +69,16 @@ class rmsClass {
       //TODO: set sleep period from SD card in a setup routine to set the rms machine to a known state
       uint8_t get_sleepPeriod(RMSState anyState);
 
-
+      /*
+      Struct
+      Contains information regarding SMS sent in different scenario
+      Use cases include URA or WM SMS multialarm management
+      */
+      enum SMSStates{
+         firstAnomalyOccurence,
+         hwAnomalyOccurence,
+         normalOccurence
+      };
       struct alarmStruct{
          uint32_t lastAlarmSMSEPochTime;
          uint32_t currentAlarmEPochTime; 
