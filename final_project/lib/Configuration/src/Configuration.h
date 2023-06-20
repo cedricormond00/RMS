@@ -14,13 +14,18 @@ struct Configuration {
     uint8_t hbTime = 9; // define at what time we want a HB
     uint8_t hbElapsePeriod = 24; // duration (in hours) between 2 HB alarms
     uint16_t uraPressDuration = 3000; //required user button press duration. in ms.
-    
+    bool sendSMS = false;
+    /*TODO: 
+    - add the threshold for battery level decision?
+    - add the sleep duration for all state
+    */
     char filename[20] = "RMS_V1.CFG";
+
 };
 
 void Config_setConfigurationFromFile(Configuration& cfg);
-void setDefaultConfiguration(Configuration& cfg);
-void saveConfiguration(const Configuration& cfg);
+void Config_setConfigurationDefault(Configuration& cfg);
+void Config_saveConfigurationToSD(const Configuration& cfg);
 void Config_printConfiguration(Configuration& cfg);
 
 

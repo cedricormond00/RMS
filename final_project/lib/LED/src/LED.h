@@ -13,4 +13,17 @@ void multipin_HL(unsigned int pin_array[], unsigned int arraySize, unsigned int 
 
 void ToggleLED(unsigned int pin);
 
+void LED_runInitCompleteSignal();
+
+
+void LED_runInitBeginSignal();
+
+void LED_showBatteryLowSignal();
+void LED_showBatteryNotConnectedSignal();
+void LED_showSDCardNokSignal();
+void LED_showSDCardFileNameNOkSignal();
+void LED_showRTCFailedInitSignal();
+void LED_showRTCFailedHBSetSignal();
+
+
 #endif

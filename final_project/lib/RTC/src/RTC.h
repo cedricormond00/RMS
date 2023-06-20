@@ -6,7 +6,7 @@
 
 #include <RTCZero.h>
 
-void RTC_init(void);
+bool RTC_init(void);
 void RTC_updateInternalRTCToCurrentTime(void);
 
 void RTC_print2digits(int number);
@@ -18,7 +18,8 @@ void RTC_printTime(RTCZero& rtcClassArg);
 */
 void RTC_callbackAlarmMatch();
 
-uint32_t RTC_findNext9AMEPochTime(uint32_t currentEPochTime);
+bool RTC_setUpHB();
+uint32_t RTC_findNextHBEPochTime(uint32_t currentEPochTime);
 uint32_t RTC_updateHBEPochTime(uint32_t hbEPochTime);
 
 

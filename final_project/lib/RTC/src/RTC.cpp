@@ -13,17 +13,19 @@
 
 // uint32_t currentEpochTime = ;
 
-
-void RTC_init(void){
-
+// TODO: use a manual configuration file to set the time
+bool RTC_init(void){
+  bool success = true;
   rtc.begin();
   rtcDS3231.begin();
 
-  //assuming the rtcDS3231 had already been initialised
-  DateTime now = rtcDS3231.now();
+  RTC_updateInternalRTCToCurrentTime();
 
-  //using external RTC OPTION
-  rtc.setEpoch(now.unixtime()); 
+  // //assuming the rtcDS3231 had already been initialised
+  // DateTime now = rtcDS3231.now();
+
+  // //using external RTC OPTION
+  // rtc.setEpoch(now.unixtime()); 
 
   //MANUAL OPTION
   // rtc.setEpoch(1577836800); // Jan 1, 2020
@@ -45,9 +47,19 @@ void RTC_init(void){
   rtc.enableAlarm(rtc.MATCH_YYMMDDHHMMSS);
   rtc.attachInterrupt(RTC_callbackAlarmMatch);
 
-  //configure next 9AM HB alarm time
-  hbEPochTime = RTC_findNext9AMEPochTime(now.unixtime());
-
+  // //configure next 9AM HB alarm time
+  // hbEPochTime = RTC_findNextHBEPochTime(now.unixtime());
+  // setSyncProvider(RTC.get);
+  // if (timeStatus() !=timeSet){
+  //   Serial.print("timeStatus(): ");
+  //   Serial.println(timeStatus());
+  //   success = false;
+  // }
+  // else{
+  //   success = true;
+  // }
+  //TODO: dont' know how to check if sync occured properly
+  return success;
 }
 
 void RTC_updateInternalRTCToCurrentTime(void){
@@ -68,7 +80,23 @@ void RTC_callbackAlarmMatch(){
   }
 }
 
-uint32_t RTC_findNext9AMEPochTime(uint32_t currentEPochTime){
+bool RTC_setUpHB(){
+  bool success = true; 
+  uint32_t currentTime = rtc.getEpoch();
+  hbEPochTime = RTC_findNextHBEPochTime(currentTime);
+  if (hbEPochTime != 0 
+  && hbEPochTime > currentTime){
+    success = true;
+  }
+  else{
+    success = false;
+  }
+  return success;
+}
+
+//TODO: add configuration struct to set the appropriate time
+uint32_t RTC_findNextHBEPochTime(uint32_t currentEPochTime){
+
   // Convert the given epoch time to a tm structure
   tmElements_t targetTime;
   breakTime(currentEPochTime, targetTime);
@@ -88,10 +116,11 @@ uint32_t RTC_findNext9AMEPochTime(uint32_t currentEPochTime){
   targetTime.Second = 0;
 
   //Convert the resulting time to epOchTime
-  uint32_t next9AMEPochtTime = makeTime(targetTime);
-  return next9AMEPochtTime;
+  uint32_t nextHBEPochtTime = makeTime(targetTime);
+  return nextHBEPochtTime;
 }
 
+//TODO: include COnfiguration struct
 uint32_t RTC_updateHBEPochTime(uint32_t hbEPochTime){
   // CONFIG: tune how often we want a HB
   return hbEPochTime+24*60*60;

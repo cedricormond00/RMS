@@ -31,7 +31,7 @@
 
 #include "Battery.h"
 #include "Tool.h"
-#include "States.h"
+// #include "States.h"
 
 int usb_mode = UNKNOWN_MODE;
 
@@ -96,8 +96,9 @@ uint8_t Battery_getChargeStatus(){
     return vBusStatus;
 }
 
-void Battery_runInitSequence(rmsClass& rmsClassArg){
-    Serial.println("Checking powerSupply");
+bool Battery_runInitSequence(rmsClass& rmsClassArg){
+
+    bool success = true;
 
     rmsClassArg.set_powerStructStablePowerSupply(Battery_getIsStablePowerSupply());
     if (!rmsClassArg.get_powerStructStablePowerSupply())
@@ -115,7 +116,8 @@ void Battery_runInitSequence(rmsClass& rmsClassArg){
         Serial.println("Battery not connected");
         Serial.println("Please connect immediately a battery");
         rmsClassArg.set_rmsState(BATTERY_NOTCONNECTED);
-        return;
+        success = false;
+        return success;
     }
     else{
         Serial.println("Battery connected");
@@ -143,8 +145,12 @@ void Battery_runInitSequence(rmsClass& rmsClassArg){
             Serial.println("Critical battery energy level.");
             Serial.println("please ensure the device is connected to a stable power supply, anfd the battery is sufficiently charged");
             rmsClassArg.set_rmsState(BATTERY_LOW);
-            return;
+            success = false;
+            return success;
         }
     }
+
+    Serial.println("DONE.");
+    return success;
 
 }

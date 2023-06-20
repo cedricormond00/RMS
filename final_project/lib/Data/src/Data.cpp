@@ -236,10 +236,12 @@ bool Data_createValidDataFileName(char datafilename[]){
     
     uint16_t i = 0;
     for(i = 0; i< 99; i++){ //24*60*60 = 86400)
-      sprintf(datafilename, "%s_%01d.csv",timeStampString, i);
-      if( !SD.exists(datafilename) ){
-         break;      
-      }
+        // sprintf(datafilename, "%s_%02d.csv",timeStampString, i);
+
+        sprintf(datafilename, "%s_%01d.csv",timeStampString, i);
+        if( !SD.exists(datafilename) ){
+            break;      
+        }
     }
     if(i == 86400){
         datafilename = NULL;

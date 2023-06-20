@@ -13,7 +13,14 @@ enum RMSState {
    SWQ,
    UWQ,
    FWQ,
-   SLEEP
+   SLEEP,
+   BATTERY_LOW,
+   BATTERY_NOTCONNECTED,
+   SDCARD_NOK,
+   SDCARD_FILENAMENOK,
+   RTC_FAILEDINIT,
+   RTC_FAILEDHBSET
+   // POWERSUPPLY_NOTSTABLE,
 };
 
 /* Class that contains 

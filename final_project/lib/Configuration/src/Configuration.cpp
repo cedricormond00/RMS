@@ -18,18 +18,20 @@
 #include "Data.h"
 
 
-void setDefaultConfiguration(Configuration& cfg){
+void Config_setConfigurationDefault(Configuration& cfg){
    cfg.uraPressDuration = 3000;
    cfg.logitThreshold = 450;
    cfg.hbTime = 9;
    cfg.hbElapsePeriod = 24;
+   cfg.sendSMS = false;
+
 }
 
 
 // pass in the default configuration, if a good config can be read from file it will be overwritten 
 void Config_setConfigurationFromFile(Configuration& cfg) {
     char buf[128];
-    char json[1024];
+    // char json[1024];
 
     // Open the SD card
     if (!SD.begin()) {
@@ -46,7 +48,7 @@ void Config_setConfigurationFromFile(Configuration& cfg) {
         Serial.print(cfg.filename);
         Serial.println(" found, using default config.");
 
-        setDefaultConfiguration(cfg);
+        Config_setConfigurationDefault(cfg);
 
         Config_printConfiguration(cfg);
         cfgFile.close();
@@ -65,21 +67,30 @@ void Config_setConfigurationFromFile(Configuration& cfg) {
 
         if (error) {
             Serial.println("Error parsing configuration file");
+            Serial.print(F("deserializeJson() failed with code "));
+            Serial.println(error.c_str());
             return;
         }
 
-        if (root.containsKey("logitThreshold")) cfg.logitThreshold = root["logitThreshold"];
-        if (root.containsKey("hbTime")) cfg.hbTime = root["hbTime"];
-        if (root.containsKey("hbElapsePeriod")) cfg.hbElapsePeriod = root["hbElapsePeriod"];
-        if (root.containsKey("uraPressDuration")) cfg.uraPressDuration = root["uraPressDuration"];
-        
+        // Extract the values from the JSON document
+        cfg.logitThreshold = doc["logitThreshold"].as<uint16_t>();
+        cfg.hbTime = doc["hbTime"].as<uint8_t>();
+        cfg.hbElapsePeriod = doc["hbElapsePeriod"].as<uint8_t>();
+        cfg.uraPressDuration = doc["uraPressDuration"].as<uint16_t>();
+        cfg.sendSMS = doc["sendSMS"].as<bool>();
+
+        // if (root.containsKey("logitThreshold")) cfg.logitThreshold = root["logitThreshold"];
+        // if (root.containsKey("hbTime")) cfg.hbTime = root["hbTime"];
+        // if (root.containsKey("hbElapsePeriod")) cfg.hbElapsePeriod = root["hbElapsePeriod"];
+        // if (root.containsKey("uraPressDuration")) cfg.uraPressDuration = root["uraPressDuration"];
+
         Config_printConfiguration(cfg);
     }    
 }                      
 
 
 // Saves the configuration to a file
-void saveConfiguration(const Configuration& cfg) {
+void Config_saveConfigurationToSD(const Configuration& cfg) {
     // Delete existing file, otherwise the configuration is appended to the file
     SD.remove(cfg.filename);
 
@@ -90,23 +101,19 @@ void saveConfiguration(const Configuration& cfg) {
         return;
     }
 
-    // Allocate the memory pool on the stack
-    // Don't forget to change the capacity to match your JSON document.
-    // Use https://arduinojson.org/assistant/ to compute the capacity.
-    StaticJsonBuffer<512> jsonBuffer;
-
-    // Parse the root object
-    JsonObject &root = jsonBuffer.createObject();
+    DynamicJsonDocument doc(1024);
 
     // Set the values
-    root["logitThreshold"] = cfg.logitThreshold;
-    root["hbTime"] = cfg.hbTime;
-    root["hbElapsePeriod"] = cfg.hbElapsePeriod;
-    root["uraPressDuration"] =  cfg.uraPressDuration;
+    doc["logitThreshold"] = cfg.logitThreshold;
+    doc["hbTime"] = cfg.hbTime;
+    doc["hbElapsePeriod"] = cfg.hbElapsePeriod;
+    doc["uraPressDuration"] = cfg.uraPressDuration;
+    doc["sendSMS"] = cfg.sendSMS;
+    doc["logitThreshold"] = cfg.logitThreshold;
 
     // Serialize JSON to file
-    if (root.printTo(file) == 0) {
-        Serial.println(F("Failed to write to file"));
+    if (serializeJson(doc, file) == 0) {
+        Serial.println("Failed to write configuration to file");
     }
 
     // Close the file (File's destructor doesn't close the file)

@@ -3,6 +3,7 @@
 #include "Constant.h"
 // #include "template.h"
 
+#define LED_DELAY 100
 
 void ToggleLED(unsigned int pin){
   digitalWrite(pin, !digitalRead(pin));
@@ -12,6 +13,14 @@ void ToggleLED(unsigned int pin){
     Serial.print("LED status: ");
     Serial.println(digitalRead(pin));
   }
+}
+
+void LED_runInitCompleteSignal(){
+  for (int i=0; i<10; i++){ 
+    ToggleLED(BLUELED_PIN);
+    delay(100);
+  }
+  digitalWrite(BLUELED_PIN, LOW);
 }
 
 void multipin_HL(unsigned int pin_arr[], unsigned int arraySize, unsigned int status)
@@ -57,3 +66,165 @@ void multipin_pinMode(unsigned int pin_array[], unsigned int arraySize, unsigned
 //     pinMode(currPin, mode);
 //   }
 // }
+
+void LED_runInitBeginSignal(){
+  digitalWrite(BLUELED_PIN, LOW);
+  digitalWrite(REDLED_PIN, LOW);
+  digitalWrite(GREENLED_PIN, LOW);
+  digitalWrite(YELLOWLED_PIN, LOW);
+  digitalWrite(ORANGELED_PIN, LOW);
+  
+  delay(LED_DELAY);
+  
+  digitalWrite(BLUELED_PIN, HIGH);
+  digitalWrite(REDLED_PIN, LOW);
+  digitalWrite(GREENLED_PIN, LOW);
+  digitalWrite(YELLOWLED_PIN, LOW);
+  digitalWrite(ORANGELED_PIN, LOW);
+
+  delay(LED_DELAY);
+
+  digitalWrite(BLUELED_PIN, HIGH);
+  digitalWrite(REDLED_PIN, HIGH);
+  digitalWrite(GREENLED_PIN, LOW);
+  digitalWrite(YELLOWLED_PIN, LOW);
+  digitalWrite(ORANGELED_PIN, LOW);
+
+  delay(LED_DELAY);
+
+  digitalWrite(BLUELED_PIN, HIGH);
+  digitalWrite(REDLED_PIN, HIGH);
+  digitalWrite(GREENLED_PIN, HIGH);
+  digitalWrite(YELLOWLED_PIN, LOW);
+  digitalWrite(ORANGELED_PIN, LOW);
+
+  delay(LED_DELAY);
+
+  digitalWrite(BLUELED_PIN, HIGH);
+  digitalWrite(REDLED_PIN, HIGH);
+  digitalWrite(GREENLED_PIN, HIGH);
+  digitalWrite(YELLOWLED_PIN, HIGH);
+  digitalWrite(ORANGELED_PIN, LOW);
+
+  delay(LED_DELAY);
+  
+  digitalWrite(BLUELED_PIN, HIGH);
+  digitalWrite(REDLED_PIN, HIGH);
+  digitalWrite(GREENLED_PIN, HIGH);
+  digitalWrite(YELLOWLED_PIN, HIGH);
+  digitalWrite(ORANGELED_PIN, HIGH);
+
+  delay(LED_DELAY);
+  
+  digitalWrite(BLUELED_PIN, LOW);
+  digitalWrite(REDLED_PIN, LOW);
+  digitalWrite(GREENLED_PIN, LOW);
+  digitalWrite(YELLOWLED_PIN, LOW);
+  digitalWrite(ORANGELED_PIN, LOW);
+
+}
+
+// about battery -> orangeLED
+void LED_showBatteryLowSignal(){
+  digitalWrite(ORANGELED_PIN, HIGH);
+  digitalWrite(YELLOWLED_PIN, LOW);
+
+  delay(100);
+
+  for (int i = 0; i<4; i++){
+    ToggleLED(YELLOWLED_PIN);
+    delay(100);
+  }
+
+  digitalWrite(ORANGELED_PIN, LOW);
+  digitalWrite(YELLOWLED_PIN, LOW);
+}
+
+void LED_showBatteryNotConnectedSignal(){
+  digitalWrite(ORANGELED_PIN, HIGH);
+  digitalWrite(REDLED_PIN, LOW);
+
+  delay(100);
+
+  for (int i = 0; i<4; i++){
+    ToggleLED(REDLED_PIN);
+    delay(100);
+  }
+
+  digitalWrite(ORANGELED_PIN, LOW);
+  digitalWrite(REDLED_PIN, LOW);
+}
+
+// about SDCard -> greenLED
+
+void LED_showSDCardNokSignal(){
+  digitalWrite(GREENLED_PIN, HIGH);
+  digitalWrite(REDLED_PIN, LOW);
+
+  delay(100);
+
+  for (int i = 0; i<4; i++){
+    ToggleLED(REDLED_PIN);
+    delay(100);
+  }
+
+  digitalWrite(GREENLED_PIN, LOW);
+  digitalWrite(REDLED_PIN, LOW);
+}
+
+void LED_showSDCardFileNameNOkSignal(){
+  digitalWrite(GREENLED_PIN, HIGH);
+  digitalWrite(YELLOWLED_PIN, LOW);
+
+  delay(100);
+
+  for (int i = 0; i<4; i++){
+    ToggleLED(YELLOWLED_PIN);
+    delay(100);
+  }
+
+  digitalWrite(GREENLED_PIN, LOW);
+  digitalWrite(YELLOWLED_PIN, LOW);
+}
+
+
+// about RTC -> green + orange LED
+
+void LED_showRTCFailedInitSignal(){
+  digitalWrite(GREENLED_PIN, HIGH);
+  digitalWrite(ORANGELED_PIN, HIGH);
+
+  digitalWrite(REDLED_PIN, LOW);
+
+  delay(100);
+
+  for (int i = 0; i<4; i++){
+    ToggleLED(REDLED_PIN);
+    delay(100);
+  }
+
+  digitalWrite(GREENLED_PIN, LOW);
+  digitalWrite(ORANGELED_PIN, LOW);
+  digitalWrite(REDLED_PIN, LOW);
+}
+
+void LED_showRTCFailedHBSetSignal(){
+  digitalWrite(GREENLED_PIN, HIGH);
+  digitalWrite(ORANGELED_PIN, HIGH);
+
+  digitalWrite(YELLOWLED_PIN, LOW);
+
+  delay(100);
+
+  for (int i = 0; i<4; i++){
+    ToggleLED(YELLOWLED_PIN);
+    delay(100);
+  }
+
+  digitalWrite(GREENLED_PIN, LOW);
+  digitalWrite(ORANGELED_PIN, LOW);
+
+  digitalWrite(YELLOWLED_PIN, LOW);
+}
+
+
