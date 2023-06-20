@@ -40,16 +40,16 @@ void SMS_hbSend(rmsClass& rmsClassArg){
 }
 
 void SMS_wmSend(rmsClass& rmsClassArg){
-    if (rmsClassArg.get_wmAlarmSituation() == 1){
+    if (rmsClassArg.get_wmAlarmSituation() == rmsClass::FIRSTANOMALY){
         SMS_wmImmediate(rmsClassArg);
-        rmsClassArg.set_wmAlarmSituation(2);
+        rmsClassArg.set_wmAlarmSituation(rmsClass::HWANOMALIES);
     }
-    else if (rmsClassArg.get_wmAlarmSituation() == 2){
+    else if (rmsClassArg.get_wmAlarmSituation() == rmsClass::HWANOMALIES){
         SMS_wmHistoryWindow(rmsClassArg);
     }
-    else if (rmsClassArg.get_wmAlarmSituation() == 3){
+    else if (rmsClassArg.get_wmAlarmSituation() == rmsClass::NORMALOCCURENCE){
         SMS_wmHistoryWindow(rmsClassArg);
-        rmsClassArg.set_wmAlarmSituation(0);
+        rmsClassArg.set_wmAlarmSituation(rmsClass::NOANOMALIES);
     }
     // else if (rmsClassArg.get_wmAlarmSituation() == 1){
     //     SMS_immediateWM(rmsClassArg);

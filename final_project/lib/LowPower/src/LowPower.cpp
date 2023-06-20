@@ -59,10 +59,11 @@ void LP_goToLowPowerConsumption(rmsClass& rmsClassArg, RTCZero& rtcClassArg, vol
             
         }
         
-        rtcClassArg.setAlarmEpoch(rmsClassArg.get_nextWakeUpEPochTime());
+        
 
         // one final check that no wm occured in the last few ms
         if (*triggeredInputEvent == 0){
+            rtcClassArg.setAlarmEpoch(rmsClassArg.get_nextWakeUpEPochTime());
             
             rmsClassArg.set_toSleepEPochTime(rtcClassArg.getEpoch());
             Serial.println("to sleep now");

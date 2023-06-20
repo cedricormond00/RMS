@@ -74,17 +74,18 @@ class rmsClass {
       Contains information regarding SMS sent in different scenario
       Use cases include URA or WM SMS multialarm management
       */
-      enum SMSStates{
-         firstAnomalyOccurence,
-         hwAnomalyOccurence,
-         normalOccurence
+      enum SMSState{
+         NOANOMALIES = 0,
+         FIRSTANOMALY,
+         HWANOMALIES,
+         NORMALOCCURENCE
       };
       struct alarmStruct{
          uint32_t lastAlarmSMSEPochTime;
          uint32_t currentAlarmEPochTime; 
          uint32_t allowedIntervalBetweenSMS;
          bool inSendingHistoryWindow = true; //informs whether we are in a continuous sending window from the WaterMontioring
-         uint8_t alarmSituation = 0;   /* 0 = first UWQ / FWQ -> go straight to sending SMS
+         SMSState alarmSituation = NOANOMALIES;   /* 0 = first UWQ / FWQ -> go straight to sending SMS
                                           1 = collate samples over HW. -> once the HW time has elapsed, go to send an SMS: If at that time, the last reading is an SWQ, go to send final SMS 
                                           2 = if the final reading was SWQ (from HW collating) -> rthen set alarmsituation to 0 */
          //constructor
@@ -117,8 +118,8 @@ class rmsClass {
       bool wm_canSendSMS(uint32_t new_currentAlarmEPochTime);
 
       void update_wmAlarmSituation(uint32_t new_currentAlarmEPochTime);
-      void set_wmAlarmSituation(uint8_t new_wmAlarmSituation);
-      uint8_t get_wmAlarmSituation();
+      void set_wmAlarmSituation(SMSState new_wmAlarmSituation);
+      SMSState get_wmAlarmSituation();
 
       // file management
       /*add a file cursor to know where was the further most away timestamp*/

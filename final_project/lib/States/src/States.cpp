@@ -355,23 +355,23 @@ void rmsClass::update_wmAlarmSituation(uint32_t new_currentAlarmEPochTime){
     if ((get_wmAlarmSituation() == 0) && (get_rmsState() == UWQ || get_rmsState() == FWQ)){
         set_wmLastAlarmSMSEPochTime(get_wmCurrentAlarmEPochTime());
 
-        set_wmAlarmSituation(1);
+        set_wmAlarmSituation(FIRSTANOMALY);
     }
-    else if ((get_wmAlarmSituation() == 2) && (get_wmCurrentAlarmEPochTime()-get_wmLastAlarmSMSEPochTime() > get_wmAllowedIntervalBetweenSMS())){
-        set_wmAlarmSituation(2);
+    else if ((get_wmAlarmSituation() == HWANOMALIES) && (get_wmCurrentAlarmEPochTime()-get_wmLastAlarmSMSEPochTime() > get_wmAllowedIntervalBetweenSMS())){
+        set_wmAlarmSituation(HWANOMALIES);
         set_wmLastAlarmSMSEPochTime(get_wmCurrentAlarmEPochTime());
 
         if (get_rmsState() == SWQ){ // THIS is where we can tune the settings to stop the alarm sending
-            set_wmAlarmSituation(3);
+            set_wmAlarmSituation(NORMALOCCURENCE);
         }
     }
 }
 
-void rmsClass::set_wmAlarmSituation(uint8_t new_wmAlarmSituation){
+void rmsClass::set_wmAlarmSituation(SMSState new_wmAlarmSituation){
     _wmStruct.alarmSituation = new_wmAlarmSituation;
 }
 
-uint8_t rmsClass::get_wmAlarmSituation(){
+rmsClass::SMSState rmsClass::get_wmAlarmSituation(){
     return _wmStruct.alarmSituation;
 }
 // void rmsClass::set_inHistoryWindow(){

@@ -4,8 +4,11 @@
 
 #include <iot_cmd.h>
 #include <Ezo_i2c_util.h>  
+#include <Arduino_PMIC.h>
 
 #include "FSM.h"
+
+// #include "States.h" // normally I should not need this
 
 #include "Constant.h"
 #include "Global.h"
@@ -21,7 +24,7 @@
 #include "SMS.h"
 #include "Battery.h"
 
-#include <Arduino_PMIC.h>
+
 
 
 bool debugDisplay = 1;
@@ -306,47 +309,18 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
     rmsClassArg.set_nextWakeUpEPochTime(rmsClassArg.get_wmWakeUpEPochTime()+rmsClassArg.get_sleepPeriod());
     
 
-    // should be added literaly just before going to sleep
-    //TODO: CHECK THIS IS BUG PROOF WITH THE COMMENT BEFORE GOING TO SLEEP
+
+    /* 
+    - This has been placed literaly just before going to sleep. 
+    This ensures we dont do twice the same thing, and that the right time is set for going to sleep
+    - TODO: CHECK THIS IS BUG PROOF WITH THE COMMENT BEFORE GOING TO SLEEP
+    */
     // rtcClassArg.setAlarmEpoch(rmsClassArg.get_nextWakeUpEPochTime());
     
     // check battery health
     FSM_setPowerSituation(rmsClassArg);
-    // rmsClassArg.set_powerStructBatteryVoltage(Battery_getBatteryVoltage());
-    // rmsClassArg.set_powerStructUSBMode(Battery_getPowerSource());
-    // rmsClassArg.set_powerStructChargeStatus(Battery_getChargeStatus());
-    // Serial.println("PowerSituation");
-    // Serial.print("isBattConnected?: ");
-    // Serial.println(PMIC.isBattConnected(), BIN);
-    // PMIC.enableDPDM();
-    // Serial.print("usbMode(): ");
-    // // Serial.println(PMIC.USBmode());
-    // Serial.println("value from Battery function");
-    // Serial.print("Battery_getBatteryVoltage: ");
-    // Serial.println(Battery_getBatteryVoltage());
-    // Serial.print("Battery_getPowerSource: ");
-    // Serial.println(Battery_getPowerSource(), BIN);
-    // Serial.print("Battery_getChargeStatus: ");
-    // Serial.println(Battery_getChargeStatus(), BIN);
-    // Serial.println("value from powerStruct function");
-    // Serial.print("rmsClassArg.get_powerStructBatteryVoltage: ");
-    // Serial.println(rmsClassArg.get_powerStructBatteryVoltage());
-    // Serial.print("rmsClassArg.get_powerStructUSBMode: ");
-    // Serial.println(rmsClassArg.get_powerStructUSBMode(), BIN);
-    // Serial.print("rmsClassArg.get_powerStructChargeStatus: ");
-    // Serial.println(rmsClassArg.get_powerStructChargeStatus(), BIN);
-    
-    Serial.print("DatafileName: ");
-    Serial.println(dataFileName);
-    // bool writeSuccess = Data_saveDataPointToDataFile(rmsClassArg.get_wmReadEPochTime(),
-    //                     rmsClassArg.get_orpReading(),
-    //                     rmsClassArg.get_rmsState(),
-    //                     WM_INPUTBIT,
-    //                     rmsClassArg.get_powerStructBatteryVoltage(),
-    //                     // rmsClassArg.get_powerStructUSBMode(),
-    //                     rmsClassArg.get_powerStructStablePowerSupply(),
-    //                     rmsClassArg.get_powerStructChargeStatus(),
-    //                     dataFileName);
+
+
     bool writeSuccess = Data_saveDataPointToDataFile(rmsClassArg,
                         WM_INPUTBIT,
                         dataFileName);
@@ -533,16 +507,16 @@ void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, uint32_t currentTime, ch
         
         rmsClassArg.set_wmLastAlarmSMSEPochTime(rmsClassArg.get_wmCurrentAlarmEPochTime());
         
-        rmsClassArg.set_wmAlarmSituation(1);
+        rmsClassArg.set_wmAlarmSituation(rmsClass::FIRSTANOMALY);
         
         SMS_wmSend(rmsClassArg);
     }
-    else if ((rmsClassArg.get_wmAlarmSituation() == 2) 
+    else if ((rmsClassArg.get_wmAlarmSituation() == rmsClass::HWANOMALIES) 
     && (rmsClassArg.get_wmCurrentAlarmEPochTime()-rmsClassArg.get_wmLastAlarmSMSEPochTime() > rmsClassArg.get_wmAllowedIntervalBetweenSMS())){
         
         rmsClassArg.set_wmLastAlarmSMSEPochTime(rmsClassArg.get_wmCurrentAlarmEPochTime());
         
-        rmsClassArg.set_wmAlarmSituation(2);
+        rmsClassArg.set_wmAlarmSituation(rmsClass::HWANOMALIES);
         
         // perform thecount of UWQ/FWQ/SWQ eventsS
         Data_updateStateHistory(rmsClassArg, dataFileName);
@@ -557,7 +531,7 @@ void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, uint32_t currentTime, ch
         rmsClassArg.set_stateHistoryPercentage(FWQ);
 
         if (rmsClassArg.get_rmsState() == SWQ){ // THIS is where we can tune the settings to stop the alarm sending
-            rmsClassArg.set_wmAlarmSituation(3);
+            rmsClassArg.set_wmAlarmSituation(rmsClass::NORMALOCCURENCE);
         }
 
         SMS_wmSend(rmsClassArg);
