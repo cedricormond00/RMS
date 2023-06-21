@@ -425,7 +425,7 @@ void FSM_f_BUP(rmsClass& rmsClassArg){
         rmsClassArg.set_smsPowerStructIsStablePowerSupply(rmsClassArg.get_powerStructStablePowerSupply(), currentEpochTime);
     }
 
-    if (currentEpochTime > rmsClassArg.get_smsPowerStructEnergyLevelSMSSentEPochTime() + SMS_HW_BUP
+    if (currentEpochTime > rmsClassArg.get_smsPowerStructEnergyLevelSMSSentEPochTime() + SMS_HW_BUP // this is to prevent spamming from flucutating changes
     && !rmsClassArg.get_powerStructStablePowerSupply() ){
         if (rmsClassArg.get_smsPowerStructBatteryEnergyLevelState() != rmsClassArg.get_powerStructBatteryELState()){
             SMS_BUPSendEnergyLevel(rmsClassArg);

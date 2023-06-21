@@ -228,16 +228,17 @@ void setup() {
   LP_setupURAInterrupt();
   Serial.println("DONE.");
 
-  //TODO:e nsure to add this before: that way, I can use it to configure my other elemts (HB etc)
 
-  Serial.println("**Setting RMS default config**");
-  // Config_setConfigurationDefault();
+  Serial.println("**Saving RMS config to SD**");
+  Config_saveConfigurationToSD(cfg);
   Serial.println("DONE.");
 
   
+
   
   // init completed
   LED_runInitCompleteSignal();
+
   Serial.println("***Setup complete***");
   Serial.println("------");
 }

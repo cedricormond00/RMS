@@ -19,11 +19,21 @@
 
 
 void Config_setConfigurationDefault(Configuration& cfg){
-   cfg.uraPressDuration = 3000;
-   cfg.logitThreshold = 450;
-   cfg.hbTime = 9;
-   cfg.hbElapsePeriod = 24;
-   cfg.sendSMS = false;
+    cfg.logitThreshold = 450;
+
+    cfg.uraPressDuration = 3000; //required user button press duration. in ms.
+    
+    cfg.hbTargetHour = 9; // Hour at which the first hb muist occur
+    cfg.hbIntervalHour = 24 ; // interval desired between each hb
+    
+    cfg.swqSleepPeriod = 10;
+    cfg.uwqSleepPeriod = 10;
+    cfg.fwqSleepPeriod = 10;
+    
+    cfg.uraSMSInterval = 20;
+    cfg.wmSMSInterval = 20;
+
+    cfg.sendSMS = false;
 
 }
 
@@ -74,9 +84,20 @@ void Config_setConfigurationFromFile(Configuration& cfg) {
 
         // Extract the values from the JSON document
         cfg.logitThreshold = doc["logitThreshold"].as<uint16_t>();
-        cfg.hbTime = doc["hbTime"].as<uint8_t>();
-        cfg.hbElapsePeriod = doc["hbElapsePeriod"].as<uint8_t>();
+        // cfg.hbTime = doc["hbTime"].as<uint8_t>();
+        // cfg.hbElapsePeriod = doc["hbElapsePeriod"].as<uint8_t>();
         cfg.uraPressDuration = doc["uraPressDuration"].as<uint16_t>();
+        
+        cfg.hbTargetHour = doc["hbTargetHour"].as<uint8_t>();
+        cfg.hbIntervalHour = doc["hbIntervalHour"].as<uint8_t>();
+        
+        cfg.swqSleepPeriod = doc["swqSleepPeriod"].as<uint32_t>();
+        cfg.uwqSleepPeriod = doc["uwqSleepPeriod"].as<uint32_t>();
+        cfg.fwqSleepPeriod = doc["fwqSleepPeriod"].as<uint32_t>();
+        
+        cfg.uraSMSInterval = doc["uraSMSInterval"].as<uint32_t>();
+        cfg.wmSMSInterval = doc["wmSMSInterval"].as<uint32_t>();
+        
         cfg.sendSMS = doc["sendSMS"].as<bool>();
 
         // if (root.containsKey("logitThreshold")) cfg.logitThreshold = root["logitThreshold"];
@@ -105,11 +126,22 @@ void Config_saveConfigurationToSD(const Configuration& cfg) {
 
     // Set the values
     doc["logitThreshold"] = cfg.logitThreshold;
-    doc["hbTime"] = cfg.hbTime;
-    doc["hbElapsePeriod"] = cfg.hbElapsePeriod;
+    // doc["hbTime"] = cfg.hbTime;
+    // doc["hbElapsePeriod"] = cfg.hbElapsePeriod;
     doc["uraPressDuration"] = cfg.uraPressDuration;
+    
+    doc["hbTargetHour"] = cfg.hbTargetHour;
+    doc["hbIntervalHour"] = cfg.hbIntervalHour;
+
+    doc["swqSleepPeriod"] = cfg.swqSleepPeriod;
+    doc["uwqSleepPeriod"] = cfg.uwqSleepPeriod;
+    doc["fwqSleepPeriod"] = cfg.fwqSleepPeriod;
+    
+    doc["uraSMSInterval"] = cfg.uraSMSInterval;
+    doc["wmSMSInterval"] = cfg.wmSMSInterval;
+
     doc["sendSMS"] = cfg.sendSMS;
-    doc["logitThreshold"] = cfg.logitThreshold;
+
 
     // Serialize JSON to file
     if (serializeJson(doc, file) == 0) {
@@ -128,11 +160,25 @@ void Config_printConfiguration(Configuration& cfg){
     Serial.println(cfg.logitThreshold); 
 
     Serial.print("Heartbeat at: ");
-    Serial.print(cfg.hbTime);
+    Serial.print(cfg.hbTargetHour);
     Serial.print(", every: ");
-    Serial.print(cfg.hbElapsePeriod);
+    Serial.print(cfg.hbIntervalHour);
     Serial.println(" hours.");
 
     Serial.print("User button press required duration");
     Serial.println(cfg.uraPressDuration);
+
+    Serial.println("Sleep period (in sec):");
+    Serial.print("swq: ");
+    Serial.println(cfg.swqSleepPeriod);
+    Serial.print("uwq: ");
+    Serial.println(cfg.uwqSleepPeriod);
+    Serial.print("fwq: ");
+    Serial.println(cfg.fwqSleepPeriod);
+
+    Serial.println("Interval between SMS:");
+    Serial.print("URA: ");
+    Serial.println(cfg.uraSMSInterval);
+    Serial.print("WM: ");
+    Serial.println(cfg.wmSMSInterval);
 }

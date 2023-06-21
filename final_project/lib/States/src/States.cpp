@@ -15,11 +15,12 @@ rmsClass::alarmStruct::alarmStruct(uint32_t lastAlarmSMSEPochTime_initVal = 0,
     allowedIntervalBetweenSMS = allowedIntervalBetweenSMS_initVal;
 }
 
+//TODO: remove this constructor for the event URA and WM. Instead, create an initialisation function
 rmsClass::rmsClass() : _uraStruct(0,0,SMS_HW_URA), _wmStruct(0,0,SMS_HW_WQ){
     _rmsState = INIT;
     _inputEventCode = 0b0;
     _sleepPeriod = _UWQSleepPeriod; //or 0 to start with
-    _nextWakeUpEPochTime = DEFAULT_EPOCHTIME + 10;
+    // _nextWakeUpEPochTime = DEFAULT_EPOCHTIME + 10;
 }
 
 // _rmsState
