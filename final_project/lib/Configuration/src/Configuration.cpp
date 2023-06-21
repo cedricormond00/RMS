@@ -46,7 +46,7 @@ void Config_setConfigurationFromFile(Configuration& cfg) {
 
         Serial.print("No ");
         Serial.print(cfg.filename);
-        Serial.println(" found, using default config.");
+        Serial.println(" found, using default config:");
 
         Config_setConfigurationDefault(cfg);
 
@@ -129,9 +129,9 @@ void Config_printConfiguration(Configuration& cfg){
 
     Serial.print("Heartbeat at: ");
     Serial.print(cfg.hbTime);
-    Serial.print("every ");
+    Serial.print(", every: ");
     Serial.print(cfg.hbElapsePeriod);
-    Serial.print("hours");
+    Serial.println(" hours.");
 
     Serial.print("User button press required duration");
     Serial.println(cfg.uraPressDuration);

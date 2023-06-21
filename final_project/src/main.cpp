@@ -42,6 +42,9 @@
 // define state machine
 rmsClass rms;
 
+// Define configuration struct
+Configuration cfg;
+
 // define EZO peripheral
 Ezo_board EZO_ORP = Ezo_board(EZO_ADDRESS, "ORP_EZO");       //create an ORP circuit object, who's address is 98 and name is "ORP_EZO"
 
@@ -65,12 +68,11 @@ uint32_t initWakeUpTime = 0;
 void setup() {
   
   // init serial comm.
-  if (rms.get_rmsState() == INIT){
-    Serial.begin(9600);
-    //wait for serial monitor
-    while (!Serial){
-      delay(1);
-    }
+
+  Serial.begin(9600);
+  //wait for serial monitor
+  while (!Serial){
+    delay(1);
   }
 
   // Utils intialisation
@@ -86,6 +88,8 @@ void setup() {
   Serial.print(PMIC.getChargeVoltage());
 
   // delay(2000);
+  Serial.println("------");
+
 
   Serial.println("****RMS****");
 
@@ -134,23 +138,6 @@ void setup() {
     return;
   }
 
-  // rms
-  // set RMS on same time as RTC on initialisation
-  //TODO: check if this is required
-  rms.set_wakeUpEPochTime(DEFAULT_EPOCHTIME+0);
-  rms.set_toSleepEPochTime(DEFAULT_EPOCHTIME);
-
-  Serial.println("*Setting up next HB time*");
-  if (RTC_setUpHB()){
-    Serial.println("DONE.");
-  }
-  else{
-    rms.set_rmsState(RTC_FAILEDHBSET);
-    Serial.println("NOK. Failed to setup HB time");
-    return;
-  }
-
-
   Serial.println("**Initialising SD card**");
   if (Data_SDCard_init()){
     Serial.println("DONE.");
@@ -162,7 +149,7 @@ void setup() {
     return;
   }
 
-  Serial.println("*Creating a valid filename*");
+  Serial.println("*Creating a valid datalogging filename*");
   if(Data_createValidDataFileName(dataFileName)){
     Serial.println("DONE.");
   }
@@ -195,9 +182,46 @@ void setup() {
   }
 
 
+  /*TODO: 
+  - read config file
+  - if fail, use default config
+  - setup rms with config settings --> done in INIT
+  */
+  Serial.println("**Setting configuration parameters**");
+  Serial.println("*Setting RMS default config*");
+  Config_setConfigurationDefault(cfg);
+  Serial.println("DONE.");
+
+  Serial.println("*Setting RMS file config*");
+  Config_setConfigurationFromFile(cfg);
+  Serial.println("DONE.");
+
+
+  // // rms
+  // // set RMS on same time as RTC on initialisation
+  // //TODO: check if this is required
+  // rms.set_wakeUpEPochTime(DEFAULT_EPOCHTIME+0);
+  // rms.set_toSleepEPochTime(DEFAULT_EPOCHTIME);
+
+  Serial.println("*Setting up next HB time*");
+  if (RTC_setUpHB()){
+    Serial.println("DONE.");
+  }
+  else{
+    rms.set_rmsState(RTC_FAILEDHBSET);
+    Serial.println("NOK. Failed to setup HB time");
+    return;
+  }
+
+
+  
+
+
+
+
 
   Serial.println("**Attaching low power external wakeup function**");
-  /* Configure LowPower: tell what to do in case of external interrupt
+  /* Sertup LowPower: tell what to do in case of external interrupt
   - According to source cdoe, this also works when the device is awake
 
   */ 
