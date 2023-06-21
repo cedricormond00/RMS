@@ -6,6 +6,8 @@
 
 #include <RTCZero.h>
 
+// #include "Configuration.h"
+
 
 // types
 enum RMSState {
@@ -34,7 +36,12 @@ djd
 class rmsClass {
    public:
       rmsClass();
-      
+
+      //TODO: if I chopse to not use these values, but directly access the data from the configuration file, I can delete these functions and variables
+      void set_SWQSleepPeriod(uint8_t new_SWQSleepPeriod);
+      void set_UWQSleepPeriod(uint8_t new_UWQSleepPeriod);
+      void set_FWQSleepPeriod(uint8_t new_FWQSleepPeriod);
+
       // getter and setter function of rms
 
       RMSState get_rmsState();
@@ -105,6 +112,8 @@ class rmsClass {
       void set_URAcurrentAlarmEPochTime(uint32_t new_currentAlarmEPochTime);
       uint32_t get_URAcurrentAlarmEPochTime();
 
+      //TODO: instead of using this,. directly use the value from the cfg file
+      void set_URAallowedIntervalBetweenSMS(uint32_t new_allowedIntervalBetweenSMS);
       uint32_t get_URAallowedIntervalBetweenSMS();
 
       bool ura_canSendSMS(uint32_t new_currentAlarmEPochTime);
@@ -116,6 +125,7 @@ class rmsClass {
       void set_wmCurrentAlarmEPochTime(uint32_t new_currentAlarmEPochTime);
       uint32_t get_wmCurrentAlarmEPochTime();
 
+      void set_wmAllowedIntervalBetweenSMS(uint32_t new_allowedIntervalBetweenSMS);
       uint32_t get_wmAllowedIntervalBetweenSMS();
 
       bool wm_canSendSMS(uint32_t new_currentAlarmEPochTime);
@@ -240,9 +250,9 @@ class rmsClass {
       This is because the alarm 0 interrupt flag in the interrupt flag status and clear registers 
       is set on the next 0-1 transition of CLK_RTC_CNT.
       */
-      static const uint8_t _SWQSleepPeriod = 10-1; //sec
-      static const uint8_t _UWQSleepPeriod = 10-1; //sec
-      static const uint8_t _FWQSleepPeriod = 10-1; //sec
+      uint8_t _SWQSleepPeriod;// = 10-1; //sec
+      uint8_t _UWQSleepPeriod;// = 10-1; //sec
+      uint8_t _FWQSleepPeriod;// = 10-1; //sec
 
       alarmStruct _uraStruct;
       alarmStruct _wmStruct;
@@ -253,6 +263,7 @@ class rmsClass {
       void set_currentAlarmEPochTime(alarmStruct& alarmStructArg, uint32_t new_currentAlarmEPochTime);
       uint32_t get_currentAlarmEPochTime(alarmStruct& alarmStructArg);
 
+      void set_allowedIntervalBetweenSMS(alarmStruct& alarmStructArg, uint32_t new_allowedIntervalBetweenSMS);
       uint32_t get_allowedIntervalBetweenSMS(alarmStruct& alarmStructArg);
 
       stateHistoryStruct _stateHistoryStruct;

@@ -267,20 +267,21 @@ void loop() {
       digitalWrite(REDLED_PIN, HIGH);
       // let the mahchine know it must perform the Water Monitoring function right now
 
-      // as if at initialisation the device has just woken up
-      initWakeUpTime = rtc.getEpoch();
-      rms.set_wakeUpEPochTime(initWakeUpTime);
-      rms.set_wmWakeUpEPochTime(initWakeUpTime);
+      // // as if at initialisation the device has just woken up
+      // initWakeUpTime = rtc.getEpoch();
+      // rms.set_wakeUpEPochTime(initWakeUpTime);
+      // rms.set_wmWakeUpEPochTime(initWakeUpTime);
 
-      Serial.print("rms.get_wakeUpEPochTime(): ");
-      Serial.println(rms.get_wakeUpEPochTime());
+
+      // Serial.print("rms.get_wakeUpEPochTime(): ");
+      // Serial.println(rms.get_wakeUpEPochTime());
       // rtc.setAlarmEpoch(rms.get_wakeUpEPochTime());
 
       // Serial.print("rms.get_wmWakeUpEPochTime(): ");
       // Serial.println(rms.get_wmWakeUpEPochTime());
       // rtc.setAlarmEpoch(rms.get_wmWakeUpEPochTime());
 
-      rms.set_inputEventCode(0b1);
+      // rms.set_inputEventCode(0b1);
 
       // put rms.set_inputEventCode(0b1); in the setup loop
       // init_smsPowerStruct(initWakeUpTime);
@@ -314,6 +315,8 @@ void loop() {
       */
 
      //TODO: CONFIG : in rmsCLass: create a config function to set the _SWQSleepPerio
+      FSM_initRMS(rms, cfg);
+
     
 
       break;

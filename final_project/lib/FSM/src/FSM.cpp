@@ -646,3 +646,36 @@ void FSM_setPowerSituation(rmsClass& rmsClassArg){
 //     // put device to sleep
 //     classArg->send_cmd("Sleep");
 // }
+
+
+
+void FSM_initRMS(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
+    // write values from config file into the rmsClass
+    rmsClassArg.set_SWQSleepPeriod(cfgStructArg.swqSleepPeriod);
+    rmsClassArg.set_UWQSleepPeriod(cfgStructArg.uwqSleepPeriod);
+    rmsClassArg.set_FWQSleepPeriod(cfgStructArg.fwqSleepPeriod);
+
+    rmsClassArg.set_URAallowedIntervalBetweenSMS(cfgStructArg.uraSMSInterval);
+    rmsClassArg.set_wmAllowedIntervalBetweenSMS(cfgStructArg.wmSMSInterval);
+
+    // Tell the device to go into a wm function
+    rmsClassArg.set_inputEventCode(0b1);
+
+    // as if at initialisation the device has just woken up
+    uint32_t initWakeUpTime = rtc.getEpoch();
+    rmsClassArg.set_wakeUpEPochTime(initWakeUpTime);
+    rmsClassArg.set_wmWakeUpEPochTime(initWakeUpTime);
+
+
+    // update the power situation in the rmsClass
+    FSM_setPowerSituation(rmsClassArg);
+
+    // consider that the operator knows the power situation on startup
+    rmsClassArg.init_smsPowerStruct(initWakeUpTime);
+
+    // Ensure the state history is back to zero:
+    rmsClassArg.reset_History();
+
+
+    
+}

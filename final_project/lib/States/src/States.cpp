@@ -23,6 +23,18 @@ rmsClass::rmsClass() : _uraStruct(0,0,SMS_HW_URA), _wmStruct(0,0,SMS_HW_WQ){
     // _nextWakeUpEPochTime = DEFAULT_EPOCHTIME + 10;
 }
 
+void rmsClass::set_SWQSleepPeriod(uint8_t new_SWQSleepPeriod){
+    _SWQSleepPeriod = new_SWQSleepPeriod;
+    return;
+}
+void rmsClass::set_UWQSleepPeriod(uint8_t new_UWQSleepPeriod){
+    _UWQSleepPeriod = new_UWQSleepPeriod;
+    return;
+}
+void rmsClass::set_FWQSleepPeriod(uint8_t new_FWQSleepPeriod){
+    _FWQSleepPeriod = new_FWQSleepPeriod;
+    return;
+}
 // _rmsState
 void rmsClass::set_rmsState(RMSState newState){
     // _previousRMSState = _rmsState;// store the previous state
@@ -177,6 +189,10 @@ uint32_t rmsClass::get_currentAlarmEPochTime(alarmStruct& alarmStructArg){
     return alarmStructArg.currentAlarmEPochTime;
 }
 
+void rmsClass::set_allowedIntervalBetweenSMS(alarmStruct& alarmStructArg, uint32_t new_allowedIntervalBetweenSMS){
+    alarmStructArg.allowedIntervalBetweenSMS = new_allowedIntervalBetweenSMS;
+}
+
 
 uint32_t rmsClass::get_allowedIntervalBetweenSMS(alarmStruct& alarmStructArg){
     return alarmStructArg.allowedIntervalBetweenSMS;
@@ -197,6 +213,11 @@ void rmsClass::set_URAcurrentAlarmEPochTime(uint32_t new_currentAlarmEPochTime){
 
 uint32_t rmsClass::get_URAcurrentAlarmEPochTime(){
     return get_currentAlarmEPochTime(_uraStruct);
+}
+
+
+void rmsClass::set_URAallowedIntervalBetweenSMS(uint32_t new_allowedIntervalBetweenSMS){
+    set_allowedIntervalBetweenSMS(_uraStruct, new_allowedIntervalBetweenSMS);
 }
 
 uint32_t rmsClass::get_URAallowedIntervalBetweenSMS(){
@@ -233,6 +254,9 @@ uint32_t rmsClass::get_wmCurrentAlarmEPochTime(){
     return get_currentAlarmEPochTime(_wmStruct);
 }
 
+void rmsClass::set_wmAllowedIntervalBetweenSMS(uint32_t new_allowedIntervalBetweenSMS){
+    set_allowedIntervalBetweenSMS(_wmStruct, new_allowedIntervalBetweenSMS);
+}
 uint32_t rmsClass::get_wmAllowedIntervalBetweenSMS(){
     return get_allowedIntervalBetweenSMS(_wmStruct);
 }

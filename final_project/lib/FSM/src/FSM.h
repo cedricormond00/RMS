@@ -32,6 +32,7 @@ void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, uint32_t currentTime, ch
 
 void FSM_setPowerSituation(rmsClass& rmsClassArg);
 
+void FSM_initRMS(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg);
 
 // void FSM_getEzoWaterReading(Ezo_board* classArg);
 
