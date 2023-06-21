@@ -18,7 +18,7 @@
 #include "Data.h"
 
 
-void Config_setConfigurationDefault(Configuration& cfg){
+void Config_setConfigurationDefault(ConfigurationStruct& cfg){
     cfg.logitThreshold = 450;
 
     cfg.uraPressDuration = 3000; //required user button press duration. in ms.
@@ -39,7 +39,7 @@ void Config_setConfigurationDefault(Configuration& cfg){
 
 
 // pass in the default configuration, if a good config can be read from file it will be overwritten 
-void Config_setConfigurationFromFile(Configuration& cfg) {
+void Config_setConfigurationFromFile(ConfigurationStruct& cfg) {
     char buf[128];
     // char json[1024];
 
@@ -111,7 +111,7 @@ void Config_setConfigurationFromFile(Configuration& cfg) {
 
 
 // Saves the configuration to a file
-void Config_saveConfigurationToSD(const Configuration& cfg) {
+void Config_saveConfigurationToSD(const ConfigurationStruct& cfg) {
     // Delete existing file, otherwise the configuration is appended to the file
     SD.remove(cfg.filename);
 
@@ -155,7 +155,7 @@ void Config_saveConfigurationToSD(const Configuration& cfg) {
 
 
 
-void Config_printConfiguration(Configuration& cfg){
+void Config_printConfiguration(ConfigurationStruct& cfg){
     Serial.print("logit threshold (ORP, mV): ");
     Serial.println(cfg.logitThreshold); 
 
@@ -165,7 +165,7 @@ void Config_printConfiguration(Configuration& cfg){
     Serial.print(cfg.hbIntervalHour);
     Serial.println(" hours.");
 
-    Serial.print("User button press required duration");
+    Serial.print("User button press required duration (in ms): ");
     Serial.println(cfg.uraPressDuration);
 
     Serial.println("Sleep period (in sec):");

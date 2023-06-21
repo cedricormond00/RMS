@@ -78,10 +78,10 @@ void RTC_callbackAlarmMatch(){
   }
 }
 
-bool RTC_setUpHB(){
+bool RTC_setUpHB(ConfigurationStruct cfgStructArg){
   bool success = true; 
   uint32_t currentTime = rtc.getEpoch();
-  hbEPochTime = RTC_findNextHBEPochTime(currentTime);
+  hbEPochTime = RTC_findNextHBEPochTime(currentTime, cfgStructArg);
   if (hbEPochTime != 0 
   && hbEPochTime > currentTime){
     success = true;
@@ -93,7 +93,7 @@ bool RTC_setUpHB(){
 }
 
 //TODO: add configuration struct to set the appropriate time
-uint32_t RTC_findNextHBEPochTime(uint32_t currentEPochTime){
+uint32_t RTC_findNextHBEPochTime(uint32_t currentEPochTime, ConfigurationStruct cfgStructArg){
 
   // Convert the given epoch time to a tm structure
   tmElements_t targetTime;
@@ -101,27 +101,32 @@ uint32_t RTC_findNextHBEPochTime(uint32_t currentEPochTime){
 
   // Increment the date by one day if the current time is after 9 AM
   // CONFIG: set the time at which the first HB should occur
-  if (targetTime.Hour >= 17) {
-    currentEPochTime += 24 * 60 * 60; // Add 24 hours in seconds
+  if (targetTime.Hour >= cfgStructArg.hbTargetHour) {
+    currentEPochTime += cfgStructArg.hbIntervalHour * 60 * 60; // Add 24 hours in seconds
   }
 
   // break down the updated (by 24hours) currentEpochTime
   breakTime(currentEPochTime, targetTime);
 
   // Set the time to 9AM on the targetTime
-  targetTime.Hour = 17;
+  targetTime.Hour = cfgStructArg.hbTargetHour;
   targetTime.Minute = 0;
   targetTime.Second = 0;
 
   //Convert the resulting time to epOchTime
   uint32_t nextHBEPochtTime = makeTime(targetTime);
+  Serial.println("Next HB EPochTime: ");
+  Serial.println(nextHBEPochtTime);
+  char buf[40];
+  RTC_getTimeInText(nextHBEPochtTime, buf);
+  Serial.println(buf);
   return nextHBEPochtTime;
 }
 
 //TODO: include COnfiguration struct
-uint32_t RTC_updateHBEPochTime(uint32_t hbEPochTime){
+uint32_t RTC_updateHBEPochTime(uint32_t hbEPochTime, ConfigurationStruct cfgStructArg){
   // CONFIG: tune how often we want a HB
-  return hbEPochTime+24*60*60;
+  return hbEPochTime+cfgStructArg.hbIntervalHour*60*60;
 }
 
 /* convert the time stamp into readable form */

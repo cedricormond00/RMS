@@ -43,7 +43,7 @@
 rmsClass rms;
 
 // Define configuration struct
-Configuration cfg;
+ConfigurationStruct cfg;
 
 // define EZO peripheral
 Ezo_board EZO_ORP = Ezo_board(EZO_ADDRESS, "ORP_EZO");       //create an ORP circuit object, who's address is 98 and name is "ORP_EZO"
@@ -204,7 +204,7 @@ void setup() {
   // rms.set_toSleepEPochTime(DEFAULT_EPOCHTIME);
 
   Serial.println("*Setting up next HB time*");
-  if (RTC_setUpHB()){
+  if (RTC_setUpHB(cfg)){
     Serial.println("DONE.");
   }
   else{
@@ -253,7 +253,7 @@ void loop() {
   //   Serial.println(triggeredInputEvent, BIN);
   // }
   
-  FSM_executeFunction(EZO_ORP, rms, rtc, dataFileName);
+  FSM_executeFunction(EZO_ORP, rms, rtc, cfg, dataFileName);
   // Serial.print(rms.get_rmsState());
   // Serial.print("test");
   delay(500);
@@ -330,7 +330,7 @@ void loop() {
 
       LP_goToLowPowerConsumption(rms, rtc, &triggeredInputEvent);
 
-      FSM_updateInputEventCode(rms, rtc, &triggeredInputEvent);
+      FSM_updateInputEventCode(rms, rtc, cfg, &triggeredInputEvent);
 
       
       break;
@@ -343,7 +343,7 @@ void loop() {
 
 
       LP_goToLowPowerConsumption(rms, rtc, &triggeredInputEvent);
-      FSM_updateInputEventCode(rms, rtc, &triggeredInputEvent);
+      FSM_updateInputEventCode(rms, rtc, cfg, &triggeredInputEvent);
 
 
 
@@ -358,7 +358,7 @@ void loop() {
 
 
       LP_goToLowPowerConsumption(rms, rtc, &triggeredInputEvent);
-      FSM_updateInputEventCode(rms, rtc, &triggeredInputEvent);
+      FSM_updateInputEventCode(rms, rtc, cfg, &triggeredInputEvent);
       break;
 
     case SLEEP:

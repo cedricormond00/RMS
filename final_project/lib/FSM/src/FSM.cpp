@@ -30,7 +30,7 @@
 bool debugDisplay = 1;
 
 
-void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volatile uint8_t* triggeredInputEvent)
+void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, ConfigurationStruct cfgStructArg, volatile uint8_t* triggeredInputEvent)
 //TODO: maybe the URA_WAIT bit is useless: just use triggerInput as a means to check 
 {
 
@@ -132,7 +132,7 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
                 previousMillis = currentMillis;
             }
             // CONFIG: can change the delay
-            if (currentMillis>=(millisOnExternalWakeUp + URA_PRESS_DURATION)){
+            if (currentMillis>=(millisOnExternalWakeUp + cfgStructArg.uraPressDuration)){
                 digitalWrite(YELLOWLED_PIN, LOW);
                 //inform the RMS the URA function may be performed
                 Tool_setBitOn(&eventInputCode, URA_INPUTBIT);
@@ -171,16 +171,17 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volat
         // reset the triggered input event tracker
         Tool_setBitOff(triggeredInputEvent, HB_INPUTBIT);
 
-        //Set a new time for the hbAlarmtrigger
+        // //Set a new time for the hbAlarmtrigger
+        //TODO: check if I can affor to keep and do this in the FSM_f_HB
 
-        hbEPochTime = RTC_updateHBEPochTime(hbEPochTime);
+        // hbEPochTime = RTC_updateHBEPochTime(hbEPochTime, cfgStructArg);
     }
 
     rmsClassArg.set_inputEventCode(eventInputCode);
 }
 
 
-void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtcClassArg, char dataFileName[]){
+void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtcClassArg, ConfigurationStruct cfgStructArg, char dataFileName[]){
     bool debug=true;
     // Serial.print("SystemStatusRegister: ");
     // Serial.println(PMIC.readSystemStatusRegister(), BIN);
@@ -199,7 +200,7 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
 
         }
 
-        FSM_f_WM_EZO(EZO_ORP, rmsClassArg, rtcClassArg, dataFileName);
+        FSM_f_WM_EZO(EZO_ORP, rmsClassArg, rtcClassArg, cfgStructArg, dataFileName);
 
         Tool_setBitOff(&eventInputCode, WM_INPUTBIT); // because eventInputCode_ is already the address of the pointer
                                                     // I am now passing the correct pointer (uint8_t*) to the Tool_setBitOff
@@ -230,7 +231,7 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
         Serial.print("milis after interrupt wakup: ");
         Serial.println(millis());
 
-        FSM_f_URA(EZO_ORP, rmsClassArg, rtcClassArg, dataFileName);
+        FSM_f_URA(EZO_ORP, rmsClassArg, rtcClassArg, cfgStructArg, dataFileName);
         Tool_setBitOff(&eventInputCode, URA_INPUTBIT); // because eventInputCode_ is already the address of the pointer
                                                     // I am now passing the correct pointer (uint8_t*) to the Tool_setBitOff
         
@@ -255,7 +256,7 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
         }
 
 
-        FSM_f_HB(rmsClassArg);
+        FSM_f_HB(rmsClassArg, cfgStructArg);
         Tool_setBitOff(&eventInputCode, HB_INPUTBIT); // because eventInputCode_ is already the address of the pointer
                                                     // I am now passing the correct pointer (uint8_t*) to the Tool_setBitOff
         
@@ -278,7 +279,7 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
 
 
 
-void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg, char dataFileName[]){
+void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg, ConfigurationStruct cfgStructArg, char dataFileName[]){
     
     uint32_t currentTime = rtcClassArg.getEpoch();
 
@@ -295,7 +296,7 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
     float orpValue = ezoClassArg.get_last_received_reading();
     rmsClassArg.set_orpReading(orpValue);
 
-    RMSState newState = FSM_decideState(ezoClassArg);
+    RMSState newState = FSM_decideState(ezoClassArg, cfgStructArg);
     rmsClassArg.set_rmsState(newState);
 
     // // decide whether or not to send SMSs
@@ -356,7 +357,7 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
 }
 
 
-void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg, char dataFileName[]){
+void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg, ConfigurationStruct cfgStructArg, char dataFileName[]){
     uint32_t currentTime = rtcClassArg.getEpoch();
     // ToggleLED(ORANGELED_PIN);
     debugDisplay = 1;
@@ -366,7 +367,7 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
     float orpValue = ezoClassArg.get_last_received_reading();
     rmsClassArg.set_orpReading(orpValue);
 
-    RMSState newState = FSM_decideState(ezoClassArg);
+    RMSState newState = FSM_decideState(ezoClassArg, cfgStructArg);
 
     rmsClassArg.set_rmsState(newState);
 
@@ -412,7 +413,9 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
     }
 }
 
-void FSM_f_HB(rmsClass& rmsClassArg){
+void FSM_f_HB(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
+    //Set a new time for the hbAlarmtrigger
+    hbEPochTime = RTC_updateHBEPochTime(hbEPochTime, cfgStructArg);
     SMS_hbSend(rmsClassArg);
     ToggleLED(BLUELED_PIN);
 }
@@ -502,7 +505,7 @@ void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, uint32_t currentTime, ch
     Serial.println(rmsClassArg.get_wmAlarmSituation());
 
 
-    if ((rmsClassArg.get_wmAlarmSituation() == 0) 
+    if ((rmsClassArg.get_wmAlarmSituation() == rmsClass::NOANOMALIES) 
     && (rmsClassArg.get_rmsState() == UWQ || rmsClassArg.get_rmsState() == FWQ)){
         
         rmsClassArg.set_wmLastAlarmSMSEPochTime(rmsClassArg.get_wmCurrentAlarmEPochTime());
@@ -511,6 +514,7 @@ void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, uint32_t currentTime, ch
         
         SMS_wmSend(rmsClassArg);
     }
+    // TODO: instead of storing the and using some extra space, can directly use the value from cfg for wmSMSInterval
     else if ((rmsClassArg.get_wmAlarmSituation() == rmsClass::HWANOMALIES) 
     && (rmsClassArg.get_wmCurrentAlarmEPochTime()-rmsClassArg.get_wmLastAlarmSMSEPochTime() > rmsClassArg.get_wmAllowedIntervalBetweenSMS())){
         
@@ -548,10 +552,10 @@ void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, uint32_t currentTime, ch
     
 }
 
-RMSState FSM_decideState(Ezo_board& ezoORPClassArg){
+RMSState FSM_decideState(Ezo_board& ezoORPClassArg, ConfigurationStruct cfgStructArg){
     RMSState state = UWQ;
     if (ezoORPClassArg.get_error() == Ezo_board::SUCCESS){
-        state = FSM_implementMLDecision(ezoORPClassArg);
+        state = FSM_implementMLDecision(ezoORPClassArg, cfgStructArg);
 
     }
     else {
@@ -560,17 +564,17 @@ RMSState FSM_decideState(Ezo_board& ezoORPClassArg){
     return state;
 }
 
-RMSState FSM_implementMLDecision(Ezo_board& ezoORPClassArg){
+RMSState FSM_implementMLDecision(Ezo_board& ezoORPClassArg, ConfigurationStruct cfgStructArg){
     // TODO: find a better way to easily tune the threshold
     // TODO: allow the ORPValue threshold to be set at initialisation
 
     RMSState state = UWQ;
     float orpValue = ezoORPClassArg.get_last_received_reading();
     // CONFIG
-    if (orpValue > LOGIT_THRESHOLD) {
+    if (orpValue > cfgStructArg.logitThreshold) {
         state = SWQ;
     }
-    else if (orpValue <= LOGIT_THRESHOLD){
+    else if (orpValue <= cfgStructArg.logitThreshold){
         state = UWQ;
     }
 
