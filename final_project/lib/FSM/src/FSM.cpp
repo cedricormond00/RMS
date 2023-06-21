@@ -650,6 +650,7 @@ void FSM_setPowerSituation(rmsClass& rmsClassArg){
 
 
 void FSM_initRMS(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
+    uint32_t currentEPochTime = rtc.getEpoch();
     // write values from config file into the rmsClass
     rmsClassArg.set_SWQSleepPeriod(cfgStructArg.swqSleepPeriod);
     rmsClassArg.set_UWQSleepPeriod(cfgStructArg.uwqSleepPeriod);
@@ -662,20 +663,27 @@ void FSM_initRMS(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
     rmsClassArg.set_inputEventCode(0b1);
 
     // as if at initialisation the device has just woken up
-    uint32_t initWakeUpTime = rtc.getEpoch();
-    rmsClassArg.set_wakeUpEPochTime(initWakeUpTime);
-    rmsClassArg.set_wmWakeUpEPochTime(initWakeUpTime);
+    
+    rmsClassArg.set_wakeUpEPochTime(currentEPochTime);
+    rmsClassArg.set_wmWakeUpEPochTime(currentEPochTime);
 
 
     // update the power situation in the rmsClass
     FSM_setPowerSituation(rmsClassArg);
 
     // consider that the operator knows the power situation on startup
-    rmsClassArg.init_smsPowerStruct(initWakeUpTime);
+    rmsClassArg.init_smsPowerStruct(currentEPochTime);
 
     // Ensure the state history is back to zero:
     rmsClassArg.reset_History();
 
+    //ensure that the HB alarm is in the future (might not be if the device was in deepsleep, and had to wakeup after the HB would have occured)
+    if(RTC_setUpHB(cfgStructArg)){
+        Serial.println("HBtime set OK.");
+    }
+    else{
+        rmsClassArg.set_rmsState(RTC_FAILEDHBSET);
+    }
 
     
 }

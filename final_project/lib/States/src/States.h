@@ -97,10 +97,12 @@ class rmsClass {
                                           1 = collate samples over HW. -> once the HW time has elapsed, go to send an SMS: If at that time, the last reading is an SWQ, go to send final SMS 
                                           2 = if the final reading was SWQ (from HW collating) -> rthen set alarmsituation to 0 */
          //constructor
-         //TODO: isntead of using a constructor: set these up in the initialisation routine of rms
-         alarmStruct(uint32_t lastAlarmSMSEPochTime_initVal, 
-                     uint32_t currentAlarmEPochTime_initVal, 
-                     uint32_t allowedIntervalBetweenSMS_initVal);
+         /*TODO: isntead of using a constructor: set these up in the initialisation routine of rms
+         -> DONE
+         */
+         // alarmStruct(uint32_t lastAlarmSMSEPochTime_initVal, 
+         //             uint32_t currentAlarmEPochTime_initVal, 
+         //             uint32_t allowedIntervalBetweenSMS_initVal);
 
       };
       

@@ -26,7 +26,9 @@ bool Data_updateStateHistory(rmsClass& rmsClassArg, char dataFileName[]){
     Serial.println(rmsClassArg.get_totalStateChanges());
 
     // Define time frame in milliseconds
-    uint32_t timeFrame = SMS_HW_WQ;  // Example: 20 sec
+    /*TODO: if I choose to only use the config file,
+     then I should add the cfg as an argument to the function, and dire ctly access the value from there*/
+    uint32_t timeFrame = rmsClassArg.get_wmAllowedIntervalBetweenSMS();  // Example: 20 sec
 
     // Get current epoch timestamp
     uint32_t currentEPochTimestamp = rmsClassArg.get_wmReadEPochTime();

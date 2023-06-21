@@ -7,22 +7,28 @@
 #include "Battery.h"
 
 // Implement the constructor for the struct
-rmsClass::alarmStruct::alarmStruct(uint32_t lastAlarmSMSEPochTime_initVal = 0, 
-                     uint32_t currentAlarmEPochTime_initVal = 0, 
-                     uint32_t allowedIntervalBetweenSMS_initVal = 20){
-    lastAlarmSMSEPochTime = lastAlarmSMSEPochTime_initVal;
-    currentAlarmEPochTime = currentAlarmEPochTime_initVal;
-    allowedIntervalBetweenSMS = allowedIntervalBetweenSMS_initVal;
-}
+// rmsClass::alarmStruct::alarmStruct(uint32_t lastAlarmSMSEPochTime_initVal = 0, 
+//                      uint32_t currentAlarmEPochTime_initVal = 0, 
+//                      uint32_t allowedIntervalBetweenSMS_initVal = 20){
+//     lastAlarmSMSEPochTime = lastAlarmSMSEPochTime_initVal;
+//     currentAlarmEPochTime = currentAlarmEPochTime_initVal;
+//     allowedIntervalBetweenSMS = allowedIntervalBetweenSMS_initVal;
+// }
 
 //TODO: remove this constructor for the event URA and WM. Instead, create an initialisation function
-rmsClass::rmsClass() : _uraStruct(0,0,SMS_HW_URA), _wmStruct(0,0,SMS_HW_WQ){
+rmsClass::rmsClass(){ //: _uraStruct(0,0,SMS_HW_URA), _wmStruct(0,0,SMS_HW_WQ){
     _rmsState = INIT;
     _inputEventCode = 0b0;
-    _sleepPeriod = _UWQSleepPeriod; //or 0 to start with
+
+    _wmWakeUpEPochTime=0;
+    set_wmWakeUpEPochTime(0);
+    _wakeUpEPochTime=0;
+    set_toSleepEPochTime(0);
+    _sleepPeriod = 0; //or 0 to start with
     // _nextWakeUpEPochTime = DEFAULT_EPOCHTIME + 10;
 }
 
+/*TODO: if I choose to use directl cfg values, I can delete these function*/
 void rmsClass::set_SWQSleepPeriod(uint8_t new_SWQSleepPeriod){
     _SWQSleepPeriod = new_SWQSleepPeriod;
     return;
@@ -418,7 +424,7 @@ rmsClass::SMSState rmsClass::get_wmAlarmSituation(){
 // Power struct
 void rmsClass::set_powerStructBatteryVoltage(float new_batteryVoltage){
     _powerStruct.batteryVoltage = new_batteryVoltage;
-    uint8_t batteryPercentage = Battery_getBatteryPercentage(_powerStruct.batteryVoltage);
+    float batteryPercentage = Battery_getBatteryPercentage(_powerStruct.batteryVoltage);
     if (batteryPercentage>LOW_EL_LIMIT){
         _powerStruct.batteryELState = sufficientEL;
     }

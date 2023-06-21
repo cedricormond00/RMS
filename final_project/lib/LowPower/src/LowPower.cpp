@@ -25,7 +25,6 @@ void LP_goToLowPowerConsumption(rmsClass& rmsClassArg, RTCZero& rtcClassArg, vol
      */
     if (rmsClassArg.get_inputEventCode() == 0 && *triggeredInputEvent == 0){
         uint32_t wakeUpEpochTime = 0;
-        uint32_t toSleepEPochTime = 0;
 
         Serial.println("");
         Serial.println("inputEventCode and trigger equal to zero");
@@ -37,14 +36,6 @@ void LP_goToLowPowerConsumption(rmsClass& rmsClassArg, RTCZero& rtcClassArg, vol
         Serial.println(rmsClassArg.get_nextWakeUpEPochTime());
         Serial.print("Unix time = ");
         Serial.println(rtcClassArg.getEpoch());
-
-        toSleepEPochTime = rtcClassArg.getEpoch();
-
-        // if (rtcClassArg.getEpoch() < rmsClassArg.get_nextWakeUpEPochTime()){
-        //     Serial.println("really going to sleep");
-        //     rmsClassArg.set_toSleepEPochTime(toSleepEPochTime);
-        //     LowPower.sleep();
-        // }
         
         // ensure that the next wake up time is in the future
         while( rmsClassArg.get_nextWakeUpEPochTime() <= rtcClassArg.getEpoch()){
@@ -55,8 +46,6 @@ void LP_goToLowPowerConsumption(rmsClass& rmsClassArg, RTCZero& rtcClassArg, vol
         - raise an error
         */
             rmsClassArg.set_nextWakeUpEPochTime(rmsClassArg.get_nextWakeUpEPochTime()+10);
-
-            
         }
         
         
@@ -67,7 +56,8 @@ void LP_goToLowPowerConsumption(rmsClass& rmsClassArg, RTCZero& rtcClassArg, vol
             
             rmsClassArg.set_toSleepEPochTime(rtcClassArg.getEpoch());
             Serial.println("to sleep now");
-            LowPower.sleep();
+            // LowPower.sleep();
+            LowPower.deepSleep();
 
         }
     

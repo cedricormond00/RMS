@@ -71,9 +71,14 @@ void setup() {
 
   Serial.begin(9600);
   //wait for serial monitor
-  while (!Serial){
-    delay(1);
-  }
+  // while (!Serial){
+  //   delay(1);
+  // }
+  pinMode(BLUELED_PIN, OUTPUT);
+  digitalWrite(BLUELED_PIN, HIGH);
+  delay(2000);
+  digitalWrite(BLUELED_PIN, LOW);
+
 
   // Utils intialisation
   // init I2C
@@ -263,6 +268,7 @@ void loop() {
     
     // go in appropriate state
     case INIT:
+      Serial.println("-in INIT State");
       digitalWrite(BLUELED_PIN, HIGH);
       digitalWrite(REDLED_PIN, HIGH);
       // let the mahchine know it must perform the Water Monitoring function right now
@@ -316,6 +322,7 @@ void loop() {
 
      //TODO: CONFIG : in rmsCLass: create a config function to set the _SWQSleepPerio
       FSM_initRMS(rms, cfg);
+      Serial.println("-end INIT State");
 
     
 

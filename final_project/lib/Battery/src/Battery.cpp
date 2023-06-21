@@ -111,8 +111,8 @@ bool Battery_runInitSequence(rmsClass& rmsClassArg){
     }
         
     rmsClassArg.set_powerStructChargeStatus(Battery_getChargeStatus());
-    if (rmsClassArg.get_powerStructChargeStatus() == 0)
-    {
+    if (rmsClassArg.get_powerStructChargeStatus() == 0
+    && rmsClassArg.get_powerStructStablePowerSupply()){
         //TODO: could maybe make this a state instead
         Serial.println("Battery not connected");
         Serial.println("Please connect immediately a battery");
@@ -141,8 +141,10 @@ bool Battery_runInitSequence(rmsClass& rmsClassArg){
         Serial.println (rmsClassArg.get_powerStructBatteryVoltage());
         Serial.print("Battery percentage: ");
         Serial.println(Battery_getBatteryPercentage(rmsClassArg.get_powerStructBatteryVoltage()));
-        if (rmsClassArg.get_powerStructBatteryELState() == rmsClass::criticalEL 
-        && !rmsClassArg.get_powerStructStablePowerSupply()){
+        Serial.print("Battery Energy level: ");
+        Serial.println(rmsClassArg.get_powerStructBatteryELState());
+        if (rmsClassArg.get_powerStructBatteryELState() == rmsClass::criticalEL //){
+        && rmsClassArg.get_powerStructStablePowerSupply() == false){
             Serial.println("Critical battery energy level.");
             Serial.println("please ensure the device is connected to a stable power supply, anfd the battery is sufficiently charged");
             rmsClassArg.set_rmsState(BATTERY_LOW);

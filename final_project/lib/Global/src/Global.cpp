@@ -17,17 +17,15 @@
 // // These would be better defined in a class or a struct
 // volatile uint32_t WMTC = 0 ; // Water motnitoring timer counter: incrmeenets every timeIncrement
 
-volatile uint8_t triggeredInputEvent = 0;
-volatile unsigned long millisOnExternalWakeUp = 0;
-volatile unsigned long previousMillis = 0;
 
-
-// char dataFileName[12] = {"df.csv"};
-
-
-RTCZero rtc; // Define the RTCZero object
+RTCZero rtc;
+RTC_DS3231 rtcDS3231;
 
 uint32_t alarmMatchEPochTime = 0; 
-
-RTC_DS3231 rtcDS3231;
 uint32_t hbEPochTime = 0;
+
+volatile uint8_t triggeredInputEvent = 0;
+volatile uint32_t millisOnExternalWakeUp = 0;
+volatile uint32_t previousMillis = 0;
+
+
