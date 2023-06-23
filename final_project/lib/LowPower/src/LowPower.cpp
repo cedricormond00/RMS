@@ -56,8 +56,8 @@ void LP_goToLowPowerConsumption(rmsClass& rmsClassArg, RTCZero& rtcClassArg, vol
             
             rmsClassArg.set_toSleepEPochTime(rtcClassArg.getEpoch());
             Serial.println("to sleep now");
-            // LowPower.sleep();
-            LowPower.deepSleep();
+            LowPower.sleep();
+            // LowPower.deepSleep();
 
         }
     

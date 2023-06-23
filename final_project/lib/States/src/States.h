@@ -38,9 +38,9 @@ class rmsClass {
       rmsClass();
 
       //TODO: if I chopse to not use these values, but directly access the data from the configuration file, I can delete these functions and variables
-      void set_SWQSleepPeriod(uint8_t new_SWQSleepPeriod);
-      void set_UWQSleepPeriod(uint8_t new_UWQSleepPeriod);
-      void set_FWQSleepPeriod(uint8_t new_FWQSleepPeriod);
+      void set_SWQSleepPeriod(uint16_t new_SWQSleepPeriod);
+      void set_UWQSleepPeriod(uint16_t new_UWQSleepPeriod);
+      void set_FWQSleepPeriod(uint16_t new_FWQSleepPeriod);
 
       // getter and setter function of rms
 
@@ -252,9 +252,9 @@ class rmsClass {
       This is because the alarm 0 interrupt flag in the interrupt flag status and clear registers 
       is set on the next 0-1 transition of CLK_RTC_CNT.
       */
-      uint8_t _SWQSleepPeriod;// = 10-1; //sec
-      uint8_t _UWQSleepPeriod;// = 10-1; //sec
-      uint8_t _FWQSleepPeriod;// = 10-1; //sec
+      uint16_t _SWQSleepPeriod;// = 10-1; //sec
+      uint16_t _UWQSleepPeriod;// = 10-1; //sec
+      uint16_t _FWQSleepPeriod;// = 10-1; //sec
 
       alarmStruct _uraStruct;
       alarmStruct _wmStruct;

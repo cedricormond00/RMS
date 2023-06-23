@@ -298,6 +298,8 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
 
     RMSState newState = FSM_decideState(ezoClassArg, cfgStructArg);
     rmsClassArg.set_rmsState(newState);
+    // we now tell the device how long he may sleep for
+    rmsClassArg.set_sleepPeriod();
 
     // // decide whether or not to send SMSs
     // rmsClassArg.set_inHistoryWindow();
@@ -370,6 +372,9 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
     RMSState newState = FSM_decideState(ezoClassArg, cfgStructArg);
 
     rmsClassArg.set_rmsState(newState);
+
+    // // we now tell the device how long he may sleep for
+    // rmsClassArg.set_sleepPeriod();
 
     Serial.print("Battery Voltage from function: ");
     Serial.print(Battery_getBatteryVoltage());

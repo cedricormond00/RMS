@@ -29,16 +29,16 @@ rmsClass::rmsClass(){ //: _uraStruct(0,0,SMS_HW_URA), _wmStruct(0,0,SMS_HW_WQ){
 }
 
 /*TODO: if I choose to use directl cfg values, I can delete these function*/
-void rmsClass::set_SWQSleepPeriod(uint8_t new_SWQSleepPeriod){
-    _SWQSleepPeriod = new_SWQSleepPeriod;
+void rmsClass::set_SWQSleepPeriod(uint16_t new_SWQSleepPeriod){
+    _SWQSleepPeriod = new_SWQSleepPeriod -1;
     return;
 }
-void rmsClass::set_UWQSleepPeriod(uint8_t new_UWQSleepPeriod){
-    _UWQSleepPeriod = new_UWQSleepPeriod;
+void rmsClass::set_UWQSleepPeriod(uint16_t new_UWQSleepPeriod){
+    _UWQSleepPeriod = new_UWQSleepPeriod-1;
     return;
 }
-void rmsClass::set_FWQSleepPeriod(uint8_t new_FWQSleepPeriod){
-    _FWQSleepPeriod = new_FWQSleepPeriod;
+void rmsClass::set_FWQSleepPeriod(uint16_t new_FWQSleepPeriod){
+    _FWQSleepPeriod = new_FWQSleepPeriod-1;
     return;
 }
 // _rmsState
