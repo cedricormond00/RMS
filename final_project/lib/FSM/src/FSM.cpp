@@ -268,7 +268,7 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
         }
     }
     if (Tool_isBitOn(eventInputCode, BUP_INPUTBIT)){
-        FSM_f_BUP(rmsClassArg);
+        FSM_f_BUP(rmsClassArg, cfgStructArg);
         Tool_setBitOff(&eventInputCode, BUP_INPUTBIT);
     }
     rmsClassArg.set_inputEventCode(eventInputCode);
@@ -330,7 +330,7 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
     Serial.print("Was the write a success? ");
     Serial.println(writeSuccess);
 
-    FSM_multipleAlarmManagement(rmsClassArg, currentTime, dataFileName);
+    FSM_multipleAlarmManagement(rmsClassArg, cfgStructArg, currentTime, dataFileName);
 
     
 
@@ -411,7 +411,7 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
     Serial.println(writeSuccess);
     if (rmsClassArg.ura_canSendSMS(currentTime)){
         ToggleLED(ORANGELED_PIN);
-        SMS_uraSend(rmsClassArg);
+        SMS_uraSend(rmsClassArg, cfgStructArg);
     }
     else{
         ToggleLED(BLUELED_PIN);
@@ -421,14 +421,14 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
 void FSM_f_HB(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
     //Set a new time for the hbAlarmtrigger
     hbEPochTime = RTC_updateHBEPochTime(hbEPochTime, cfgStructArg);
-    SMS_hbSend(rmsClassArg);
+    SMS_hbSend(rmsClassArg, cfgStructArg);
     ToggleLED(BLUELED_PIN);
 }
 
-void FSM_f_BUP(rmsClass& rmsClassArg){
+void FSM_f_BUP(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
     uint32_t currentEpochTime = rmsClassArg.get_wmReadEPochTime();
     if (rmsClassArg.get_smsPowerStructIsStablePowerSupply() != rmsClassArg.get_powerStructStablePowerSupply()){
-        SMS_BUPSendIsStablePowerSupply(rmsClassArg);
+        SMS_BUPSendIsStablePowerSupply(rmsClassArg, cfgStructArg);
 
         rmsClassArg.set_smsPowerStructIsStablePowerSupply(rmsClassArg.get_powerStructStablePowerSupply(), currentEpochTime);
     }
@@ -436,7 +436,7 @@ void FSM_f_BUP(rmsClass& rmsClassArg){
     if (currentEpochTime > rmsClassArg.get_smsPowerStructEnergyLevelSMSSentEPochTime() + SMS_HW_BUP // this is to prevent spamming from flucutating changes
     && !rmsClassArg.get_powerStructStablePowerSupply() ){
         if (rmsClassArg.get_smsPowerStructBatteryEnergyLevelState() != rmsClassArg.get_powerStructBatteryELState()){
-            SMS_BUPSendEnergyLevel(rmsClassArg);
+            SMS_BUPSendEnergyLevel(rmsClassArg, cfgStructArg);
 
             rmsClassArg.set_smsPowerStructBatteryEnergyLevelState(rmsClassArg.get_powerStructBatteryELState(), currentEpochTime);
         }
@@ -449,6 +449,8 @@ void FSM_f_BUP(rmsClass& rmsClassArg){
             rtc.disableAlarm();
             rtc.detachInterrupt();
             detachInterrupt(BUTTON_PIN);
+            
+            rmsClassArg.set_rmsState(SLEEP);
             // update rmsPowerState --> do this in FSM_setPowerSituation
             // LowPower.attachInterruptWakeup(digitalPinToInterrupt(PIN_PA27))
             // attach interrupt from BQ24195L
@@ -492,7 +494,7 @@ void FSM_f_BUP(rmsClass& rmsClassArg){
 //     }
 // }
 
-void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, uint32_t currentTime, char dataFileName[]){
+void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg, uint32_t currentTime, char dataFileName[]){
     rmsClassArg.set_wmCurrentAlarmEPochTime(currentTime);
 
     Serial.print("get_wmCurrentAlarmEPochTime(): ");
@@ -517,7 +519,7 @@ void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, uint32_t currentTime, ch
         
         rmsClassArg.set_wmAlarmSituation(rmsClass::FIRSTANOMALY);
         
-        SMS_wmSend(rmsClassArg);
+        SMS_wmSend(rmsClassArg, cfgStructArg);
     }
     // TODO: instead of storing the and using some extra space, can directly use the value from cfg for wmSMSInterval
     else if ((rmsClassArg.get_wmAlarmSituation() == rmsClass::HWANOMALIES) 
@@ -543,7 +545,7 @@ void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, uint32_t currentTime, ch
             rmsClassArg.set_wmAlarmSituation(rmsClass::NORMALOCCURENCE);
         }
 
-        SMS_wmSend(rmsClassArg);
+        SMS_wmSend(rmsClassArg, cfgStructArg);
 
         rmsClassArg.reset_History();
         

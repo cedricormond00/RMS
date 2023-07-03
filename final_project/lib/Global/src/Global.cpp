@@ -21,6 +21,10 @@
 RTCZero rtc;
 RTC_DS3231 rtcDS3231;
 
+// initialize the library instance
+NB nbAccess;
+NB_SMS sms;
+
 uint32_t alarmMatchEPochTime = 0; 
 uint32_t hbEPochTime = 0;
 

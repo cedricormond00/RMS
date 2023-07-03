@@ -6,6 +6,7 @@
 
 #include <RTCZero.h>
 #include <RTClib.h>
+#include <MKRNB.h>
 
 /** \brief include all global variable declaration that must be used in separate files
  * \remark the global variable declaration is done in Global.c
@@ -25,6 +26,10 @@ extern volatile uint32_t WMTC; // Water motnitoring timer counter
 extern RTCZero rtc;
 // Define the RTC_DS3231 object
 extern RTC_DS3231 rtcDS3231;
+
+// initialize the library instance
+extern NB nbAccess;
+extern NB_SMS sms;
 
 // variable to keep track of the epochtime when an alarm match occurs between the internal clock and the set alarm time
 extern uint32_t alarmMatchEPochTime;

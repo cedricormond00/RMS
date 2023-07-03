@@ -13,6 +13,9 @@
 
 // RMS number
 #define RMS_ID 20
+#define PINNUMBER ""
+
+
 
 // SMSWindow
 // #define SMS_HW_WQ 20

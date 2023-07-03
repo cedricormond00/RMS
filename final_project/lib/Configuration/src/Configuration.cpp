@@ -35,6 +35,17 @@ void Config_setConfigurationDefault(ConfigurationStruct& cfg){
 
     cfg.sendSMS = false;
 
+    // cfg.remoteNumberLength = 13;
+    // char remoteNumber[cfg.remoteNumberLength+1] = {'0','0','4','1','7','6','7','2','4','7','4','4','9','\0'};
+    // strcpy(cfg.remoteNumber, remoteNumber);
+
+    char remoteNumber[] = {'0','0','4','1','7','6','7','2','4','7','4','4','9','\0'};
+    strcpy(cfg.remoteNumber, remoteNumber);
+    cfg.remoteNumberLength = strlen(remoteNumber);
+
+    // strcpy(cfg.remoteNumber, {'0','0','4','1','7','6','7','2','4','7','4','4','9','\0'});
+    Config_printConfiguration(cfg);
+
 }
 
 
@@ -68,8 +79,8 @@ void Config_setConfigurationFromFile(ConfigurationStruct& cfg) {
         // valid cfg file was found, 
         sprintf(buf, "  %s found. \r\n<Configuration: ", cfg.filename);
         Serial.println(buf);
-
-        DynamicJsonDocument doc(1024);
+        //TODO: sort out how to find the right size
+        DynamicJsonDocument doc(4096);
 
         // Read the content of the configuration file
         DeserializationError error = deserializeJson(doc, cfgFile);
@@ -99,6 +110,16 @@ void Config_setConfigurationFromFile(ConfigurationStruct& cfg) {
         cfg.wmSMSInterval = doc["wmSMSInterval"].as<uint32_t>();
         
         cfg.sendSMS = doc["sendSMS"].as<bool>();
+        
+
+        cfg.remoteNumberLength = doc["remoteNumberLength"].as<uint8_t>();
+        // strncpy(cfg.remoteNumber, doc["remoteNumber"], cfg.phoneNumberLength+1);
+        // cfg.remoteNumber[cfg.phoneNumberLength] = '\0';
+
+        const char* remoteNumber = doc["remoteNumber"];
+        Serial.print("remoteNumber: ");
+        Serial.println(remoteNumber);
+        strcpy(cfg.remoteNumber, remoteNumber);
 
         // if (root.containsKey("logitThreshold")) cfg.logitThreshold = root["logitThreshold"];
         // if (root.containsKey("hbTime")) cfg.hbTime = root["hbTime"];
@@ -122,7 +143,7 @@ void Config_saveConfigurationToSD(const ConfigurationStruct& cfg) {
         return;
     }
 
-    DynamicJsonDocument doc(1024);
+    DynamicJsonDocument doc(2048);
 
     // Set the values
     doc["logitThreshold"] = cfg.logitThreshold;
@@ -141,6 +162,8 @@ void Config_saveConfigurationToSD(const ConfigurationStruct& cfg) {
     doc["wmSMSInterval"] = cfg.wmSMSInterval;
 
     doc["sendSMS"] = cfg.sendSMS;
+    doc["remoteNumberLength"] = cfg.remoteNumberLength;
+    doc["remoteNumber"] = cfg.remoteNumber;
 
 
     // Serialize JSON to file
@@ -155,7 +178,7 @@ void Config_saveConfigurationToSD(const ConfigurationStruct& cfg) {
 
 
 
-void Config_printConfiguration(ConfigurationStruct& cfg){
+void Config_printConfiguration(ConfigurationStruct cfg){
     Serial.print("logit threshold (ORP, mV): ");
     Serial.println(cfg.logitThreshold); 
 
@@ -181,4 +204,13 @@ void Config_printConfiguration(ConfigurationStruct& cfg){
     Serial.println(cfg.uraSMSInterval);
     Serial.print("WM: ");
     Serial.println(cfg.wmSMSInterval);
+
+    Serial.print("Request to send SMS: ");
+    Serial.println(cfg.sendSMS);
+    Serial.print("Sending SMS to: ");
+    Serial.println(cfg.remoteNumber);
+    Serial.print("Phone Number length: ");
+    Serial.println(cfg.remoteNumberLength);
+
+
 }

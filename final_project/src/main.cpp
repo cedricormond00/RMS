@@ -195,10 +195,14 @@ void setup() {
   Serial.println("**Setting configuration parameters**");
   Serial.println("*Setting RMS default config*");
   Config_setConfigurationDefault(cfg);
+  // Serial.println("Default settings: ");
+  // Config_printConfiguration(cfg);
   Serial.println("DONE.");
 
   Serial.println("*Setting RMS file config*");
   Config_setConfigurationFromFile(cfg);
+  // Serial.println("File settings: ");
+  // Config_printConfiguration(cfg);
   Serial.println("DONE.");
 
 

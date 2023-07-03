@@ -23,12 +23,12 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
 void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg, ConfigurationStruct cfgStructArg, char dataFileName[]);
 void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg, ConfigurationStruct cfgStructArg, char dataFileName[]);
 void FSM_f_HB(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg);
-void FSM_f_BUP(rmsClass& rmsClassArg);
+void FSM_f_BUP(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg);
 
 RMSState FSM_decideState(Ezo_board& ezoORPClassArg, ConfigurationStruct cfgStructArg);
 RMSState FSM_implementMLDecision(Ezo_board& ezoORPClassArg, ConfigurationStruct cfgStructArg);
 
-void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, uint32_t currentTime, char dataFileName[]);
+void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg, uint32_t currentTime, char dataFileName[]);
 
 void FSM_setPowerSituation(rmsClass& rmsClassArg);
 

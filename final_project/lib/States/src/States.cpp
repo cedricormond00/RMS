@@ -427,6 +427,7 @@ void rmsClass::set_powerStructBatteryVoltage(float new_batteryVoltage){
     float batteryPercentage = Battery_getBatteryPercentage(_powerStruct.batteryVoltage);
     if (batteryPercentage>LOW_EL_LIMIT){
         _powerStruct.batteryELState = sufficientEL;
+        
     }
     else if ((LOW_EL_LIMIT >= batteryPercentage) && (batteryPercentage > CRITICAL_EL_LIMIT)){
         _powerStruct.batteryELState = lowEL;
