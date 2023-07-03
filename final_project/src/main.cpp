@@ -1,41 +1,23 @@
 #include <Arduino.h>
-#include <RTCZero.h>
+// #include <RTCZero.h>
 
-#include <Ezo_i2c.h> //include the EZO I2C library from https://github.com/Atlas-Scientific/Ezo_I2c_lib
+// #include <Ezo_i2c.h> //include the EZO I2C library from https://github.com/Atlas-Scientific/Ezo_I2c_lib
 #include <Arduino_PMIC.h>
 
 #include "Constant.h"
-#include "Global.h"
-
-#include "Serial.h"
-#include "Timer.h"
-#include "I2c.h"
-#include "LED.h"
-#include "FSM.h"
-#include "Tool.h"
+#include "Configuration.h"
 #include "States.h"
+#include "FSM.h"
+
 #include "LowPower.h"
 #include "RTC.h"
 #include "Data.h"
 #include "Battery.h"
-#include"Configuration.h"
+#include "LED.h"
 
+#include "Tool.h"
 
-
-
-// // types
-// enum RMSState {
-//    INIT = 0,
-//    SWQ,
-//    UWQ,
-//    FWQ,
-//    SLEEP
-// };
-
-
-// instance of Real Time Clock
-// RTCZero rtc;
-
+#include "Global.h"
 
 // local variables
 
@@ -48,33 +30,21 @@ ConfigurationStruct cfg;
 // define EZO peripheral
 Ezo_board EZO_ORP = Ezo_board(EZO_ADDRESS, "ORP_EZO");       //create an ORP circuit object, who's address is 98 and name is "ORP_EZO"
 
-// file to store the data
+// filename that will store the data
 char dataFileName[13] = "df.csv";
 
 
-uint32_t initWakeUpTime = 0; 
-//TODO: find a better way to define the first time interval for intialisation
-
-
-// uint16_t WMTC_limit = 5; // Upper timer limit for action to be triggered
-// uint8_t inputEventCode = 0b0;
-// const int nbLastORPValuesStored = 5; // Size of the ring buffer for ORP values
-// float ORPRingBuffer[nbLastORPValuesStored];  // Array to store the floating-point values
-
-
-// uint32_t wakePeriod = 0;
-// char ORPData[32];               //we make a 32 byte character array to hold incoming data from the ORP circuit.
-
 void setup() {
   
-  // init serial comm.
-
+  // initialise serial comm.
   Serial.begin(9600);
   //wait for serial monitor
   // while (!Serial){
   //   delay(1);
   // }
   pinMode(BLUELED_PIN, OUTPUT);
+
+  // visual output
   digitalWrite(BLUELED_PIN, HIGH);
   delay(2000);
   digitalWrite(BLUELED_PIN, LOW);
@@ -90,16 +60,16 @@ void setup() {
     while (1);
   }
   
-  Serial.print(PMIC.getChargeVoltage());
+  // Serial.print(PMIC.getChargeVoltage());
 
-  // delay(2000);
   Serial.println("------");
-
 
   Serial.println("****RMS****");
 
-  Serial.println("***Setup Start***");
+  Serial.println("RMS ID: ");
+  Serial.println(RMS_ID);
 
+  Serial.println("***Setup Start***");
 
   Serial.println("**Initializing LEDs**");
 
@@ -129,8 +99,10 @@ void setup() {
     return;
   }
 
-    Serial.println("**Initializing internal RTC**");
   // RTC  
+  Serial.println("**Initializing internal RTC**");
+  //TODO: use the nb.getTime: to update the time external RTC ansd internal RTC
+  // STOPPED HERE in commenting
   if(RTC_init()){
     char buf[20];
     Serial.print("Current time: ");

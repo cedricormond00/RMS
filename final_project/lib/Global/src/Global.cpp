@@ -17,7 +17,7 @@
 // // These would be better defined in a class or a struct
 // volatile uint32_t WMTC = 0 ; // Water motnitoring timer counter: incrmeenets every timeIncrement
 
-
+// rtc objects instance
 RTCZero rtc;
 RTC_DS3231 rtcDS3231;
 

@@ -13,7 +13,6 @@
 
 // uint32_t currentEpochTime = ;
 
-// TODO: use a manual configuration file to set the time
 bool RTC_init(void){
   bool success = true;
   rtc.begin();
@@ -21,42 +20,8 @@ bool RTC_init(void){
 
   RTC_updateInternalRTCToCurrentTime();
 
-  // //assuming the rtcDS3231 had already been initialised
-  // DateTime now = rtcDS3231.now();
-  // //using external RTC OPTION
-  // rtc.setEpoch(now.unixtime()); 
-  //MANUAL OPTION
-  // rtc.setEpoch(1577836800); // Jan 1, 2020
-  // rtc.setDate(01, 01, 2020);
-  // rtc.setTime(0, 0, 0);
-  //SERIAL OPTION
-  // while (Serial.available()) {
-  //     Serial.read();  // Clear any existing data from the serial buffer
-  // }
-  // Serial.println("GET_EPOCH");  // Send a command to the computer to request the epoch time
-  // while (!Serial.available()) {
-  //     ;  // Wait for the response from the computer
-  // }
-  // uint32_t epochTime = Serial.parseFloat();  // Read the epoch time from the serial connection
-  // rtc.setEpoch(epochTime);  // Set the obtained epoch time
-  // PREPROCESSING OPTION
-  // rtc.setEpoch(currentEpochTime);
-
   rtc.enableAlarm(rtc.MATCH_YYMMDDHHMMSS);
   rtc.attachInterrupt(RTC_callbackAlarmMatch);
-
-  // //configure next 9AM HB alarm time
-  // hbEPochTime = RTC_findNextHBEPochTime(now.unixtime());
-  // setSyncProvider(RTC.get);
-  // if (timeStatus() !=timeSet){
-  //   Serial.print("timeStatus(): ");
-  //   Serial.println(timeStatus());
-  //   success = false;
-  // }
-  // else{
-  //   success = true;
-  // }
-  //TODO: dont' know how to check if sync occured properly
   return success;
 }
 
@@ -69,11 +34,13 @@ void RTC_updateInternalRTCToCurrentTime(void){
 }
 
 void RTC_callbackAlarmMatch(){
-  // //when match alarm, set all other bits to zero
-  // Tool_setBitOff(&triggeredInputEvent, ~WM_INPUTBIT);
+  // //when match alarm, inform an alarm match occured
   Tool_setBitOn(&triggeredInputEvent, WM_INPUTBIT);
+  // glpbal variable: hecne update the time at which alarm occured
   alarmMatchEPochTime = rtc.getEpoch();
+  // in case alarm match is after next hb epoch time,
   if (alarmMatchEPochTime >= hbEPochTime){
+    // inform RMS that it will need to perform a HB signla
     Tool_setBitOn(&triggeredInputEvent, HB_INPUTBIT);
   }
 }
