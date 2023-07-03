@@ -134,7 +134,7 @@ void setup() {
   if(RTC_init()){
     char buf[20];
     Serial.print("Current time: ");
-    RTC_getTimeInText(rtc.getEpoch(), buf);
+    Tool_stringTime(rtc.getEpoch(), buf);
     Serial.println("DONE.");
   }
   else{

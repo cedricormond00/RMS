@@ -10,7 +10,8 @@
 #include "Global.h"
 #include "States.h"
 
-#include "RTC.h"
+// #include "RTC.h"
+#include "Tool.h"
 #include "States.h"
 
 bool Data_updateStateHistory(rmsClass& rmsClassArg, char dataFileName[]){
@@ -154,7 +155,7 @@ bool Data_saveDataPointToDataFile(uint32_t ePochTime,
         dataFile.print(ePochTime);
         dataFile.print(",");
         
-        RTC_getTimeInText(ePochTime, buf);
+        Tool_stringTime(ePochTime, buf);
         dataFile.print(buf);
         dataFile.print(",");
         

@@ -25,7 +25,7 @@ uint32_t RTC_updateHBEPochTime(uint32_t hbEPochTime, ConfigurationStruct cfgStru
 
 
 
-void RTC_getTimeInText(uint32_t ePochTime, char* buf);
+// void RTC_getTimeInText(uint32_t ePochTime, char* buf);
 
 
 

@@ -118,7 +118,7 @@ uint32_t RTC_findNextHBEPochTime(uint32_t currentEPochTime, ConfigurationStruct 
   Serial.println("Next HB EPochTime: ");
   Serial.println(nextHBEPochtTime);
   char buf[40];
-  RTC_getTimeInText(nextHBEPochtTime, buf);
+  Tool_stringTime(nextHBEPochtTime, buf);
   Serial.println(buf);
   return nextHBEPochtTime;
 }
@@ -129,16 +129,16 @@ uint32_t RTC_updateHBEPochTime(uint32_t hbEPochTime, ConfigurationStruct cfgStru
   return hbEPochTime+cfgStructArg.hbIntervalHour*60*60;
 }
 
-/* convert the time stamp into readable form */
-void RTC_getTimeInText(uint32_t ePochTime, char* buf){
-  // Convert the timestamp to a tm structure
-  tmElements_t timeInfo;
-  breakTime(ePochTime, timeInfo);
+// /* convert the time stamp into readable form */
+// void RTC_getTimeInText(uint32_t ePochTime, char* buf){
+//   // Convert the timestamp to a tm structure
+//   tmElements_t timeInfo;
+//   breakTime(ePochTime, timeInfo);
 
-  // Format the time components into the provided buffer
-  sprintf(buf, "%4d-%02d-%02d %02d:%02d:%02d", timeInfo.Year + 1970, timeInfo.Month, timeInfo.Day, timeInfo.Hour, timeInfo.Minute, timeInfo.Second);
-  // sprintf(buf, "%4d%02d%02d%02d%02d%02d", timeInfo.Year + 1970, timeInfo.Month, timeInfo.Day, timeInfo.Hour, timeInfo.Minute, timeInfo.Second);
-}
+//   // Format the time components into the provided buffer
+//   sprintf(buf, "%4d-%02d-%02d %02d:%02d:%02d", timeInfo.Year + 1970, timeInfo.Month, timeInfo.Day, timeInfo.Hour, timeInfo.Minute, timeInfo.Second);
+//   // sprintf(buf, "%4d%02d%02d%02d%02d%02d", timeInfo.Year + 1970, timeInfo.Month, timeInfo.Day, timeInfo.Hour, timeInfo.Minute, timeInfo.Second);
+// }
 
 
 

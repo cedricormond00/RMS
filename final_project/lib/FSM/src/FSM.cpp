@@ -68,7 +68,7 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, Confi
         uint32_t currentTime = rtcClassArg.getEpoch();
         char buf[256];
 
-        RTC_getTimeInText(currentTime, buf);
+        Tool_stringTime(currentTime, buf);
         
         Serial.print("Current unix time: ");
         Serial.println(currentTime);
@@ -428,6 +428,7 @@ void FSM_f_HB(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
 void FSM_f_BUP(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
     uint32_t currentEpochTime = rmsClassArg.get_wmReadEPochTime();
     if (rmsClassArg.get_smsPowerStructIsStablePowerSupply() != rmsClassArg.get_powerStructStablePowerSupply()){
+        //TODO: check if we can exchange both following line and then change the time we use in the SMS sending
         SMS_BUPSendIsStablePowerSupply(rmsClassArg, cfgStructArg);
 
         rmsClassArg.set_smsPowerStructIsStablePowerSupply(rmsClassArg.get_powerStructStablePowerSupply(), currentEpochTime);
@@ -449,7 +450,7 @@ void FSM_f_BUP(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
             rtc.disableAlarm();
             rtc.detachInterrupt();
             detachInterrupt(BUTTON_PIN);
-            
+
             rmsClassArg.set_rmsState(SLEEP);
             // update rmsPowerState --> do this in FSM_setPowerSituation
             // LowPower.attachInterruptWakeup(digitalPinToInterrupt(PIN_PA27))

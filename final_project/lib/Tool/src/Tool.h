@@ -9,6 +9,9 @@
 
 void Tools_print2digits(int number);
 
+void Tool_stringTime(uint32_t ePochTime, char* buf);
+
+
 /** \brief obtains the next power of two, for a 16 bit integer
  * \param v_ = input 16 bit integer
 */
