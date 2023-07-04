@@ -13,6 +13,10 @@ bool ura = false;
 bool hb = false;
 bool bup = false;
 
+void SMS_init(uint32_t timeout){
+    nbAccess.setTimeout(timeout); 
+}
+
 void SMS_wmSend(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
     if (rmsClassArg.get_wmAlarmSituation() == rmsClass::FIRSTANOMALY){
         SMS_wmImmediate(rmsClassArg, cfgStructArg);
@@ -322,7 +326,8 @@ bool SMS_initConnection(){
 
     // If your SIM has PIN, pass it as a parameter of begin() in quotes
     //TODO: change the while to a count up to 5 tries
-    while (!connected) {
+    uint8_t count = 0;
+    while (!connected && count <5) {
         // if (nbAccess.begin(PINNUMBER) == NB_READY) {
             //here is the problem
         NB_NetworkStatus_t status = nbAccess.status();
@@ -330,11 +335,15 @@ bool SMS_initConnection(){
         Serial.println(status);
         if (status == NB_READY) {
             connected = true;
+            Serial.println("NB initialized");
         }
         else {
             Serial.println("Not connected");
+            count ++;
             delay(1000);
             Serial.println("NB not NB_ready. SHutting down and rebegining.");
+            Serial.print("Attempt: ");
+            Serial.println(count);
             nbAccess.shutdown();
             nbAccess.begin(PINNUMBER);
             status = nbAccess.status();
@@ -354,7 +363,7 @@ bool SMS_initConnection(){
     //         delay(1000);
     //     }
     // }
-    Serial.println("NB initialized");
+
     return connected;
 }
 

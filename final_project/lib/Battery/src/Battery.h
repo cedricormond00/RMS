@@ -5,13 +5,12 @@
 #include "States.h"
 
 /** 
- * @brief Initialisation sequence to ensure power supply (battery and mains) is suitable
+ * @brief Initialisation sequence to ensure power supply (battery and mains) is suitable. 
  * 
- * If the battery is either
+ * @details If the battery is either
  * - not connected
  * - critical energy level (less then 5%) and the RMS is not connected to mains, 
- * stop the intialisation, and updates the rmsClass
- * 
+ * stop the intialisation, and updates the rmsClass.
  * Also sets the powerStruct values (
  * - is stable power supply
  * - battery charge status

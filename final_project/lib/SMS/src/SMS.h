@@ -5,6 +5,13 @@
 #include "States.h"
 #include "Configuration.h"
 
+/**
+ * @brief function to initialisze nb object 
+ * @details sets 
+ * - the timeout 
+*/
+void SMS_init(uint32_t timeout);
+
 void SMS_wmSend(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg);
 void SMS_wmImmediate(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg);
 void SMS_wmHistoryWindow(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg);

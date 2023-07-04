@@ -1,13 +1,16 @@
 #include <Arduino.h>
 // #include <RTCZero.h>
-
-// #include <Ezo_i2c.h> //include the EZO I2C library from https://github.com/Atlas-Scientific/Ezo_I2c_lib
+#include <Ezo_i2c.h> //include the EZO I2C library from https://github.com/Atlas-Scientific/Ezo_I2c_lib
 #include <Arduino_PMIC.h>
 
 #include "Constant.h"
+
 #include "Configuration.h"
 #include "States.h"
+
 #include "FSM.h"
+
+#include "SMS.h"
 
 #include "LowPower.h"
 #include "RTC.h"
@@ -59,7 +62,11 @@ void setup() {
     Serial.println("Failed to initialize PMIC!");
     while (1);
   }
+
+  //nb timeout
+  SMS_init(5000);//5 secs timeout
   
+  // obtain the charge volatge in the register
   // Serial.print(PMIC.getChargeVoltage());
 
   Serial.println("------");
