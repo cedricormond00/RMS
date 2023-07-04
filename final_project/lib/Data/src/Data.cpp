@@ -75,6 +75,30 @@ void Data_stringTime(uint32_t ePochTime, char* buf){
 }
 
 
+bool Data_populateHeaderRowToFile(String colNames[],
+                                uint8_t numberOfCols,
+                                char fileName[]){
+    bool success = true;
+    
+    File file = SD.open(fileName, FILE_WRITE);
+    if (file) {
+        for (int i=0; i<numberOfCols; i++){
+            file.print(colNames[i]);
+            if (i<numberOfCols-1){
+                file.print(",");
+            }
+            
+        }
+        file.println();
+        file.close();
+    } 
+    else {
+        success = false;
+    }
+    file.close();  
+    return success;
+}
+
 
 bool Data_updateStateHistory(rmsClass& rmsClassArg, char dataFileName[]){
     bool success = true;
@@ -261,29 +285,7 @@ bool Data_saveDataPointToDataFile(uint32_t ePochTime,
     return success;
 }
 
-bool Data_populateHeaderRowToFile(String colNames[],
-                                uint8_t numberOfCols,
-                                char fileName[]){
-    bool success = true;
-    
-    File file = SD.open(fileName, FILE_WRITE);
-    if (file) {
-        for (int i=0; i<numberOfCols; i++){
-            file.print(colNames[i]);
-            if (i<numberOfCols-1){
-                file.print(",");
-            }
-            
-        }
-        file.println();
-        file.close();
-    } 
-    else {
-        success = false;
-    }
-    file.close();  
-    return success;
-}
+
 
 
 

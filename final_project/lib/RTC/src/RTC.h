@@ -33,13 +33,38 @@ void RTC_updateInternalRTCToCurrentTime(void);
 */
 void RTC_callbackAlarmMatch();
 
-void RTC_print2digits(int number);
+/**
+ * @brief Sets up the heartbeat (HB) based on the current time and configuration.
+ *
+ * This function calculates the next heartbeat epoch time based on the current time and the provided configuration.
+ * It uses the RTC (Real-Time Clock) to retrieve the current epoch time.
+ * The calculated heartbeat epoch time is stored in the global variable `hbEPochTime`.
+ *
+ * @param cfgStructArg The configuration structure containing the heartbeat settings.
+ * @return True if the heartbeat epoch time is successfully calculated and is greater than the current time, false otherwise.
+ */
+bool RTC_setUpHB(ConfigurationStruct cfgStructArg);
+
+/**
+ * @brief Finds the epoch time for the next heartbeat (HB) based on the current epoch time and configuration.
+ *
+ * This function calculates the epoch time for the next heartbeat based on the current epoch time and the provided configuration.
+ * To do so, it adjusts the current epoch time by adding the heartbeat interval in seconds if the current time is after the specified target hour.
+ * Then, it sets the target hour in the resulting date and converts it to epoch time.
+ * The calculated epoch time for the next heartbeat is returned.
+ *
+ * @param currentEPochTime The current epoch time.
+ * @param cfgStructArg The configuration structure containing the heartbeat settings.
+ * @return The epoch time for the next heartbeat.
+ */
+uint32_t RTC_findNextHBEPochTime(uint32_t currentEPochTime, ConfigurationStruct cfgStructArg);
+
+
+
 void RTC_printTime(RTCZero& rtcClassArg);
 
 
 
-bool RTC_setUpHB(ConfigurationStruct cfgStructArg);
-uint32_t RTC_findNextHBEPochTime(uint32_t currentEPochTime, ConfigurationStruct cfgStructArg);
 uint32_t RTC_updateHBEPochTime(uint32_t hbEPochTime, ConfigurationStruct cfgStructArg);
 
 

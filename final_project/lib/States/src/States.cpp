@@ -42,14 +42,15 @@ void rmsClass::set_FWQSleepPeriod(uint16_t new_FWQSleepPeriod){
     return;
 }
 // _rmsState
+RMSState rmsClass::get_rmsState(){
+    return _rmsState;
+}
 void rmsClass::set_rmsState(RMSState newState){
     // _previousRMSState = _rmsState;// store the previous state
     _rmsState = newState; // store the current updated state
 }
 
-RMSState rmsClass::get_rmsState(){
-    return _rmsState;
-}
+
 
 
 // // _previousRMSState

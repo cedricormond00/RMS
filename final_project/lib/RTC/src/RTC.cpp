@@ -11,7 +11,8 @@
 #include "Tool.h"
 
 
-// uint32_t currentEpochTime = ;
+bool debug_RTC = false;
+
 
 bool RTC_init(void){
   bool success = true;
@@ -59,54 +60,44 @@ bool RTC_setUpHB(ConfigurationStruct cfgStructArg){
   return success;
 }
 
-//TODO: add configuration struct to set the appropriate time
 uint32_t RTC_findNextHBEPochTime(uint32_t currentEPochTime, ConfigurationStruct cfgStructArg){
 
   // Convert the given epoch time to a tm structure
-  tmElements_t targetTime;
-  breakTime(currentEPochTime, targetTime);
+  tmElements_t targetTime;                                      // for now, this is the current epoch time
+  breakTime(currentEPochTime, targetTime);                      // store the current epochTime into my targetTime
 
-  // Increment the date by one day if the current time is after 9 AM
-  // CONFIG: set the time at which the first HB should occur
-  if (targetTime.Hour >= cfgStructArg.hbTargetHour) {
-    currentEPochTime += cfgStructArg.hbIntervalHour * 60 * 60; // Add 24 hours in seconds
+  // Increment the date by one day if the current time is after the desired HB time
+  if (targetTime.Hour >= cfgStructArg.hbTargetHour) {           // if we are currently later than the desired HB hour
+    currentEPochTime += cfgStructArg.hbIntervalHour * 60 * 60;  // Add 24 hours in seconds
   }
 
   // break down the updated (by 24hours) currentEpochTime
-  breakTime(currentEPochTime, targetTime);
+  breakTime(currentEPochTime, targetTime);                       //targetTime now contains the desired HB time
 
-  // Set the time to 9AM on the targetTime
+  // Set the HB hour in the targetTime
   targetTime.Hour = cfgStructArg.hbTargetHour;
   targetTime.Minute = 0;
   targetTime.Second = 0;
 
   //Convert the resulting time to epOchTime
   uint32_t nextHBEPochtTime = makeTime(targetTime);
-  Serial.println("Next HB EPochTime: ");
-  Serial.println(nextHBEPochtTime);
-  char buf[40];
-  Tool_stringTime(nextHBEPochtTime, buf);
-  Serial.println(buf);
+  if (debug_RTC){
+    Serial.println("Next HB time: ");
+    Serial.println(nextHBEPochtTime);
+    char buf[40];
+    // convert the time to a human readable format
+    Tool_stringTime(nextHBEPochtTime, buf);
+    Serial.println(buf);
+  }
   return nextHBEPochtTime;
 }
 
-//TODO: include COnfiguration struct
+
+
 uint32_t RTC_updateHBEPochTime(uint32_t hbEPochTime, ConfigurationStruct cfgStructArg){
   // CONFIG: tune how often we want a HB
   return hbEPochTime+cfgStructArg.hbIntervalHour*60*60;
 }
-
-// /* convert the time stamp into readable form */
-// void RTC_getTimeInText(uint32_t ePochTime, char* buf){
-//   // Convert the timestamp to a tm structure
-//   tmElements_t timeInfo;
-//   breakTime(ePochTime, timeInfo);
-
-//   // Format the time components into the provided buffer
-//   sprintf(buf, "%4d-%02d-%02d %02d:%02d:%02d", timeInfo.Year + 1970, timeInfo.Month, timeInfo.Day, timeInfo.Hour, timeInfo.Minute, timeInfo.Second);
-//   // sprintf(buf, "%4d%02d%02d%02d%02d%02d", timeInfo.Year + 1970, timeInfo.Month, timeInfo.Day, timeInfo.Hour, timeInfo.Minute, timeInfo.Second);
-// }
-
 
 
 

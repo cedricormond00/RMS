@@ -3,13 +3,22 @@
 #define TOOL_H
 
 
-// #pragma once
 
-// Function prototype
+/**
+ * @brief Converts the given epoch time to a formatted string representation (yyyy/mm/dd-hh:mm:ss).
+ *
+ * This function converts the provided epoch time to a human-readable string format
+ * and stores it in the given buffer.
+ *
+ * @param ePochTime The epoch time value to convert.
+ * @param buf The buffer to store the formatted string representation.
+ */
+void Tool_stringTime(uint32_t ePochTime, char* buf);
+
 
 void Tools_print2digits(int number);
 
-void Tool_stringTime(uint32_t ePochTime, char* buf);
+
 
 
 /** \brief obtains the next power of two, for a 16 bit integer

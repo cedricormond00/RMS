@@ -21,7 +21,7 @@ enum RMSState {
    SDCARD_NOK,
    SDCARD_FILENAMENOK,
    RTC_FAILEDINIT,
-   RTC_FAILEDHBSET
+   RTC_FAILEDHBSET, UNKNOWN_ERROR
    // POWERSUPPLY_NOTSTABLE,
 };
 
@@ -42,9 +42,17 @@ class rmsClass {
       void set_UWQSleepPeriod(uint16_t new_UWQSleepPeriod);
       void set_FWQSleepPeriod(uint16_t new_FWQSleepPeriod);
 
-      // getter and setter function of rms
-
+      /**
+       * @brief getter function for _rmsState
+       * @param none
+       * @return _rmsState
+       * */ 
       RMSState get_rmsState();
+      /**
+       * @brief setter function for _rmsState
+       * @param newState
+       * @return none
+       * */ 
       void set_rmsState(RMSState newState);
 
       // RMSState get_previousRMSState();

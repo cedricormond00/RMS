@@ -84,6 +84,8 @@ void ToggleLED(unsigned int pin){
 
 
 
+
+
 void multipin_HL(unsigned int pin_arr[], unsigned int arraySize, unsigned int status)
 {
   // unsigned int n_arraySize = sizeof(n_pinAllLEDs) / sizeof(n_pinAllLEDs[0]);
@@ -232,5 +234,22 @@ void LED_showRTCFailedHBSetSignal(){
 
   digitalWrite(YELLOWLED_PIN, LOW);
 }
+
+// about unknown_Error -> red + blue LED
+void LED_showUnknownErrorSignal(){
+  digitalWrite(REDLED_PIN, HIGH);
+  digitalWrite(BLUELED_PIN, LOW);
+
+  delay(100);
+
+  for (int i = 0; i<4; i++){
+    ToggleLED(BLUELED_PIN);
+    delay(100);
+  }
+
+  digitalWrite(REG_DAC_DATA, LOW);
+  digitalWrite(BLUELED_PIN, HIGH);
+}
+
 
 

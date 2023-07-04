@@ -4,14 +4,25 @@
 #ifndef FSM_H
 #define FSM_H
 
-#include <Arduino.h>
+// #include <Arduino.h>
 #include <Ezo_i2c.h> //include the EZO I2C library from https://github.com/Atlas-Scientific/Ezo_I2c_lib
 
 #include "States.h"
 #include "Configuration.h"
 
-// CONFIG
-// TODO: the datafileName shoudl/could be in the configuration struct...
+
+/**
+ * @brief Initializes the RMS (Remote Monitoring System) with the provided configuration.
+ *
+ * This function initializes the RMS by setting the required values from the configuration file into the `rmsClass` object.
+ * It sets the sleep periods, allowed intervals between SMS, input event code, wake-up epoch times, power situation,
+ * SMS power structure, and state history of the RMS. It also ensures that the heartbeat alarm is set in the future.
+ *
+ * @param rmsClassArg The RMS class object to be initialized.
+ * @param cfgStructArg The configuration struct containing the required values.
+ */
+void FSM_initRMS(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg);
+
 
 void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, ConfigurationStruct cfgStructArg, volatile uint8_t* triggeredInputEvent);//input arguments: relevant function counter
 // void FSM_executeFunction(uint8_t* eventInputCode_, char ORPData_[]);

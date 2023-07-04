@@ -73,7 +73,7 @@ void setup() {
 
   Serial.println("****RMS****");
 
-  Serial.println("RMS ID: ");
+  Serial.print("RMS ID: ");
   Serial.println(RMS_ID);
 
   Serial.println("***Setup Start***");
@@ -228,68 +228,20 @@ void loop() {
       Serial.println("-in INIT State");
       digitalWrite(BLUELED_PIN, HIGH);
       digitalWrite(REDLED_PIN, HIGH);
-      // let the mahchine know it must perform the Water Monitoring function right now
-
-      // // as if at initialisation the device has just woken up
-      // initWakeUpTime = rtc.getEpoch();
-      // rms.set_wakeUpEPochTime(initWakeUpTime);
-      // rms.set_wmWakeUpEPochTime(initWakeUpTime);
-
-
-      // Serial.print("rms.get_wakeUpEPochTime(): ");
-      // Serial.println(rms.get_wakeUpEPochTime());
-      // rtc.setAlarmEpoch(rms.get_wakeUpEPochTime());
-
-      // Serial.print("rms.get_wmWakeUpEPochTime(): ");
-      // Serial.println(rms.get_wmWakeUpEPochTime());
-      // rtc.setAlarmEpoch(rms.get_wmWakeUpEPochTime());
-
-      // rms.set_inputEventCode(0b1);
-
-      // put rms.set_inputEventCode(0b1); in the setup loop
-      // init_smsPowerStruct(initWakeUpTime);
+      FSM_initRMS(rms, cfg);
+      Serial.println("-end INIT State");
 
       /*TODO: ensure to check the next hb is checked to be in the future here:
       update the HB time, if again it fails,
       else:return an error and show the rror signal code: send the device into unknown error state
       */
-      
-      /*TODO: set inside the rms class
-      - input event code
-      - time
-        - wake up
-        - wmWakeUp -> for future alarm 
-        - 
-      - sleep period depending on rmsState
-        - value defined in the SD Card
-      - alarmStruct -> for both URA + WM
-        - allowedIntervalBetweenSMS_initVal); -> use the config file
-        (- lastAlarmSMSEPochTime_initVal, -> if equal to 0, set to now)
-        (- currentAlarmEPochTime_initVal, -> if equal to 0, set to now)
-        - -> setting to now prevents that the alarm gets triggered at start up
-        - alarmSituation (wm) -> set to NOANOMALIES
-      - stateHistoryStruct -
-        - simply call reset
-      - the BUP -> power struct 
-        - simply call FSM_setPowerSituation
-      - smsPowerStruct
-        - simply call init_smsPowerStruct (consider that we consider that the operator knows the state at init)
-      - 
-      */
-
-     //TODO: CONFIG : in rmsCLass: create a config function to set the _SWQSleepPerio
-      FSM_initRMS(rms, cfg);
-      Serial.println("-end INIT State");
-
-    
-
       break;
 
     case SWQ: 
+      Serial.println("-in SWQ State");
       digitalWrite(REDLED_PIN, LOW);
       digitalWrite(GREENLED_PIN, HIGH);
-      // wakePeriod = 10000; //every 30 sec
-      // wake evry 5 minutes (5*60*1000ms=300000)
+
       
 
      
@@ -303,6 +255,7 @@ void loop() {
       break;
 
     case UWQ:
+      Serial.println("-in UWQ State");
       digitalWrite(REDLED_PIN, HIGH);
       digitalWrite(GREENLED_PIN, LOW);
       // wakePeriod = 10000; // 20 sec
@@ -313,11 +266,12 @@ void loop() {
       FSM_updateInputEventCode(rms, rtc, cfg, &triggeredInputEvent);
 
 
+      Serial.println("-end UWQ State");
 
       break;
 
     case FWQ:
-      // rmsState = SWQ;
+      Serial.println("-in FWQ State");
       digitalWrite(REDLED_PIN, HIGH);
       digitalWrite(GREENLED_PIN, LOW);
       // wakePeriod = 10000; // 20 sec
@@ -326,44 +280,74 @@ void loop() {
 
       LP_goToLowPowerConsumption(rms, rtc, &triggeredInputEvent);
       FSM_updateInputEventCode(rms, rtc, cfg, &triggeredInputEvent);
+      Serial.println("-end FWQ State");
+
       break;
 
     case SLEEP:
+      Serial.println("-in SLEEP State");
       digitalWrite(REDLED_PIN, HIGH);
       digitalWrite(GREENLED_PIN, LOW);
       digitalWrite(BLUELED_PIN, LOW);
       
       LP_goToDeepSleep(rms);
-      break;
+      Serial.println("-end SLEEP State");
 
+      break;
+//TODO: remove the in /end for the follwoing states
     case BATTERY_LOW:
+      Serial.println("-in BATTERY_LOW State");
       LED_showBatteryLowSignal();
       delay(2000);
+      Serial.println("-end BATTERY_LOW State");
+
       break;
 
     case BATTERY_NOTCONNECTED:
+      Serial.println("-in BATTERY_NOTCONNECTED State");
       LED_showBatteryNotConnectedSignal();
       delay(2000);
+      Serial.println("-end BATTERY_NOTCONNECTED State");
+
       break;
 
     case SDCARD_NOK:
+      Serial.println("-in SDCARD_NOK State");
       LED_showSDCardNokSignal();
       delay(2000);
+      Serial.println("-end SDCARD_NOK State");
+
       break;
     
     case SDCARD_FILENAMENOK:
+      Serial.println("-in SDCARD_FILENAMENOK State");
       LED_showSDCardFileNameNOkSignal();
       delay(2000);
+      Serial.println("-end SDCARD_FILENAMENOK State");
+
       break;
     
     case RTC_FAILEDINIT:
+      Serial.println("-in RTC_FAILEDINIT State");
       LED_showRTCFailedInitSignal();
       delay(2000);
+      Serial.println("-end RTC_FAILEDINIT State");
+
       break;
     
     case RTC_FAILEDHBSET:
+      Serial.println("-in RTC_FAILEDHBSET State");
       LED_showRTCFailedHBSetSignal();
       delay(2000);
+      Serial.println("-end RTC_FAILEDHBSET State");
+
+      break;
+    
+    case UNKNOWN_ERROR:
+      Serial.println("-in UNKNOWN_ERROR State");
+      LED_showUnknownErrorSignal();
+      delay(2000);
+      Serial.println("-end UNKNOWN_ERROR State");
       break;
 
     
