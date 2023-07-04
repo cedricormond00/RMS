@@ -14,6 +14,68 @@
 #include "Tool.h"
 #include "States.h"
 
+bool Data_SDCard_init( void ){
+    bool success = true;
+    
+    // Initialize SD card
+    SD.begin(SD_CHIPSELECT);
+
+    Serial.print("Initializing SD card...");
+    // Set chip select pin as an output
+    pinMode(SD_CHIPSELECT, OUTPUT);
+
+    // see if the card is present and can be initialized:
+    if (!SD.begin(SD_CHIPSELECT)) {
+        Serial.println("Card failed, or not present");
+        success = false;
+        return success;
+    }
+    Serial.println("Card initialized.");
+
+    return success;
+}
+
+
+bool Data_createValidDataFileName(char datafilename[]){
+    bool success = true;
+    char timeStampString[8];
+    // uint32_t currentEpochTimeTime = rtc.getEpoch();
+    Data_stringTime(rtc.getEpoch(), timeStampString);
+    Serial.print("timeStampString: ");
+    Serial.println(timeStampString);
+    //create the filename string
+    // sprintf(datafilename, "%s.csv", timeStampString);
+    
+    uint16_t i = 0;
+    for(i = 0; i< 99; i++){ //24*60*60 = 86400)
+        // sprintf(datafilename, "%s_%02d.csv",timeStampString, i);
+
+        sprintf(datafilename, "%s_%01d.csv",timeStampString, i);
+        if( !SD.exists(datafilename) ){
+            break;      
+        }
+    }
+    if(i == 99){
+        datafilename = NULL;
+        success = false;
+        /* error flag */
+    }
+    return success;
+}
+
+
+/* convert the ePochTimestamp into a formatted string: ymmdd*/
+void Data_stringTime(uint32_t ePochTime, char* buf){
+  // Convert the timestamp to a tm structure
+  tmElements_t timeInfo;
+  breakTime(ePochTime, timeInfo);
+
+  // Format the time components into the provided buffer
+  sprintf(buf, "%1d%02d%02d", timeInfo.Year + 1970 - 2020, timeInfo.Month, timeInfo.Day);//, timeInfo.Hour, timeInfo.Minute, timeInfo.Second);
+}
+
+
+
 bool Data_updateStateHistory(rmsClass& rmsClassArg, char dataFileName[]){
     bool success = true;
     Serial.println("before updating counts");
@@ -223,58 +285,9 @@ bool Data_populateHeaderRowToFile(String colNames[],
     return success;
 }
 
-/* Filename convention:
- *  dataXXXX.txt where XXXX is a sequential number. This function finds the lowest
- *  XXXX index and creates a file name. If XXXX = 9999 exists, filename is set to NULL
- */
-bool Data_createValidDataFileName(char datafilename[]){
-    bool success = true;
-    char timeStampString[8];
-    // uint32_t currentEpochTimeTime = rtc.getEpoch();
-    Data_stringTime(rtc.getEpoch(), timeStampString);
-    Serial.print("timeStampString: ");
-    Serial.println(timeStampString);
-    //create the filename string
-    // sprintf(datafilename, "%s.csv", timeStampString);
-    
-    uint16_t i = 0;
-    for(i = 0; i< 99; i++){ //24*60*60 = 86400)
-        // sprintf(datafilename, "%s_%02d.csv",timeStampString, i);
-
-        sprintf(datafilename, "%s_%01d.csv",timeStampString, i);
-        if( !SD.exists(datafilename) ){
-            break;      
-        }
-    }
-    if(i == 86400){
-        datafilename = NULL;
-        success = false;
-        /* error flag */
-    }
-
-    Serial.print("datafilename: ");
-    Serial.println(datafilename);
-    return success;
-}
 
 
-/* convert the time stamp into readable form */
-void Data_stringTime(uint32_t ePochTime, char* buf){
-  // // Convert the epoch time to time_t
-  // time_t time = ePochTime;
 
-  // uint32_t time = ePochTime;
-
-  // Convert the timestamp to a tm structure
-  tmElements_t timeInfo;
-  breakTime(ePochTime, timeInfo);
-
-  // Format the time components into the provided buffer
-//   sprintf(buf, "%2d%02d%02d", timeInfo.Year + 1970, timeInfo.Month, timeInfo.Day);//, timeInfo.Hour, timeInfo.Minute, timeInfo.Second);
-
-  sprintf(buf, "%1d%02d%02d", timeInfo.Year + 1970 - 2020, timeInfo.Month, timeInfo.Day);//, timeInfo.Hour, timeInfo.Minute, timeInfo.Second);
-  // sprintf(buf, "%4d%02d%02d%02d%02d%02d", timeInfo.Year + 1970, timeInfo.Month, timeInfo.Day, timeInfo.Hour, timeInfo.Minute, timeInfo.Second);
-}
 
 
 
@@ -304,28 +317,7 @@ bool Data_removeFile(char fileName[]){
     return success;
 }
 
-bool Data_SDCard_init( void ){
-    bool success = true;
 
-    // // Set chip select pin as an output
-    // pinMode(SD_CHIPSELECT, OUTPUT);
-    
-    // Initialize SD card
-    SD.begin(SD_CHIPSELECT);
-
-    Serial.print("Initializing SD card...");
-    pinMode(SD_CHIPSELECT, OUTPUT);
-
-    // see if the card is present and can be initialized:
-    if (!SD.begin(SD_CHIPSELECT)) {
-        Serial.println("Card failed, or not present");
-        success = false;
-        return success;
-    }
-    Serial.println("card initialized.");
-
-    return success;
-}
 
 // Prints the content of a file to the Serial
 void Data_printFile(const char *filename) {

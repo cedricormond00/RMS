@@ -35,17 +35,12 @@ void Config_setConfigurationDefault(ConfigurationStruct& cfg){
 
     cfg.sendSMS = false;
 
-    // cfg.remoteNumberLength = 13;
-    // char remoteNumber[cfg.remoteNumberLength+1] = {'0','0','4','1','7','6','7','2','4','7','4','4','9','\0'};
-    // strcpy(cfg.remoteNumber, remoteNumber);
 
     char remoteNumber[] = {'0','0','4','1','7','6','7','2','4','7','4','4','9','\0'};
     strcpy(cfg.remoteNumber, remoteNumber);
     cfg.remoteNumberLength = strlen(remoteNumber);
 
-    // strcpy(cfg.remoteNumber, {'0','0','4','1','7','6','7','2','4','7','4','4','9','\0'});
     Config_printConfiguration(cfg);
-
 }
 
 
@@ -131,53 +126,6 @@ void Config_setConfigurationFromFile(ConfigurationStruct& cfg) {
 }                      
 
 
-// Saves the configuration to a file
-void Config_saveConfigurationToSD(const ConfigurationStruct& cfg) {
-    // Delete existing file, otherwise the configuration is appended to the file
-    SD.remove(cfg.filename);
-
-    // Open file for writing
-    File file = SD.open(cfg.filename, FILE_WRITE);
-    if (!file) {
-        Serial.println(F("Failed to create file"));
-        return;
-    }
-
-    DynamicJsonDocument doc(2048);
-
-    // Set the values
-    doc["logitThreshold"] = cfg.logitThreshold;
-    // doc["hbTime"] = cfg.hbTime;
-    // doc["hbElapsePeriod"] = cfg.hbElapsePeriod;
-    doc["uraPressDuration"] = cfg.uraPressDuration;
-    
-    doc["hbTargetHour"] = cfg.hbTargetHour;
-    doc["hbIntervalHour"] = cfg.hbIntervalHour;
-
-    doc["swqSleepPeriod"] = cfg.swqSleepPeriod;
-    doc["uwqSleepPeriod"] = cfg.uwqSleepPeriod;
-    doc["fwqSleepPeriod"] = cfg.fwqSleepPeriod;
-    
-    doc["uraSMSInterval"] = cfg.uraSMSInterval;
-    doc["wmSMSInterval"] = cfg.wmSMSInterval;
-
-    doc["sendSMS"] = cfg.sendSMS;
-    doc["remoteNumberLength"] = cfg.remoteNumberLength;
-    doc["remoteNumber"] = cfg.remoteNumber;
-
-
-    // Serialize JSON to file
-    if (serializeJson(doc, file) == 0) {
-        Serial.println("Failed to write configuration to file");
-    }
-
-    // Close the file (File's destructor doesn't close the file)
-    file.close();
-}
-
-
-
-
 void Config_printConfiguration(ConfigurationStruct cfg){
     Serial.print("logit threshold (ORP, mV): ");
     Serial.println(cfg.logitThreshold); 
@@ -211,6 +159,52 @@ void Config_printConfiguration(ConfigurationStruct cfg){
     Serial.println(cfg.remoteNumber);
     Serial.print("Phone Number length: ");
     Serial.println(cfg.remoteNumberLength);
-
-
 }
+
+
+// Saves the configuration to a file
+void Config_saveConfigurationToSD(const ConfigurationStruct& cfg) {
+    // Delete existing file, Otherwise the configuration is appended to the file
+    SD.remove(cfg.filename);
+
+    // Open file for writing
+    File file = SD.open(cfg.filename, FILE_WRITE);
+    if (!file) {
+        Serial.println(F("Failed to create file"));
+        return;
+    }
+
+    //TODO: sort out the lenght required
+    DynamicJsonDocument doc(2048);
+
+    // Set the values
+    doc["logitThreshold"] = cfg.logitThreshold;
+
+    doc["uraPressDuration"] = cfg.uraPressDuration;
+    
+    doc["hbTargetHour"] = cfg.hbTargetHour;
+    doc["hbIntervalHour"] = cfg.hbIntervalHour;
+
+    doc["swqSleepPeriod"] = cfg.swqSleepPeriod;
+    doc["uwqSleepPeriod"] = cfg.uwqSleepPeriod;
+    doc["fwqSleepPeriod"] = cfg.fwqSleepPeriod;
+    
+    doc["uraSMSInterval"] = cfg.uraSMSInterval;
+    doc["wmSMSInterval"] = cfg.wmSMSInterval;
+
+    doc["sendSMS"] = cfg.sendSMS;
+    doc["remoteNumberLength"] = cfg.remoteNumberLength;
+    doc["remoteNumber"] = cfg.remoteNumber;
+
+    // Serialize JSON to file
+    if (serializeJson(doc, file) == 0) {
+        Serial.println("Failed to write configuration to file");
+    }
+
+    // Close the file (File's destructor doesn't close the file)
+    file.close();
+}
+
+
+
+

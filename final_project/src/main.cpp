@@ -78,7 +78,7 @@ void setup() {
 
   Serial.println("***Setup Start***");
 
-  Serial.println("**Initializing LEDs**");
+  Serial.println("**LEDs initialisation**");
 
   // LED pins
   pinMode(BLUELED_PIN, OUTPUT);
@@ -91,13 +91,13 @@ void setup() {
 
   
 
-  Serial.println("**Initializing button**");
+  Serial.println("**Button initialisation**");
 
   pinMode(BUTTON_PIN, INPUT);
   Serial.println("DONE.");
 
   
-  Serial.println("**Checking powerSupply**");
+  Serial.println("**PowerSupply check**");
   if(Battery_runInitSequence(rms)){
     Serial.println("DONE.");
   }
@@ -107,9 +107,8 @@ void setup() {
   }
 
   // RTC  
-  Serial.println("**Initializing internal RTC**");
+  Serial.println("**Internal RTC initialisation**");
   //TODO: use the nb.getTime: to update the time external RTC ansd internal RTC
-  // STOPPED HERE in commenting
   if(RTC_init()){
     char buf[20];
     Serial.print("Current time: ");
@@ -122,7 +121,7 @@ void setup() {
     return;
   }
 
-  Serial.println("**Initialising SD card**");
+  Serial.println("**SD card initialisation**");
   if (Data_SDCard_init()){
     Serial.println("DONE.");
     // create a valide filename
@@ -171,25 +170,19 @@ void setup() {
   - if fail, use default config
   - setup rms with config settings --> done in INIT
   */
-  Serial.println("**Setting configuration parameters**");
-  Serial.println("*Setting RMS default config*");
+  Serial.println("**Configuration parameters setting**");
+  Serial.println("*Setting RMS configuration as default*");
   Config_setConfigurationDefault(cfg);
   // Serial.println("Default settings: ");
   // Config_printConfiguration(cfg);
   Serial.println("DONE.");
 
-  Serial.println("*Setting RMS file config*");
+  Serial.println("*Setting RMS configuration from file*");
   Config_setConfigurationFromFile(cfg);
   // Serial.println("File settings: ");
   // Config_printConfiguration(cfg);
   Serial.println("DONE.");
 
-
-  // // rms
-  // // set RMS on same time as RTC on initialisation
-  // //TODO: check if this is required
-  // rms.set_wakeUpEPochTime(DEFAULT_EPOCHTIME+0);
-  // rms.set_toSleepEPochTime(DEFAULT_EPOCHTIME);
 
   Serial.println("*Setting up next HB time*");
   if (RTC_setUpHB(cfg)){
@@ -202,17 +195,11 @@ void setup() {
   }
 
 
-  
-
-
-
-
-
   Serial.println("**Attaching low power external wakeup function**");
-  /* Sertup LowPower: tell what to do in case of external interrupt
-  - According to source cdoe, this also works when the device is awake
-
-  */ 
+  /* 
+  Setup LowPower: tell what to do in case of external interrupt. 
+  According to source cdoe, this also works when the device is awake
+  */
   LP_setupURAInterrupt();
   Serial.println("DONE.");
 
@@ -220,9 +207,6 @@ void setup() {
   Serial.println("**Saving RMS config to SD**");
   Config_saveConfigurationToSD(cfg);
   Serial.println("DONE.");
-
-  
-
   
   // init completed
   LED_runInitCompleteSignal();
@@ -232,23 +216,13 @@ void setup() {
 }
 
 void loop() {
-  // RTC_printTime(rtc);
-  // delay(1000);
-  // Serial.println(digitalRead(BUTTON_PIN));
-  //   FSM_executeFunction(&inputEventCode, &EZO_ORP, &rmsState);
-  // if (digitalRead(BUTTON_PIN) == HIGH){
-  //   Serial.print("triggeredInputEvent: ");
-  //   Serial.println(triggeredInputEvent, BIN);
-  // }
-  
+  /* execute FSM functions.
+  Based on inputs, tracked through the global variable triggeredInputEvent, 
+  the corresponding functions will execute */
   FSM_executeFunction(EZO_ORP, rms, rtc, cfg, dataFileName);
-  // Serial.print(rms.get_rmsState());
-  // Serial.print("test");
-  delay(500);
-  switch(rms.get_rmsState()){
-    
+  // delay(500);
 
-    
+  switch(rms.get_rmsState()){
     // go in appropriate state
     case INIT:
       Serial.println("-in INIT State");
