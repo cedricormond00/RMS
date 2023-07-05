@@ -59,13 +59,33 @@ bool RTC_setUpHB(ConfigurationStruct cfgStructArg);
  */
 uint32_t RTC_findNextHBEPochTime(uint32_t currentEPochTime, ConfigurationStruct cfgStructArg);
 
+/**
+ * @brief Updates the epoch time for the next Heartbeat (HB) event.
+ * 
+ * @param hbEPochTime The epoch time of the current Heartbeat event.
+ * @param cfgStructArg The configuration settings for the system.
+ * 
+ * @return The updated epoch time for the next Heartbeat event.
+ * 
+ * @details This function takes the current epoch time of the Heartbeat event and
+ * adds the configured Heartbeat interval in hours to calculate the epoch time for
+ * the next Heartbeat event. The Heartbeat interval determines how often the Heartbeat
+ * event occurs.
+ * 
+ * @note The function assumes that the Heartbeat interval in the configuration settings
+ * is properly set and represents the desired time interval in hours between Heartbeat events.
+ * 
+ * @warning The function relies on the correctness of the current Heartbeat epoch time and
+ * the Heartbeat interval in the configuration settings. Ensure that these values are accurate
+ * to obtain the correct epoch time for the next Heartbeat event.
+ */
+uint32_t RTC_updateHBEPochTime(uint32_t hbEPochTime, ConfigurationStruct cfgStructArg);
 
 
 void RTC_printTime(RTCZero& rtcClassArg);
 
 
 
-uint32_t RTC_updateHBEPochTime(uint32_t hbEPochTime, ConfigurationStruct cfgStructArg);
 
 
 

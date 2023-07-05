@@ -51,10 +51,38 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
  * @param cfgStructArg The `ConfigurationStruct` object containing the configuration settings.
  * @param dataFileName The name of the data file to which data points will be saved.
  */
-
 void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg, ConfigurationStruct cfgStructArg, char dataFileName[]);
 
-void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg, ConfigurationStruct cfgStructArg, char dataFileName[]);
+/**
+ * @brief User Raised Alarm (URA) Execution function
+ * 
+ * @param ezoClassArg The Ezo_board object representing the ORP sensor.
+ * @param rmsClassArg The rmsClass object containing the RMS state and data.
+ * @param rtcClassArg The RTCZero object for accessing the current time.
+ * @param cfgStructArg The configuration settings for the system.
+ * @param dataFileName The name of the data file for storing the data points.
+ * 
+ * @return None.
+ * 
+ * @details This function performs the URA function, which involves 
+ * 1- reading the ORP value,
+ * 2- deciding on the RMS state based on the ORP value and configuration settings,
+ * 3- updating the power situation, 
+ * 4- storing the data point, 
+ * 5- sending an SMS if necessary.
+ * The URA process is executed periodically based on the user input.
+ * 
+ * @note The function assumes that the necessary objects and libraries have been properly
+ * initialized and set up prior to calling this function.
+ * 
+ * @warning The function relies on the correct configuration settings and proper functioning
+ * of the ORP sensor, RTC, data storage, and SMS functionality. Ensure that these components
+ * are set up correctly to ensure the desired behavior of the URA process.
+ */
+void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg,
+    ConfigurationStruct cfgStructArg, char dataFileName[]);
+
+
 void FSM_f_HB(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg);
 void FSM_f_BUP(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg);
 

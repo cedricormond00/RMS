@@ -320,6 +320,8 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
         //perform the function
         FSM_f_HB(rmsClassArg, cfgStructArg);
 
+        //HERE
+
         // set the input event code bit off
         Tool_setBitOff(&inputEvenCode, HB_INPUTBIT); // because inputEvenCode_ is already the address of the pointer
                                                     // I am now passing the correct pointer (uint8_t*) to the Tool_setBitOff
@@ -447,6 +449,20 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
         }
     }
 }
+
+
+void FSM_f_HB(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
+    bool debug = true;
+    //Set a new time for the hbAlarmtrigger
+    hbEPochTime = RTC_updateHBEPochTime(hbEPochTime, cfgStructArg);
+    //send the HB SMS
+    SMS_hbSend(rmsClassArg, cfgStructArg);
+    if (debug && debug_FSM){
+        ToggleLED(BLUELED_PIN);
+    }
+    
+}
+
 
 RMSState FSM_decideState(Ezo_board& ezoORPClassArg, ConfigurationStruct cfgStructArg){
     RMSState state = UWQ;
@@ -592,12 +608,7 @@ void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, ConfigurationStruct cfgS
 }
 
 
-void FSM_f_HB(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
-    //Set a new time for the hbAlarmtrigger
-    hbEPochTime = RTC_updateHBEPochTime(hbEPochTime, cfgStructArg);
-    SMS_hbSend(rmsClassArg, cfgStructArg);
-    ToggleLED(BLUELED_PIN);
-}
+
 
 void FSM_f_BUP(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
     uint32_t currentEpochTime = rmsClassArg.get_wmReadEPochTime();

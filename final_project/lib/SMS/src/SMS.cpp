@@ -56,26 +56,6 @@ bool SMS_initConnection(){
     return connected;
 }
 
-void SMS_wmSend(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
-    // first detection of an anomaly
-    if (rmsClassArg.get_wmAlarmSituation() == rmsClass::FIRSTANOMALY){
-        SMS_wmImmediate(rmsClassArg, cfgStructArg);
-        // now set the alarm situation as being inside the HistoryWindow of anomalies
-        rmsClassArg.set_wmAlarmSituation(rmsClass::HWANOMALIES);
-    }
-    // we shall remain in the histoy window
-    else if (rmsClassArg.get_wmAlarmSituation() == rmsClass::HWANOMALIES){
-        SMS_wmHistoryWindow(rmsClassArg, cfgStructArg);
-    }
-    // We may now exit the history window, because the criterias to qualify the RMS as back to safe mode were met
-    else if (rmsClassArg.get_wmAlarmSituation() == rmsClass::NORMALOCCURENCE){
-        SMS_wmHistoryWindow(rmsClassArg, cfgStructArg);
-        //exit the HW SMS sending
-        rmsClassArg.set_wmAlarmSituation(rmsClass::NOANOMALIES);
-    }
-}
-
-
 bool SMS_sendMessage(char message[160], char remoteNumber[20]){
     bool success = true;
     // if (sendSMS){
@@ -106,6 +86,25 @@ bool SMS_sendMessage(char message[160], char remoteNumber[20]){
 }
 
 
+void SMS_wmSend(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
+    // first detection of an anomaly
+    if (rmsClassArg.get_wmAlarmSituation() == rmsClass::FIRSTANOMALY){
+        SMS_wmImmediate(rmsClassArg, cfgStructArg);
+        // now set the alarm situation as being inside the HistoryWindow of anomalies
+        rmsClassArg.set_wmAlarmSituation(rmsClass::HWANOMALIES);
+    }
+    // we shall remain in the histoy window
+    else if (rmsClassArg.get_wmAlarmSituation() == rmsClass::HWANOMALIES){
+        SMS_wmHistoryWindow(rmsClassArg, cfgStructArg);
+    }
+    // We may now exit the history window, because the criterias to qualify the RMS as back to safe mode were met
+    else if (rmsClassArg.get_wmAlarmSituation() == rmsClass::NORMALOCCURENCE){
+        SMS_wmHistoryWindow(rmsClassArg, cfgStructArg);
+        //exit the HW SMS sending
+        rmsClassArg.set_wmAlarmSituation(rmsClass::NOANOMALIES);
+    }
+}
+
 
 void SMS_wmImmediate(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
     char message[160];
@@ -129,6 +128,7 @@ void SMS_wmImmediate(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
         SMS_sendSMS(cfgStructArg, message);
     }    
 }
+
 
 void SMS_wmHistoryWindow(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
     char message[160];
@@ -227,19 +227,6 @@ void SMS_hbSend(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
     if (hb){
         SMS_sendSMS(cfgStructArg, message);
     }    
-    // Serial.println("");
-    // Serial.println("---");
-    // Serial.print("RMS ");
-    // Serial.println(RMS_ID);
-    // Serial.println("HB");
-    // Serial.print("Current State: ");
-    // Serial.println(rmsClassArg.get_rmsState());
-    // Serial.print("Last ORP reading: ");
-    // Serial.println(rmsClassArg.get_orpReading());
-    // Serial.print("Current Time: ");
-    // RTC_getTimeInText(rtc.getEpoch(), buf);
-    // Serial.println(buf);
-    // Serial.println("---");
 }
 
 
