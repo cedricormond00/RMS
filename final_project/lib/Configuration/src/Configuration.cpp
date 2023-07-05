@@ -39,8 +39,6 @@ void Config_setConfigurationDefault(ConfigurationStruct& cfg){
     char remoteNumber[] = {'0','0','4','1','7','6','7','2','4','7','4','4','9','\0'};
     strcpy(cfg.remoteNumber, remoteNumber);
     cfg.remoteNumberLength = strlen(remoteNumber);
-
-    Config_printConfiguration(cfg);
 }
 
 
@@ -58,26 +56,23 @@ void Config_setConfigurationFromFile(ConfigurationStruct& cfg) {
     // open the configuration file
     File cfgFile = SD.open(cfg.filename, FILE_READ);
     if( cfgFile == 0 ) {
-        // no config file found, create default configuration 
+        // no config file found, use default configuration settings
 
         Serial.print("No ");
         Serial.print(cfg.filename);
         Serial.println(" found, using default config:");
 
         Config_setConfigurationDefault(cfg);
-
-        Config_printConfiguration(cfg);
         cfgFile.close();
         return;
     } 
     else {
-        // valid cfg file was found, 
+        // valid cfg file was found, use the configuration settings from the file
         sprintf(buf, "  %s found. \r\n<Configuration: ", cfg.filename);
         Serial.println(buf);
+
         //TODO: sort out how to find the right size
         DynamicJsonDocument doc(4096);
-
-        // Read the content of the configuration file
         DeserializationError error = deserializeJson(doc, cfgFile);
         cfgFile.close();
 
@@ -90,8 +85,7 @@ void Config_setConfigurationFromFile(ConfigurationStruct& cfg) {
 
         // Extract the values from the JSON document
         cfg.logitThreshold = doc["logitThreshold"].as<uint16_t>();
-        // cfg.hbTime = doc["hbTime"].as<uint8_t>();
-        // cfg.hbElapsePeriod = doc["hbElapsePeriod"].as<uint8_t>();
+
         cfg.uraPressDuration = doc["uraPressDuration"].as<uint16_t>();
         
         cfg.hbTargetHour = doc["hbTargetHour"].as<uint8_t>();
@@ -108,20 +102,11 @@ void Config_setConfigurationFromFile(ConfigurationStruct& cfg) {
         
 
         cfg.remoteNumberLength = doc["remoteNumberLength"].as<uint8_t>();
-        // strncpy(cfg.remoteNumber, doc["remoteNumber"], cfg.phoneNumberLength+1);
-        // cfg.remoteNumber[cfg.phoneNumberLength] = '\0';
 
         const char* remoteNumber = doc["remoteNumber"];
         Serial.print("remoteNumber: ");
         Serial.println(remoteNumber);
         strcpy(cfg.remoteNumber, remoteNumber);
-
-        // if (root.containsKey("logitThreshold")) cfg.logitThreshold = root["logitThreshold"];
-        // if (root.containsKey("hbTime")) cfg.hbTime = root["hbTime"];
-        // if (root.containsKey("hbElapsePeriod")) cfg.hbElapsePeriod = root["hbElapsePeriod"];
-        // if (root.containsKey("uraPressDuration")) cfg.uraPressDuration = root["uraPressDuration"];
-
-        Config_printConfiguration(cfg);
     }    
 }                      
 

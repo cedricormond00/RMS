@@ -14,6 +14,8 @@
 #include "Tool.h"
 #include "States.h"
 
+bool debug_Data = true;
+
 bool Data_SDCard_init( void ){
     bool success = true;
     
@@ -100,116 +102,10 @@ bool Data_populateHeaderRowToFile(String colNames[],
 }
 
 
-bool Data_updateStateHistory(rmsClass& rmsClassArg, char dataFileName[]){
-    bool success = true;
-    Serial.println("before updating counts");
-    Serial.print("n_SWQ: ");
-    Serial.println(rmsClassArg.get_stateHistoryCount(SWQ));
-    Serial.print("n_UWQ: ");
-    Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
-    Serial.print("n_FWQ: ");
-    Serial.println(rmsClassArg.get_stateHistoryCount(FWQ));
-    Serial.print("n_meas: ");
-    Serial.println(rmsClassArg.get_totalStateChanges());
-
-    // Define time frame in milliseconds
-    /*TODO: if I choose to only use the config file,
-     then I should add the cfg as an argument to the function, and dire ctly access the value from there*/
-    uint32_t timeFrame = rmsClassArg.get_wmAllowedIntervalBetweenSMS();  // Example: 20 sec
-
-    // Get current epoch timestamp
-    uint32_t currentEPochTimestamp = rmsClassArg.get_wmReadEPochTime();
-
-    File dataFile;
-
-    if (!SD.begin()) {
-        // Handle SD card initialization error
-        Serial.println("Failed to initialise SD card");
-        success = false;
-        return success;    
-    }
-
-    // Open data file
-    dataFile = SD.open(dataFileName);
-    if (!dataFile) {
-        // Handle file opening error
-        Serial.println("Failed to open file");
-        success = false;
-        return success;
-    }
-
-    // Reset the file cursor to the beginning
-    dataFile.seek(1);
-
-    // // Start counting
-    // int rowCount = 0;
-    Serial.println("");
-
-
-    while (dataFile.available()) {
-        // Read a line from the file
-        String line = dataFile.readStringUntil('\n');
-        
-        // Serial.print("just reading lines");
-        // Serial.print("line string");
-        // Serial.println(line);
-
-        // Split the line into columns
-        String timestamp = getValue(line, ',', 0);
-
-        // Parse the timestamp and convert it to an unsigned long
-        uint32_t rowTimestamp = timestamp.toInt();
-
-        // Check if the row timestamp falls within the desired time frame
-        if ((currentEPochTimestamp - rowTimestamp) <= timeFrame) {
-            // Split the line into columns
-            String state = getValue(line, ',', 3);
-
-            // Parse the row and convert it to an unsigned long
-            RMSState rowState = static_cast<RMSState>(state.toInt());
-
-            rmsClassArg.set_stateHistoryCount(rowState, rmsClassArg.get_stateHistoryCount(rowState)+1);
-            
-            Serial.print("Read lines within the timeframe");
-            Serial.print("line string");
-            Serial.println(line); 
-        }
-    }
-    //update percentage -> this is done immediately upon setting a new count per state
-    Serial.println("After updating counts");
-    Serial.print("n_SWQ: ");
-    Serial.println(rmsClassArg.get_stateHistoryCount(SWQ));
-    Serial.print("n_UWQ: ");
-    Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
-    Serial.print("n_FWQ: ");
-    Serial.println(rmsClassArg.get_stateHistoryCount(FWQ));
-    Serial.print("n_meas: ");
-    Serial.println(rmsClassArg.get_totalStateChanges());
-    return success;
-}
-
-
-/*helper function to retrieve a certain column from a .csv file*/
-String getValue(String data, char separator, int index) {
-  int found = 0;
-  int strIndex[] = {0, -1};
-  int maxIndex = data.length() - 1;
-
-  for (int i = 0; i <= maxIndex && found <= index; i++) {
-    if (data.charAt(i) == separator || i == maxIndex) {
-      found++;
-      strIndex[0] = strIndex[1] + 1;
-      strIndex[1] = (i == maxIndex) ? i + 1 : i;
-    }
-  }
-
-  return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
-}
-
 bool Data_saveDataPointToDataFile(rmsClass& rmsClassArg,
                                 uint8_t inputEventCodeBit,
                                 char dataFileName[]){
-
+    // pass as arguments the attributes from the rmsClassArg object
     bool success = Data_saveDataPointToDataFile(rmsClassArg.get_wmReadEPochTime(),
                         rmsClassArg.get_orpReading(),
                         rmsClassArg.get_rmsState(),
@@ -222,6 +118,7 @@ bool Data_saveDataPointToDataFile(rmsClass& rmsClassArg,
     return success;
 }
 
+
 bool Data_saveDataPointToDataFile(uint32_t ePochTime,
                                 float orpValue,
                                 RMSState evaluatedState,
@@ -232,6 +129,7 @@ bool Data_saveDataPointToDataFile(uint32_t ePochTime,
                                 uint8_t chargeStatus,
                                 char dataFileName[]){
     bool success = true;
+    // buffer string for readable format time
     char buf[256];
     File dataFile = SD.open(dataFileName, FILE_WRITE);
     
@@ -284,6 +182,136 @@ bool Data_saveDataPointToDataFile(uint32_t ePochTime,
     dataFile.close();  
     return success;
 }
+
+
+bool Data_updateStateHistory(rmsClass& rmsClassArg, char dataFileName[]){
+    bool debug = true;
+    bool success = true;
+    if (debug && debug_Data){
+        Serial.println("before updating counts");
+        Serial.print("n_SWQ: ");
+        Serial.println(rmsClassArg.get_stateHistoryCount(SWQ));
+        Serial.print("n_UWQ: ");
+        Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
+        Serial.print("n_FWQ: ");
+        Serial.println(rmsClassArg.get_stateHistoryCount(FWQ));
+        Serial.print("n_meas: ");
+        Serial.println(rmsClassArg.get_totalStateChanges());
+    }
+    
+
+    // Define time frame in milliseconds
+    /*
+     TODO: if I choose to only use the config file,
+     then I should add the cfg as an argument to the function, 
+     and directly access the value from there
+    */
+    uint32_t timeFrame;
+    if (Tool_isBitOn(rmsClassArg.get_inputEventCode(), WM_INPUTBIT)){
+        timeFrame = rmsClassArg.get_wmAllowedIntervalBetweenSMS();  // Example: 20 sec
+    }
+    else if (Tool_isBitOn(rmsClassArg.get_inputEventCode(), URA_INPUTBIT)){
+        timeFrame = rmsClassArg.get_URAallowedIntervalBetweenSMS();  // Example: 20 sec
+    }
+    else{
+        timeFrame = 600; //default = 10 minutes (10min*60sec/min)
+    }
+   
+    // Get current epoch timestamp
+    uint32_t currentEPochTimestamp = rmsClassArg.get_wmReadEPochTime();
+
+    File dataFile;
+
+    if (!SD.begin()) {
+        // Handle SD card initialization error
+        Serial.println("Failed to initialise SD card");
+        success = false;
+        return success;    
+    }
+
+    // Open data file
+    dataFile = SD.open(dataFileName);
+    if (!dataFile) {
+        // Handle file opening error
+        Serial.println("Failed to open file");
+        success = false;
+        return success;
+    }
+
+    // Reset the file cursor to the beginning
+    dataFile.seek(1);
+
+    Serial.println("");
+
+
+    while (dataFile.available()) {
+        // Read a line from the file
+        String line = dataFile.readStringUntil('\n');
+        
+        // retireve the timestamp
+        String timestamp = getValue(line, ',', 0);
+
+        // Parse the timestamp and convert it to an unsigned long
+        uint32_t rowTimestamp = timestamp.toInt();
+
+        // Check if the row timestamp falls within the desired time frame
+        if ((currentEPochTimestamp - rowTimestamp) <= timeFrame) {
+            // Split the line into columns
+            String state = getValue(line, ',', 3);
+
+            // Parse the row and convert it to an unsigned long
+            RMSState rowState = static_cast<RMSState>(state.toInt());
+
+            //increment the corresponding state (SWQ, UWQ, FWQ) count by 1
+            rmsClassArg.set_stateHistoryCount(rowState, rmsClassArg.get_stateHistoryCount(rowState)+1);
+            /* 
+            - increment the total state changes count
+            - update percentage 
+            -> these are done immediately upon setting a new count per state
+            */
+
+            if (debug && debug_Data){
+                Serial.print("Read lines within the timeframe");
+                Serial.print("line string");
+                Serial.println(line); 
+            }
+            
+        }
+    }
+    if (debug && debug_Data){
+        Serial.println("After updating counts");
+        Serial.print("n_SWQ: ");
+        Serial.println(rmsClassArg.get_stateHistoryCount(SWQ));
+        Serial.print("n_UWQ: ");
+        Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
+        Serial.print("n_FWQ: ");
+        Serial.println(rmsClassArg.get_stateHistoryCount(FWQ));
+        Serial.print("n_meas: ");
+        Serial.println(rmsClassArg.get_totalStateChanges());
+    }
+    
+    return success;
+}
+
+
+/*helper function to retrieve a certain column from a .csv file*/
+String getValue(String data, char separator, int index) {
+  int found = 0;
+  int strIndex[] = {0, -1};
+  int maxIndex = data.length() - 1;
+
+  for (int i = 0; i <= maxIndex && found <= index; i++) {
+    if (data.charAt(i) == separator || i == maxIndex) {
+      found++;
+      strIndex[0] = strIndex[1] + 1;
+      strIndex[1] = (i == maxIndex) ? i + 1 : i;
+    }
+  }
+
+  return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
+}
+
+
 
 
 

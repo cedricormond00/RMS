@@ -56,7 +56,64 @@ void Data_stringTime(uint32_t ePochTime, char* buf);
 bool Data_populateHeaderRowToFile(String colNames[], uint8_t numberOfCols, char fileName[]);
 
 
+/**
+ * @brief Saves a data point to a data file.
+ *
+ * This function saves a data point to a data file on the SD card. It takes various parameters representing the data point,
+ * such as the attributes from the `rmsClass` object, the input event code bit, and the data file name.
+ *
+ * @param rmsClassArg The `rmsClass` object containing the data point attributes.
+ * @param inputEventCodeBit This tells the operator what input event had triggered the data point monitoring
+ * @param dataFileName The name of the data file.
+ * @return True if the data point was successfully saved, false otherwise.
+ */
+bool Data_saveDataPointToDataFile(rmsClass& rmsClassArg,
+                                uint8_t inputEventCodeBit,
+                                char dataFileName[]);
+
+
+/**
+ * @brief Saves a data point to a data file.
+ *
+ * This function saves a data point to a data file on the SD card. It takes various parameters representing the data point,
+ * such as the epoch time, ORP value, evaluated state, input event code, power source stability, battery voltage, battery
+ * energy level state, charge status, and the data file name.
+ *
+ * @param ePochTime The epoch time of the data point.
+ * @param orpValue The ORP value of the data point.
+ * @param evaluatedState The state at which the rms is from the reading
+ * @param inputEventCodeBit This tells the operator what input event had triggered the data point moitoring
+ * @param isPowerSourceStable Whether the power source to the RMS is stable or not
+ * @param batteryVoltage The battery voltage when the data point was evaluated
+ * @param battELState The battery energy level state when the data point was evaluated
+ * @param chargeStatus The charge status when the data point was evaluated
+ * @param dataFileName The name of the data file.
+ * @return True if the data point was successfully saved, false otherwise.
+ */
+bool Data_saveDataPointToDataFile(uint32_t ePochTime,
+                                float orpValue,
+                                RMSState evaluatedState,
+                                uint8_t inputEventCodeBit,
+                                bool isPowerSourceStable, 
+                                float batteryVoltage,
+                                rmsClass::BatteryEnergyLevelState battELState,
+                                uint8_t chargeStatus,
+                                char dataFileName[]);
+
+/**
+ * @brief Updates the state history counts (number of each state occurence) for each data points within a specific time frame.
+ *
+ * This function reads data points from a data file within a specified time frame 
+ * and for those qualifying data points, updates the state history 
+ * in the `rmsClass` object accordingly (stored inside the stateHistoryStruct). 
+ * The function takes the `rmsClass` object and the data file name as parameters.
+ *
+ * @param rmsClassArg The `rmsClass` object to update the state history counts for.
+ * @param dataFileName The name of the data file.
+ * @return True if the state history counts were successfully updated, false otherwise.
+ */
 bool Data_updateStateHistory(rmsClass& rmsClassArg, char dataFileName[]);
+
 
 String getValue(String data, char separator, int index);
 
@@ -64,15 +121,7 @@ bool Data_saveDataPointToDataFile(rmsClass& rmsClassArg,
                                 uint8_t inputEventCodeBit,
                                 char dataFileName[]);
 
-bool Data_saveDataPointToDataFile(uint32_t ePochTime,
-                                float orpValue,
-                                RMSState evaluatedState,
-                                uint8_t inputEventCodeBit,
-                                bool isPowerSourceStable,
-                                float batteryVoltage,
-                                rmsClass::BatteryEnergyLevelState battELState,
-                                uint8_t chargeStatus,
-                                char dataFileName[]);
+
     
 
 

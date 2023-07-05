@@ -26,7 +26,13 @@
 
 
 
-
+// debug boolean
+/* 
+Some functions such as 
+- 
+- 
+have an additional debug boolean, so as to be more granular
+*/
 bool debugDisplay = 1;
 
 bool debug_FSM = false;
@@ -69,19 +75,30 @@ void FSM_initRMS(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, ConfigurationStruct cfgStructArg, volatile uint8_t* triggeredInputEvent)
 //TODO: maybe the URA_WAIT bit is useless: just use triggerInput as a means to check 
 {
 
     bool debug=true;
-    uint8_t eventInputCode = rmsClassArg.get_inputEventCode();
+    uint8_t inputEvenCode = rmsClassArg.get_inputEventCode();
 
     // if (debug){
     //     Serial.println("in FSM_updateInputEventCode, function");
-    //     Serial.print("eventInputCode before update: ");
-    //     Serial.print(*eventInputCode, BIN);
+    //     Serial.print("inputEvenCode before update: ");
+    //     Serial.print(*inputEvenCode, BIN);
     //     Serial.print(", ");
-    //     Serial.println(*eventInputCode);
+    //     Serial.println(*inputEvenCode);
     //     Serial.print("triggeredInputEvent before update: ");
     //     Serial.print(*triggeredInputEvent, BIN);
     //     Serial.print(", ");
@@ -95,10 +112,10 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, Confi
         // double gate: one for the time window, and one for a boolean to inform if the HB's been sent. Once out ot the time window, reset to the boolean
         if (debug){
             Serial.println("in FSM_updateInputEventCode, WM");
-            Serial.print("eventInputCode before update: ");
-            Serial.print(eventInputCode, BIN);
+            Serial.print("inputEvenCode before update: ");
+            Serial.print(inputEvenCode, BIN);
             Serial.print(", ");
-            Serial.println(eventInputCode);
+            Serial.println(inputEvenCode);
             Serial.print("triggeredInputEvent before update: ");
             Serial.print(*triggeredInputEvent, BIN);
             Serial.print(", ");
@@ -128,16 +145,16 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, Confi
         rmsClassArg.set_wmWakeUpEPochTime(alarmMatchEPochTime);
 
 
-        Tool_setBitOn(&eventInputCode, WM_INPUTBIT);// code for WM function
+        Tool_setBitOn(&inputEvenCode, WM_INPUTBIT);// code for WM function
 
         // reset the triggered input event tracker
         Tool_setBitOff(triggeredInputEvent, WM_INPUTBIT);
 
          if (debug){
-            Serial.print("eventInputCode after update: ");
-            Serial.print(eventInputCode, BIN);
+            Serial.print("inputEvenCode after update: ");
+            Serial.print(inputEvenCode, BIN);
             Serial.print(", ");
-            Serial.println(eventInputCode);
+            Serial.println(inputEvenCode);
             Serial.print("triggeredInputEvent after update: ");
             Serial.print(*triggeredInputEvent, BIN);
             Serial.print(", ");
@@ -150,10 +167,10 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, Confi
     {
         if (debug && debugDisplay){
             Serial.println("in FSM_updateInputEventCode, URA");
-            Serial.print("eventInputCode before update: ");
-            Serial.print(eventInputCode, BIN);
+            Serial.print("inputEvenCode before update: ");
+            Serial.print(inputEvenCode, BIN);
             Serial.print(", ");
-            Serial.println(eventInputCode);
+            Serial.println(inputEvenCode);
             Serial.print("triggeredInputEvent before update: ");
             Serial.print(*triggeredInputEvent, BIN);
             Serial.print(", ");
@@ -161,7 +178,7 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, Confi
         }
 
         //because we haven't yet reached the 3 seconds
-        Tool_setBitOn(&eventInputCode, URA_WAIT_INPUTBIT);// This prevents to go back to sleep
+        Tool_setBitOn(&inputEvenCode, URA_WAIT_INPUTBIT);// This prevents to go back to sleep
         
         // check the button is still pressed 
         if (digitalRead(BUTTON_PIN)==LOW){
@@ -174,8 +191,8 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, Confi
             if (currentMillis>=(millisOnExternalWakeUp + cfgStructArg.uraPressDuration)){
                 digitalWrite(YELLOWLED_PIN, LOW);
                 //inform the RMS the URA function may be performed
-                Tool_setBitOn(&eventInputCode, URA_INPUTBIT);
-                Tool_setBitOff(&eventInputCode, URA_WAIT_INPUTBIT);
+                Tool_setBitOn(&inputEvenCode, URA_INPUTBIT);
+                Tool_setBitOff(&inputEvenCode, URA_WAIT_INPUTBIT);
 
                 // reset the triggered input event tracker
                 Tool_setBitOff(triggeredInputEvent, URA_INPUTBIT);
@@ -186,17 +203,17 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, Confi
             // // no more URA alarm
             Tool_setBitOff(triggeredInputEvent, URA_INPUTBIT);
             // no need to inform that we shall wait for 3 seconds
-            Tool_setBitOff(&eventInputCode, URA_WAIT_INPUTBIT);
+            Tool_setBitOff(&inputEvenCode, URA_WAIT_INPUTBIT);
             digitalWrite(YELLOWLED_PIN, LOW);
 
         }
 
         
         if (debug && debugDisplay){
-            Serial.print("eventInputCode after update: ");
-            Serial.print(eventInputCode, BIN);
+            Serial.print("inputEvenCode after update: ");
+            Serial.print(inputEvenCode, BIN);
             Serial.print(", ");
-            Serial.println(eventInputCode);
+            Serial.println(inputEvenCode);
             Serial.print("triggeredInputEvent after update: ");
             Serial.print(*triggeredInputEvent, BIN);
             Serial.print(", ");
@@ -205,7 +222,7 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, Confi
         }
     }
     if (Tool_isBitOn(*triggeredInputEvent, HB_INPUTBIT)){
-        Tool_setBitOn(&eventInputCode, HB_INPUTBIT);// code for WM function
+        Tool_setBitOn(&inputEvenCode, HB_INPUTBIT);// code for WM function
 
         // reset the triggered input event tracker
         Tool_setBitOff(triggeredInputEvent, HB_INPUTBIT);
@@ -216,101 +233,109 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, Confi
         // hbEPochTime = RTC_updateHBEPochTime(hbEPochTime, cfgStructArg);
     }
 
-    rmsClassArg.set_inputEventCode(eventInputCode);
+    rmsClassArg.set_inputEventCode(inputEvenCode);
 }
 
 
 void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtcClassArg, ConfigurationStruct cfgStructArg, char dataFileName[]){
+    //boolean for local function debugging
     bool debug=true;
-    // Serial.print("SystemStatusRegister: ");
-    // Serial.println(PMIC.readSystemStatusRegister(), BIN);
 
-    uint8_t eventInputCode = rmsClassArg.get_inputEventCode();
-    if (Tool_isBitOn(eventInputCode, WM_INPUTBIT)){
-        // Serial.println("in if");
-        if (debug){
+    // Find the function to execute, using the inputEventCode, set by FSM_updateInputEventCode
+    // TODO: clean if we use inputEventCode (I prefer this one) or inputEvenCode
+    uint8_t inputEvenCode = rmsClassArg.get_inputEventCode();
+
+    // execute a water monitoring
+    if (Tool_isBitOn(inputEvenCode, WM_INPUTBIT)){
+        if (debug && debug_FSM){
             Serial.println("in FSM_executeFunction, WM");
             Serial.print("Current unix time = ");
             Serial.println(rtcClassArg.getEpoch());
             Serial.print("event Input Code before update: ");
-            Serial.print(eventInputCode, BIN);
+            Serial.print(inputEvenCode, BIN);
             Serial.print(", ");
-            Serial.println(eventInputCode);
-
+            Serial.println(inputEvenCode);
         }
-
+        
+        //perform the function
         FSM_f_WM_EZO(EZO_ORP, rmsClassArg, rtcClassArg, cfgStructArg, dataFileName);
 
-        Tool_setBitOff(&eventInputCode, WM_INPUTBIT); // because eventInputCode_ is already the address of the pointer
+        // set the input event code bit off
+        Tool_setBitOff(&inputEvenCode, WM_INPUTBIT); // because inputEvenCode_ is already the address of the pointer
                                                     // I am now passing the correct pointer (uint8_t*) to the Tool_setBitOff
-        //We now want to check the battery situation
-        Tool_setBitOn(&eventInputCode, BUP_INPUTBIT);
+        //We now want to perform the back-up power check (inform the operator and user if required)
+        //TODO: trigger appropriate LEDs
+        Tool_setBitOn(&inputEvenCode, BUP_INPUTBIT);
 
-        if (debug){
+        if (debug && debug_FSM){
             Serial.println("");
             Serial.print("event Input Code after update: ");
-            Serial.print(eventInputCode, BIN);
+            Serial.print(inputEvenCode, BIN);
             Serial.print(", ");
-            Serial.println(eventInputCode);
+            Serial.println(inputEvenCode);
         }
     }
 
-    if (Tool_isBitOn(eventInputCode, URA_INPUTBIT)){
+    if (Tool_isBitOn(inputEvenCode, URA_INPUTBIT)){
         // Serial.println("in if");
-        if (debug){
+        if (debug && debug_FSM){
             Serial.println("in FSM_executeFunction, URA");
             Serial.print("Current unix time = ");
             Serial.println(rtcClassArg.getEpoch());
             Serial.print("event Input Code before update: ");
-            Serial.print(eventInputCode, BIN);
+            Serial.print(inputEvenCode, BIN);
             Serial.print(", ");
-            Serial.println(eventInputCode);
+            Serial.println(inputEvenCode);
+            Serial.print("milis after interrupt wakup: ");
+            Serial.println(millis());
         }
 
-        Serial.print("milis after interrupt wakup: ");
-        Serial.println(millis());
-
+        //perform the function
         FSM_f_URA(EZO_ORP, rmsClassArg, rtcClassArg, cfgStructArg, dataFileName);
-        Tool_setBitOff(&eventInputCode, URA_INPUTBIT); // because eventInputCode_ is already the address of the pointer
+        
+        // set the input event code bit off
+        Tool_setBitOff(&inputEvenCode, URA_INPUTBIT); // because inputEvenCode_ is already the address of the pointer
                                                     // I am now passing the correct pointer (uint8_t*) to the Tool_setBitOff
         
-        if (debug){
+        if (debug && debug_FSM){
 
             Serial.print("event Input Code after update: ");
-            Serial.print(eventInputCode, BIN);
+            Serial.print(inputEvenCode, BIN);
             Serial.print(", ");
-            Serial.println(eventInputCode);
+            Serial.println(inputEvenCode);
         }
     }
-    if (Tool_isBitOn(eventInputCode, HB_INPUTBIT)){
-        // Serial.println("in if");
-        if (debug){
+    if (Tool_isBitOn(inputEvenCode, HB_INPUTBIT)){
+
+        if (debug && debug_FSM){
             Serial.println("in FSM_executeFunction, HB");
             Serial.print("Current unix time = ");
             Serial.println(rtcClassArg.getEpoch());
             Serial.print("event Input Code before update: ");
-            Serial.print(eventInputCode, BIN);
+            Serial.print(inputEvenCode, BIN);
             Serial.print(", ");
-            Serial.println(eventInputCode);
+            Serial.println(inputEvenCode);
         }
 
-
+        //perform the function
         FSM_f_HB(rmsClassArg, cfgStructArg);
-        Tool_setBitOff(&eventInputCode, HB_INPUTBIT); // because eventInputCode_ is already the address of the pointer
+
+        // set the input event code bit off
+        Tool_setBitOff(&inputEvenCode, HB_INPUTBIT); // because inputEvenCode_ is already the address of the pointer
                                                     // I am now passing the correct pointer (uint8_t*) to the Tool_setBitOff
         
-        if (debug){
+        if (debug && debug_FSM){
             Serial.print("event Input Code after update: ");
-            Serial.print(eventInputCode, BIN);
+            Serial.print(inputEvenCode, BIN);
             Serial.print(", ");
-            Serial.println(eventInputCode);
+            Serial.println(inputEvenCode);
         }
     }
-    if (Tool_isBitOn(eventInputCode, BUP_INPUTBIT)){
+    if (Tool_isBitOn(inputEvenCode, BUP_INPUTBIT)){
         FSM_f_BUP(rmsClassArg, cfgStructArg);
-        Tool_setBitOff(&eventInputCode, BUP_INPUTBIT);
+        Tool_setBitOff(&inputEvenCode, BUP_INPUTBIT);
     }
-    rmsClassArg.set_inputEventCode(eventInputCode);
+    rmsClassArg.set_inputEventCode(inputEvenCode);
     if (debug){
         // Serial.println("");
     }
@@ -319,46 +344,38 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
 
 
 void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg, ConfigurationStruct cfgStructArg, char dataFileName[]){
-    
+    bool debug = false;
+    // Different time from the wakeUp time.
     uint32_t currentTime = rtcClassArg.getEpoch();
-
-    /* 
-    - Different time from the wakeUp time.
-    - Storing this value is useful for datalogging purpose
-    */
-    rmsClassArg.set_wmReadEPochTime(currentTime);
-    Serial.print("rmsClassArg.get_wmReadEPochTime(): ");
-    Serial.println(rmsClassArg.get_wmReadEPochTime());
     
-    EZO_getEzoORPReading(ezoClassArg);
+    //Storing this value is useful for datalogging purpose
+    rmsClassArg.set_wmReadEPochTime(currentTime);
+    if (debug && debug_FSM){
+        Serial.print("rmsClassArg.get_wmReadEPochTime(): ");
+        Serial.println(rmsClassArg.get_wmReadEPochTime());
+    }
+    
+    // get and print the ORP reading from the ORP sensor
+    EZO_getEzoORPReading(ezoClassArg);          // value is stored in the ezoClassArg object
 
     float orpValue = ezoClassArg.get_last_received_reading();
+
+    // store the ORP value inside the rmsClassArg object
     rmsClassArg.set_orpReading(orpValue);
 
+    // based on the ORP value and the configuration settings, decide on the rms State
     RMSState newState = FSM_decideState(ezoClassArg, cfgStructArg);
+
+    // update the rmsClassArg object with the ndew evaluated state
     rmsClassArg.set_rmsState(newState);
-    // we now tell the device how long he may sleep for
+
+    // now decide how long the device may sleep for
     rmsClassArg.set_sleepPeriod();
 
-    // // decide whether or not to send SMSs
-    // rmsClassArg.set_inHistoryWindow();
-    // rmsClassArg.set_nextWakeUpEPochTime(rmsClassArg.get_wakeUpEPochTime()+rmsClassArg.get_sleepPeriod());
-    // This solution would allow to minisme this drift. However, it would probably require to add a check to ensure the next wakup alarm time is later then the present time
-    // TODO: add a check to ensure the next wakeup alarm is later then the present time
-
-    // now we knwo the state the device is in, we can adjust for the appropriate sleep period
-    // TODO: add a check just before going to sleep that the next wakeup time is in the future
+    // now also evalute at what time the device should then wake up at
+    // before going to sleep, you will still need to set the alarm time for wakeup
     rmsClassArg.set_nextWakeUpEPochTime(rmsClassArg.get_wmWakeUpEPochTime()+rmsClassArg.get_sleepPeriod());
-    
 
-
-    /* 
-    - This has been placed literaly just before going to sleep. 
-    This ensures we dont do twice the same thing, and that the right time is set for going to sleep
-    - TODO: CHECK THIS IS BUG PROOF WITH THE COMMENT BEFORE GOING TO SLEEP
-    */
-    // rtcClassArg.setAlarmEpoch(rmsClassArg.get_nextWakeUpEPochTime());
-    
     // check battery health
     FSM_setPowerSituation(rmsClassArg);
 
@@ -366,96 +383,214 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
     bool writeSuccess = Data_saveDataPointToDataFile(rmsClassArg,
                         WM_INPUTBIT,
                         dataFileName);
-    Serial.print("Was the write a success? ");
-    Serial.println(writeSuccess);
-
+    if (debug && debug_FSM){
+        Serial.print("Was the write a success? ");
+        Serial.println(writeSuccess);
+    }
     FSM_multipleAlarmManagement(rmsClassArg, cfgStructArg, currentTime, dataFileName);
-
-    
-
-    // if (rmsClassArg.get_rmsState() == UWQ || rmsClassArg.get_rmsState() == FWQ){
-    // if (rmsClassArg.wm_canSendSMS(currentTime)){
-    //     // perform thecount of UWQ/FWQ/SWQ eventsS
-    //     Data_updateStateHistory(rmsClassArg, dataFileName);
-    //     Serial.print("rmsClassArg.get_stateHistoryCount(UWQ)");
-    //     Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
-    //     Serial.print("rmsClassArg.get_totalStateChanges()");
-    //     Serial.println(rmsClassArg.get_totalStateChanges());
-    //     //update percentage:
-    //     rmsClassArg.set_stateHistoryPercentage(SWQ);
-    //     rmsClassArg.set_stateHistoryPercentage(UWQ);
-    //     rmsClassArg.set_stateHistoryPercentage(FWQ);
-    //     float testFloat = 2/3;
-    //     Serial.println(testFloat);
-    //     SMS_wmSend(rmsClassArg);
-    //     //TODO:  create a reset function
-    //     rmsClassArg.reset_History();
-    //     Serial.print("rmsClassArg.get_stateHistoryCount(UWQ)");
-    //     Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
-    //     Serial.print("rmsClassArg.get_totalStateChanges()");
-    //     Serial.println(rmsClassArg.get_totalStateChanges());
-    // }
 }
 
 
 void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg, ConfigurationStruct cfgStructArg, char dataFileName[]){
+    bool debug = true;
+    // time of URA miught be different from Wakeup, especially if the device woke up, performed a WM. Also consider that 3 secondsat least happen between wakeup and URA function
     uint32_t currentTime = rtcClassArg.getEpoch();
-    // ToggleLED(ORANGELED_PIN);
+    
+    // for debugging purpose
     debugDisplay = 1;
-    // read water value
+
+    // get and print the ORP reading from the ORP sensor
     EZO_getEzoORPReading(ezoClassArg);
 
     float orpValue = ezoClassArg.get_last_received_reading();
+    
+    // store the ORP value inside the rmsClassArg object
     rmsClassArg.set_orpReading(orpValue);
 
+    // based on the ORP value and the configuration settings, decide on the rms State
     RMSState newState = FSM_decideState(ezoClassArg, cfgStructArg);
-
+   
+    // update the rmsClassArg object with the ndew evaluated state
     rmsClassArg.set_rmsState(newState);
 
     // // we now tell the device how long he may sleep for
     // rmsClassArg.set_sleepPeriod();
 
-    Serial.print("Battery Voltage from function: ");
-    Serial.print(Battery_getBatteryVoltage());
+    //TODO: check why we dont have to evaluate sleep period and next wakeup time
 
 
     // check battery health
     FSM_setPowerSituation(rmsClassArg);
 
-    Serial.print("Battery Voltage from struct: ");
-    Serial.println(rmsClassArg.get_powerStructBatteryVoltage());
-    // Serial.println(rmsClassArg.get_powerStructMember(1));
-    // Serial.println(rmsClassArg.get_powerStructMember(2));
-    // Serial.println(rmsClassArg.get_powerStructMember(3));
-
 
     //store value
-    Serial.print("dataFileName: ");
-    Serial.println(dataFileName);
-    // bool writeSuccess = Data_saveDataPointToDataFile(rmsClassArg.get_wmReadEPochTime(),
-    //                     rmsClassArg.get_orpReading(),
-    //                     rmsClassArg.get_rmsState(),
-    //                     URA_INPUTBIT,
-    //                     rmsClassArg.get_powerStructBatteryVoltage(),
-    //                     // rmsClassArg.get_powerStructUSBMode(),
-    //                     rmsClassArg.get_powerStructStablePowerSupply(),
-    //                     rmsClassArg.get_powerStructChargeStatus(),
-    //                     dataFileName);
     bool writeSuccess = Data_saveDataPointToDataFile(rmsClassArg,
                         URA_INPUTBIT,
                         dataFileName);
-    Serial.print("dataFileName: ");
-    Serial.println(dataFileName);
-    Serial.print("Was the write a success? ");
-    Serial.println(writeSuccess);
+    if (debug && debug_FSM){
+        Serial.print("dataFileName: ");
+        Serial.println(dataFileName);
+        Serial.print("Was the write a success? ");
+        Serial.println(writeSuccess);
+    }
+
+    // message spamming management
     if (rmsClassArg.ura_canSendSMS(currentTime)){
-        ToggleLED(ORANGELED_PIN);
+        if (debug && debug_FSM){
+            ToggleLED(ORANGELED_PIN);
+        }
         SMS_uraSend(rmsClassArg, cfgStructArg);
     }
     else{
-        ToggleLED(BLUELED_PIN);
+        if (debug && debug_FSM){
+            ToggleLED(BLUELED_PIN);
+        }
     }
 }
+
+RMSState FSM_decideState(Ezo_board& ezoORPClassArg, ConfigurationStruct cfgStructArg){
+    RMSState state = UWQ;
+    //Could successfully read a value from the sensor
+    if (ezoORPClassArg.get_error() == Ezo_board::SUCCESS){
+        state = FSM_implementMLDecision(ezoORPClassArg, cfgStructArg);
+    }
+    // problem occured while reading the sensor
+    else {
+        state = FWQ;
+    }
+    return state;
+}
+
+RMSState FSM_implementMLDecision(Ezo_board& ezoORPClassArg, ConfigurationStruct cfgStructArg){
+    // TODO: allow the ORPValue threshold to be set at initialisation
+    // UPGRADE: tune here the decision making criteria
+    RMSState state = UWQ;
+    float orpValue = ezoORPClassArg.get_last_received_reading();
+    // test for threshold value
+    if (orpValue > cfgStructArg.logitThreshold) {
+        state = SWQ;
+    }
+    else if (orpValue <= cfgStructArg.logitThreshold){
+        state = UWQ;
+    }
+    return state;
+}
+
+
+void FSM_setPowerSituation(rmsClass& rmsClassArg){
+    bool debug = true;
+    // Check battery health, and store into the RMS State class
+    // this function also updates the energy level band
+    rmsClassArg.set_powerStructBatteryVoltage(Battery_getBatteryVoltage());
+    rmsClassArg.set_powerStructStablePowerSupply(Battery_getIsStablePowerSupply());
+    rmsClassArg.set_powerStructChargeStatus(Battery_getChargeStatus());
+
+    if (debug_FSM && debug){
+        Serial.println("PowerSituation");
+        Serial.println("value from Battery function");
+        Serial.print("Battery_getBatteryVoltage: ");
+        Serial.println(Battery_getBatteryVoltage());
+        Serial.print("Battery_getStablePowerSupply: ");
+        Serial.println(Battery_getIsStablePowerSupply(), BIN);
+        Serial.print("Battery_getChargeStatus: ");
+        Serial.println(Battery_getChargeStatus(), BIN);
+        Serial.println("value from powerStruct function");
+        Serial.print("rmsClassArg.get_powerStructBatteryVoltage: ");
+        Serial.println(rmsClassArg.get_powerStructBatteryVoltage());
+        Serial.print("rmsClassArg.get_powerStructStablePowerSupply: ");
+        Serial.println(rmsClassArg.get_powerStructStablePowerSupply(), BIN);
+        Serial.print("rmsClassArg.get_powerStructChargeStatus: ");
+        Serial.println(rmsClassArg.get_powerStructChargeStatus(), BIN);
+    }
+}
+
+void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg, uint32_t currentTime, char dataFileName[]){
+    bool debug = false;
+    rmsClassArg.set_wmCurrentAlarmEPochTime(currentTime);
+    if (debug && debug_FSM){
+        Serial.print("get_wmCurrentAlarmEPochTime(): ");
+        Serial.println(rmsClassArg.get_wmCurrentAlarmEPochTime());
+        Serial.print("get_wmLastAlarmEPochTime(): ");
+        Serial.println(rmsClassArg.get_wmLastAlarmSMSEPochTime());
+        Serial.print("Time difference: ");
+        Serial.println(rmsClassArg.get_wmCurrentAlarmEPochTime()-rmsClassArg.get_wmLastAlarmSMSEPochTime());
+        Serial.print("Allowed interval: ");
+        Serial.println(rmsClassArg.get_wmAllowedIntervalBetweenSMS());
+        Serial.print("second condition: ");
+        bool test = (rmsClassArg.get_wmCurrentAlarmEPochTime()-rmsClassArg.get_wmLastAlarmSMSEPochTime() > rmsClassArg.get_wmAllowedIntervalBetweenSMS());
+        Serial.println (test);
+        Serial.print("WM alarm situation before update: ");
+        Serial.println(rmsClassArg.get_wmAlarmSituation());
+    }
+    
+    /* 
+    The alarm situation is in no anomaly mode (before the water was Safe)
+    but the rms has just detected an UWQ of FWQ.
+    */
+    if ((rmsClassArg.get_wmAlarmSituation() == rmsClass::NOANOMALIES) 
+    && (rmsClassArg.get_rmsState() == UWQ || rmsClassArg.get_rmsState() == FWQ)){
+        // we will send an SMS; so we update the lastAlarmSMSEPochTime
+        rmsClassArg.set_wmLastAlarmSMSEPochTime(rmsClassArg.get_wmCurrentAlarmEPochTime());
+        
+        // this is the first anaomly detected
+        rmsClassArg.set_wmAlarmSituation(rmsClass::FIRSTANOMALY);
+        
+        // send an SMS
+        SMS_wmSend(rmsClassArg, cfgStructArg);
+    }
+    // TODO: instead of storing the and using some extra space, can directly use the value from cfg for wmSMSInterval
+    /* 
+    The alarm situation is in History Window (containing anomalies (UWQ or FWQ))
+    and, we are now at the end of the History Window duration: we should update the operator on the situation
+    */
+    else if ((rmsClassArg.get_wmAlarmSituation() == rmsClass::HWANOMALIES) 
+    && (rmsClassArg.get_wmCurrentAlarmEPochTime()-rmsClassArg.get_wmLastAlarmSMSEPochTime() > rmsClassArg.get_wmAllowedIntervalBetweenSMS())){
+        // we will send an SMS; so we update the lastAlarmSMSEPochTime
+        rmsClassArg.set_wmLastAlarmSMSEPochTime(rmsClassArg.get_wmCurrentAlarmEPochTime());
+        
+        // We are still in a history window: assumes the criteria for terminating a HW has not been reached yet
+        rmsClassArg.set_wmAlarmSituation(rmsClass::HWANOMALIES);
+        
+        // perform thecount of UWQ/FWQ/SWQ eventsS
+        rmsClassArg.set_stateHistorySuccess(Data_updateStateHistory(rmsClassArg, dataFileName));
+        if (debug && debug_FSM){
+            Serial.print("rmsClassArg.get_stateHistoryCount(UWQ)");
+            Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
+            Serial.print("rmsClassArg.get_totalStateChanges()");
+            Serial.println(rmsClassArg.get_totalStateChanges());
+        }
+
+        if (rmsClassArg.get_stateHistorySuccess()){
+            // final percentage update:
+            rmsClassArg.set_stateHistoryPercentage(SWQ);
+            rmsClassArg.set_stateHistoryPercentage(UWQ);
+            rmsClassArg.set_stateHistoryPercentage(FWQ);
+        }
+        /*
+        If the final data point lead to a SWQ, we assume in this version that the device is now in SWQ, and should exit the HW
+        UPGRADE: THIS is where we can tune the settings to stop the alarm sending
+        */
+        if (rmsClassArg.get_rmsState() == SWQ){ 
+            rmsClassArg.set_wmAlarmSituation(rmsClass::NORMALOCCURENCE);
+        }
+
+        SMS_wmSend(rmsClassArg, cfgStructArg);
+
+        rmsClassArg.reset_History();
+        if (debug && debug_FSM){
+            Serial.println("after rmsClassArg.reset_History");
+            Serial.print("rmsClassArg.get_stateHistoryCount(UWQ)");
+            Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
+            Serial.print("rmsClassArg.get_totalStateChanges()");
+            Serial.println(rmsClassArg.get_totalStateChanges());
+        }
+    }
+    if (debug && debug_FSM){
+        Serial.print("AlarmSituation after update: ");
+        Serial.println(rmsClassArg.get_wmAlarmSituation());
+    }
+}
+
 
 void FSM_f_HB(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
     //Set a new time for the hbAlarmtrigger
@@ -534,125 +669,13 @@ void FSM_f_BUP(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
 //     }
 // }
 
-void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg, uint32_t currentTime, char dataFileName[]){
-    rmsClassArg.set_wmCurrentAlarmEPochTime(currentTime);
-
-    Serial.print("get_wmCurrentAlarmEPochTime(): ");
-    Serial.println(rmsClassArg.get_wmCurrentAlarmEPochTime());
-    Serial.print("get_wmLastAlarmEPochTime(): ");
-    Serial.println(rmsClassArg.get_wmLastAlarmSMSEPochTime());
-    Serial.print("Time difference: ");
-    Serial.println(rmsClassArg.get_wmCurrentAlarmEPochTime()-rmsClassArg.get_wmLastAlarmSMSEPochTime());
-    Serial.print("Allowed interval: ");
-    Serial.println(rmsClassArg.get_wmAllowedIntervalBetweenSMS());
-    Serial.print("second condition: ");
-    bool test = (rmsClassArg.get_wmCurrentAlarmEPochTime()-rmsClassArg.get_wmLastAlarmSMSEPochTime() > rmsClassArg.get_wmAllowedIntervalBetweenSMS());
-    Serial.println (test);
-    Serial.print("AlarmSituation beofre update: ");
-    Serial.println(rmsClassArg.get_wmAlarmSituation());
 
 
-    if ((rmsClassArg.get_wmAlarmSituation() == rmsClass::NOANOMALIES) 
-    && (rmsClassArg.get_rmsState() == UWQ || rmsClassArg.get_rmsState() == FWQ)){
-        
-        rmsClassArg.set_wmLastAlarmSMSEPochTime(rmsClassArg.get_wmCurrentAlarmEPochTime());
-        
-        rmsClassArg.set_wmAlarmSituation(rmsClass::FIRSTANOMALY);
-        
-        SMS_wmSend(rmsClassArg, cfgStructArg);
-    }
-    // TODO: instead of storing the and using some extra space, can directly use the value from cfg for wmSMSInterval
-    else if ((rmsClassArg.get_wmAlarmSituation() == rmsClass::HWANOMALIES) 
-    && (rmsClassArg.get_wmCurrentAlarmEPochTime()-rmsClassArg.get_wmLastAlarmSMSEPochTime() > rmsClassArg.get_wmAllowedIntervalBetweenSMS())){
-        
-        rmsClassArg.set_wmLastAlarmSMSEPochTime(rmsClassArg.get_wmCurrentAlarmEPochTime());
-        
-        rmsClassArg.set_wmAlarmSituation(rmsClass::HWANOMALIES);
-        
-        // perform thecount of UWQ/FWQ/SWQ eventsS
-        Data_updateStateHistory(rmsClassArg, dataFileName);
-        Serial.print("rmsClassArg.get_stateHistoryCount(UWQ)");
-        Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
-        Serial.print("rmsClassArg.get_totalStateChanges()");
-        Serial.println(rmsClassArg.get_totalStateChanges());
-
-        //update percentage:
-        rmsClassArg.set_stateHistoryPercentage(SWQ);
-        rmsClassArg.set_stateHistoryPercentage(UWQ);
-        rmsClassArg.set_stateHistoryPercentage(FWQ);
-
-        if (rmsClassArg.get_rmsState() == SWQ){ // THIS is where we can tune the settings to stop the alarm sending
-            rmsClassArg.set_wmAlarmSituation(rmsClass::NORMALOCCURENCE);
-        }
-
-        SMS_wmSend(rmsClassArg, cfgStructArg);
-
-        rmsClassArg.reset_History();
-        
-        Serial.print("rmsClassArg.get_stateHistoryCount(UWQ)");
-        Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
-        Serial.print("rmsClassArg.get_totalStateChanges()");
-        Serial.println(rmsClassArg.get_totalStateChanges());
-    }
-    Serial.print("AlarmSituation after update: ");
-    Serial.println(rmsClassArg.get_wmAlarmSituation());
-    
-}
-
-RMSState FSM_decideState(Ezo_board& ezoORPClassArg, ConfigurationStruct cfgStructArg){
-    RMSState state = UWQ;
-    if (ezoORPClassArg.get_error() == Ezo_board::SUCCESS){
-        state = FSM_implementMLDecision(ezoORPClassArg, cfgStructArg);
-
-    }
-    else {
-        state = FWQ;
-    }
-    return state;
-}
-
-RMSState FSM_implementMLDecision(Ezo_board& ezoORPClassArg, ConfigurationStruct cfgStructArg){
-    // TODO: find a better way to easily tune the threshold
-    // TODO: allow the ORPValue threshold to be set at initialisation
-
-    RMSState state = UWQ;
-    float orpValue = ezoORPClassArg.get_last_received_reading();
-    // CONFIG
-    if (orpValue > cfgStructArg.logitThreshold) {
-        state = SWQ;
-    }
-    else if (orpValue <= cfgStructArg.logitThreshold){
-        state = UWQ;
-    }
-
-    // TODO: need to deal with faulty reading as well
-    return state;
-}
 
 
-void FSM_setPowerSituation(rmsClass& rmsClassArg){
-    // CHeck battery health, and store into the RMS State class
-    // this function also updates the energy level band
-    rmsClassArg.set_powerStructBatteryVoltage(Battery_getBatteryVoltage());
-    rmsClassArg.set_powerStructStablePowerSupply(Battery_getIsStablePowerSupply());
-    rmsClassArg.set_powerStructChargeStatus(Battery_getChargeStatus());
-    Serial.println("PowerSituation");
-    Serial.println("value from Battery function");
-    Serial.print("Battery_getBatteryVoltage: ");
-    Serial.println(Battery_getBatteryVoltage());
-    Serial.print("Battery_getStablePowerSupply: ");
-    Serial.println(Battery_getIsStablePowerSupply(), BIN);
-    Serial.print("Battery_getChargeStatus: ");
-    Serial.println(Battery_getChargeStatus(), BIN);
-    Serial.println("value from powerStruct function");
-    Serial.print("rmsClassArg.get_powerStructBatteryVoltage: ");
-    Serial.println(rmsClassArg.get_powerStructBatteryVoltage());
-    Serial.print("rmsClassArg.get_powerStructUSBMode: ");
-    Serial.println(rmsClassArg.get_powerStructStablePowerSupply(), BIN);
-    Serial.print("rmsClassArg.get_powerStructChargeStatus: ");
-    Serial.println(rmsClassArg.get_powerStructChargeStatus(), BIN);
 
-}
+
+
 
 
 

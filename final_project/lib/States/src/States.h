@@ -148,6 +148,7 @@ class rmsClass {
       /*add a file cursor to know where was the further most away timestamp*/
       
       struct stateHistoryStruct {
+         bool success;
          uint8_t n_SWQ;
          uint8_t n_UWQ;
          uint8_t n_FWQ;
@@ -156,7 +157,9 @@ class rmsClass {
          float p_UWQ;
          float p_FWQ;
       };
-
+      void set_stateHistorySuccess(bool new_success);
+      bool get_stateHistorySuccess();
+      
       void set_stateHistoryCount(RMSState stateOfInterest, uint8_t countState);
       uint8_t get_stateHistoryCount(RMSState stateOfInterest);
 
@@ -164,6 +167,8 @@ class rmsClass {
 
       void set_stateHistoryPercentage(RMSState stateOfInterest);
       float get_stateHistoryPercentage(RMSState stateOfInterest);
+
+      
 
       void reset_History();
 

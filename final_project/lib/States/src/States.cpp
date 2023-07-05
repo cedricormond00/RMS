@@ -282,6 +282,12 @@ bool rmsClass::wm_canSendSMS(uint32_t new_currentAlarmEPochTime){
 
 
 // History
+void rmsClass::set_stateHistorySuccess(bool new_success){
+    _stateHistoryStruct.success = new_success;
+}
+bool rmsClass::get_stateHistorySuccess(){
+    return _stateHistoryStruct.success;
+}
 void rmsClass::set_stateHistoryCount(RMSState stateOfInterest, uint8_t countState){
     switch(stateOfInterest){
         case(SWQ):

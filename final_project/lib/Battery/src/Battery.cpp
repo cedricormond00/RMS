@@ -31,10 +31,10 @@
 
 #include "Battery.h"
 #include "Tool.h"
-// #include "States.h"
 
-int usb_mode = UNKNOWN_MODE;
 
+
+bool debug_Battery = true;
 
 
 //define the resistor values in the voltage divider
@@ -51,7 +51,6 @@ const float batteryCapacity = 2.9;            //set battery capacity in Ah
         
 
 bool Battery_runInitSequence(rmsClass& rmsClassArg){
-
     bool success = true;
 
     rmsClassArg.set_powerStructStablePowerSupply(Battery_getIsStablePowerSupply());
@@ -109,7 +108,9 @@ bool Battery_runInitSequence(rmsClass& rmsClassArg){
     return success;
 }
 
+
 float Battery_getBatteryVoltage(void){
+    bool debug = false;
     analogReference(AR_DEFAULT);      // the upper value of ADC is set to 3.3V
     analogReadResolution(12);         // this will give us 4096 (2^12) levels on the ADC
     
@@ -125,29 +126,33 @@ float Battery_getBatteryVoltage(void){
     float voltADC = rawADC * (3.3/4095.0);                      //convert ADC value to the voltage read at the pin
     //calculated voltage on battery
     float voltBat = voltADC * (maxSourceVoltage/3.3);         //we cannot use map since it requires int inputs/outputs
-    // //report information over Serial
-    // Serial.begin(9600);               // start Serial port with a baudrate of 9600bps
-    // Serial.print("The ADC on PB09 reads a value of ");
-    // Serial.print(rawADC);
-    // Serial.print(" which is equivialent to ");
-    // Serial.print(voltADC);
-    // Serial.print("V. This means the battery voltage is ");
-    // Serial.print(voltBat);
-    // Serial.print("V. Which is equivalent to a charge level of ");
-    // Serial.print(Battery_getBatteryPerc(voltBat));
-    // Serial.println("%.");
+    if (debug_Battery && debug){
+        //report information over Serial
+        Serial.print("The ADC on PB09 reads a value of ");
+        Serial.print(rawADC);
+        Serial.print(" which is equivialent to ");
+        Serial.print(voltADC);
+        Serial.print("V. This means the battery voltage is ");
+        Serial.print(voltBat);
+        Serial.print("V. Which is equivalent to a charge level of ");
+        Serial.print(Battery_getBatteryPercentage(voltBat));
+        Serial.println("%.");
+    }
     return voltBat;
 }
+
 
 uint8_t Battery_getBatteryPercentage(float batteryVoltage){
     uint8_t batteryPercentage = (batteryVoltage - batteryEmptyVoltage) * (100) / (batteryFullVoltage - batteryEmptyVoltage);    //custom float friendly map function
     return batteryPercentage;
 }
 
+
 bool Battery_getIsStablePowerSupply(){
     bool isPowerGood = PMIC.isPowerGood();
     return isPowerGood;
 }
+
 
 uint8_t Battery_getChargeStatus(){
     uint8_t vBusStatus = PMIC.chargeStatus();

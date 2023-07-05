@@ -23,6 +23,7 @@
 #include "Global.h"
 
 // local variables
+bool debug_main = true;
 
 // define state machine
 rmsClass rms;
@@ -164,23 +165,15 @@ void setup() {
     return;
   }
 
-
-  /*TODO: 
-  - read config file
-  - if fail, use default config
-  - setup rms with config settings --> done in INIT
-  */
   Serial.println("**Configuration parameters setting**");
   Serial.println("*Setting RMS configuration as default*");
   Config_setConfigurationDefault(cfg);
-  // Serial.println("Default settings: ");
-  // Config_printConfiguration(cfg);
   Serial.println("DONE.");
 
   Serial.println("*Setting RMS configuration from file*");
   Config_setConfigurationFromFile(cfg);
-  // Serial.println("File settings: ");
-  // Config_printConfiguration(cfg);
+  Serial.println("File settings: ");
+  Config_printConfiguration(cfg);
   Serial.println("DONE.");
 
 
@@ -225,37 +218,34 @@ void loop() {
   switch(rms.get_rmsState()){
     // go in appropriate state
     case INIT:
-      Serial.println("-in INIT State");
+      if (debug_main) {Serial.println("-in INIT State");}
       digitalWrite(BLUELED_PIN, HIGH);
       digitalWrite(REDLED_PIN, HIGH);
       FSM_initRMS(rms, cfg);
-      Serial.println("-end INIT State");
+      if (debug_main) {Serial.println("-end INIT State");}
 
       /*TODO: ensure to check the next hb is checked to be in the future here:
       update the HB time, if again it fails,
       else:return an error and show the rror signal code: send the device into unknown error state
       */
+
+     //documentation: stopeed here
       break;
 
     case SWQ: 
-      Serial.println("-in SWQ State");
+      if (debug_main) {Serial.println("-in SWQ State");}
       digitalWrite(REDLED_PIN, LOW);
       digitalWrite(GREENLED_PIN, HIGH);
-
-      
-
-     
-      //function: determine wakeup period (cf input trigger event)
 
       LP_goToLowPowerConsumption(rms, rtc, &triggeredInputEvent);
 
       FSM_updateInputEventCode(rms, rtc, cfg, &triggeredInputEvent);
-
+      if (debug_main) {Serial.println("-end SWQ State");}
       
       break;
 
     case UWQ:
-      Serial.println("-in UWQ State");
+      if (debug_main) {Serial.println("-in UWQ State");}
       digitalWrite(REDLED_PIN, HIGH);
       digitalWrite(GREENLED_PIN, LOW);
       // wakePeriod = 10000; // 20 sec
@@ -266,88 +256,65 @@ void loop() {
       FSM_updateInputEventCode(rms, rtc, cfg, &triggeredInputEvent);
 
 
-      Serial.println("-end UWQ State");
+      if (debug_main) {Serial.println("-end UWQ State");}
 
       break;
 
     case FWQ:
-      Serial.println("-in FWQ State");
+      if (debug_main) {Serial.println("-in FWQ State");}
       digitalWrite(REDLED_PIN, HIGH);
       digitalWrite(GREENLED_PIN, LOW);
-      // wakePeriod = 10000; // 20 sec
-      //wake every 2 minutes (2*60*1000ms = 120000)
-
 
       LP_goToLowPowerConsumption(rms, rtc, &triggeredInputEvent);
       FSM_updateInputEventCode(rms, rtc, cfg, &triggeredInputEvent);
-      Serial.println("-end FWQ State");
+      if (debug_main) {Serial.println("-end FWQ State");}
 
       break;
 
     case SLEEP:
-      Serial.println("-in SLEEP State");
+      if (debug_main) {Serial.println("-in SLEEP State");}
       digitalWrite(REDLED_PIN, HIGH);
       digitalWrite(GREENLED_PIN, LOW);
       digitalWrite(BLUELED_PIN, LOW);
       
       LP_goToDeepSleep(rms);
-      Serial.println("-end SLEEP State");
+      if (debug_main) {Serial.println("-end SLEEP State");}
 
       break;
-//TODO: remove the in /end for the follwoing states
+
     case BATTERY_LOW:
-      Serial.println("-in BATTERY_LOW State");
       LED_showBatteryLowSignal();
       delay(2000);
-      Serial.println("-end BATTERY_LOW State");
-
       break;
 
     case BATTERY_NOTCONNECTED:
-      Serial.println("-in BATTERY_NOTCONNECTED State");
       LED_showBatteryNotConnectedSignal();
       delay(2000);
-      Serial.println("-end BATTERY_NOTCONNECTED State");
-
       break;
 
     case SDCARD_NOK:
-      Serial.println("-in SDCARD_NOK State");
       LED_showSDCardNokSignal();
       delay(2000);
-      Serial.println("-end SDCARD_NOK State");
-
       break;
     
     case SDCARD_FILENAMENOK:
-      Serial.println("-in SDCARD_FILENAMENOK State");
       LED_showSDCardFileNameNOkSignal();
       delay(2000);
-      Serial.println("-end SDCARD_FILENAMENOK State");
-
       break;
     
     case RTC_FAILEDINIT:
-      Serial.println("-in RTC_FAILEDINIT State");
       LED_showRTCFailedInitSignal();
       delay(2000);
-      Serial.println("-end RTC_FAILEDINIT State");
-
       break;
     
     case RTC_FAILEDHBSET:
-      Serial.println("-in RTC_FAILEDHBSET State");
       LED_showRTCFailedHBSetSignal();
       delay(2000);
-      Serial.println("-end RTC_FAILEDHBSET State");
-
       break;
     
     case UNKNOWN_ERROR:
-      Serial.println("-in UNKNOWN_ERROR State");
       LED_showUnknownErrorSignal();
       delay(2000);
-      Serial.println("-end UNKNOWN_ERROR State");
       break;
 
     

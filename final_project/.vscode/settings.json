@@ -2,5 +2,18 @@
     "files.associations": {
         "limits": "cpp",
         "type_traits": "cpp"
-    }
+    },
+    "C_Cpp.doxygen.sectionTags": [
+        "attention",
+        "tparam",
+        "param",
+        "result",
+        "returns",
+        "retval",
+        "exception",
+        "deprecated",
+        "warning",
+        "note",
+        "details"
+    ]
 }

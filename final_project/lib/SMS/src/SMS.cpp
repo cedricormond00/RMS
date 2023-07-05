@@ -17,23 +17,95 @@ void SMS_init(uint32_t timeout){
     nbAccess.setTimeout(timeout); 
 }
 
+void SMS_sendSMS(ConfigurationStruct cfgStructArg, char message[160]){
+    if (cfgStructArg.sendSMS){
+        if (SMS_initConnection()){
+            SMS_sendMessage(message,cfgStructArg.remoteNumber);
+        }
+    }
+}
+
+bool SMS_initConnection(){
+    // connection state
+    bool connected = false;
+    // number of conenction to network attempts
+    uint8_t count = 0;
+
+    while (!connected && count <5) {
+        NB_NetworkStatus_t status = nbAccess.status();
+        Serial.print("NB status: ");
+        Serial.println(status);
+        if (status == NB_READY) {
+            connected = true;
+            Serial.println("NB initialized");
+        }
+        else {
+            Serial.println("Not connected");
+            count ++;
+            delay(1000);
+            if (count!=0){
+                Serial.println("NB not NB_ready. Shutting down and rebegining.");
+                Serial.print("Connection attempt: ");
+                Serial.println(count);
+            }
+            nbAccess.shutdown();
+            nbAccess.begin(PINNUMBER);
+            status = nbAccess.status();
+        }    
+    } 
+    return connected;
+}
+
 void SMS_wmSend(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
+    // first detection of an anomaly
     if (rmsClassArg.get_wmAlarmSituation() == rmsClass::FIRSTANOMALY){
         SMS_wmImmediate(rmsClassArg, cfgStructArg);
+        // now set the alarm situation as being inside the HistoryWindow of anomalies
         rmsClassArg.set_wmAlarmSituation(rmsClass::HWANOMALIES);
     }
+    // we shall remain in the histoy window
     else if (rmsClassArg.get_wmAlarmSituation() == rmsClass::HWANOMALIES){
         SMS_wmHistoryWindow(rmsClassArg, cfgStructArg);
     }
+    // We may now exit the history window, because the criterias to qualify the RMS as back to safe mode were met
     else if (rmsClassArg.get_wmAlarmSituation() == rmsClass::NORMALOCCURENCE){
         SMS_wmHistoryWindow(rmsClassArg, cfgStructArg);
+        //exit the HW SMS sending
         rmsClassArg.set_wmAlarmSituation(rmsClass::NOANOMALIES);
     }
-    // else if (rmsClassArg.get_wmAlarmSituation() == 1){
-    //     SMS_immediateWM(rmsClassArg);
-    //     rmsClassArg.set_wmAlarmSituation(2);
+}
+
+
+bool SMS_sendMessage(char message[160], char remoteNumber[20]){
+    bool success = true;
+    // if (sendSMS){
+    Serial.println("SENDING");
+    Serial.println();
+    Serial.println("Message:");
+    Serial.println(message);
+
+    // send the message
+    success = sms.beginSMS(remoteNumber);
+    if (success == 1){
+        success = sms.print(message);
+    } else{
+        //TODO: could return an error code to know where it failed
+        return success;
+    }
+
+    if (success == 1){
+        success = sms.endSMS();
+    } else{
+        //TODO: could return an error code to know where it failed
+        return success;
+    }
+    
+    Serial.println("\nCOMPLETE!\n");
+    return success;
     // }
 }
+
+
 
 void SMS_wmImmediate(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
     char message[160];
@@ -56,63 +128,59 @@ void SMS_wmImmediate(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
     if (wm){
         SMS_sendSMS(cfgStructArg, message);
     }    
-    // Serial.println("");
-    // Serial.println("---");
-    // Serial.print("RMS ");
-    // Serial.println(RMS_ID);
-    // Serial.println("WQ situation");
-    // Serial.print("Current State: ");
-    // Serial.println(rmsClassArg.get_rmsState());
-    // Serial.print("Last ORP reading: ");
-    // Serial.println(rmsClassArg.get_orpReading());
-    // Serial.println("Update will come in at regular interval until a SWQ is detected at the end of the History Window");
-    // Serial.println("---");
 }
 
 void SMS_wmHistoryWindow(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
     char message[160];
     char dateTime[21];
     Tool_stringTime(rmsClassArg.get_wmReadEPochTime(), dateTime);
+
     Serial.println("");
     Serial.println("---");
-    sprintf(message,"%d\n"//+ 1
-                    "%s\n"//+ 1
-                    "WQ\n"//2 + 1
-                    "State %d\n"//6 + 1
-                    "Last ORP %.2f\n"//9 + 1
-                    "SWQ %.2f\n"//4 + 1
-                    "UWQ %.2f\n"//4 + 1
-                    "FWQ %.2f"//4 + 1
-                    , RMS_ID, // 2
-                    dateTime,//21
-                    rmsClassArg.get_rmsState(), //1
-                    rmsClassArg.get_orpReading(), //7
-                    rmsClassArg.get_stateHistoryPercentage(SWQ), //4
-                    rmsClassArg.get_stateHistoryPercentage(UWQ), //4
-                    rmsClassArg.get_stateHistoryPercentage(FWQ)); //4
-                    // 80
-    Serial.println(message);
+    // if we were successful in updating the state History
+    if (rmsClassArg.get_stateHistorySuccess()){
+        sprintf(message,"%d\n"//+ 1
+                        "%s\n"//+ 1
+                        "WQ\n"//2 + 1
+                        "State %d\n"//6 + 1
+                        "Last ORP %.2f\n"//9 + 1
+                        "SWQ %.2f\n"//4 + 1
+                        "UWQ %.2f\n"//4 + 1
+                        "FWQ %.2f"//4 + 1
+                        , RMS_ID, // 2
+                        dateTime,//21
+                        rmsClassArg.get_rmsState(), //1
+                        rmsClassArg.get_orpReading(), //7
+                        rmsClassArg.get_stateHistoryPercentage(SWQ), //4
+                        rmsClassArg.get_stateHistoryPercentage(UWQ), //4
+                        rmsClassArg.get_stateHistoryPercentage(FWQ)); //4
+                        // 80
+        Serial.println(message);
+    }
+    // if we were unsucceessful in updating the state History
+    else{
+        sprintf(message,"%d\n"//+ 1
+                "%s\n"//+ 1
+                "WQ\n"//2 + 1
+                "State %d\n"//6 + 1
+                "Last ORP %.2f\n"//9 + 1
+                "Failed to compute states' percentage over the HW"//46 + 1
+                , RMS_ID, // 2
+                dateTime,//21
+                rmsClassArg.get_rmsState(), //1
+                rmsClassArg.get_orpReading(), //7
+                rmsClassArg.get_stateHistoryPercentage(SWQ), //4
+                rmsClassArg.get_stateHistoryPercentage(UWQ), //4
+                rmsClassArg.get_stateHistoryPercentage(FWQ)); //4
+                // 112
+        Serial.println(message);  
+    } 
     Serial.println("---");
     if (wm){
         SMS_sendSMS(cfgStructArg, message);
     }    
-    // Serial.println("");
-    // Serial.println("---");
-    // Serial.print("RMS ");
-    // Serial.println(RMS_ID);
-    // Serial.println("WQ situation");
-    // Serial.print("Current State: ");
-    // Serial.println(rmsClassArg.get_rmsState());
-    // Serial.print("Last ORP reading: ");
-    // Serial.println(rmsClassArg.get_orpReading());
-    // Serial.print("SWQ percentage");
-    // Serial.println(rmsClassArg.get_stateHistoryPercentage(SWQ),2);
-    // Serial.print("UWQ percentage");
-    // Serial.println(rmsClassArg.get_stateHistoryPercentage(UWQ),2);
-    // Serial.print("FWQ percentage");
-    // Serial.println(rmsClassArg.get_stateHistoryPercentage(FWQ),2);
-    // Serial.println("---");
 }
+
 
 void SMS_uraSend(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
     char message[160];
@@ -135,16 +203,6 @@ void SMS_uraSend(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
     if (ura){
         SMS_sendSMS(cfgStructArg, message);
     }    
-    // Serial.println("");
-    // Serial.println("---");
-    // Serial.print("RMS ");
-    // Serial.println(RMS_ID);
-    // Serial.println("URA situation");
-    // Serial.print("Current State: ");
-    // Serial.println(rmsClassArg.get_rmsState());
-    // Serial.print("Last ORP reading: ");
-    // Serial.println(rmsClassArg.get_orpReading());
-    // Serial.println("---");
 }
 
 
@@ -320,86 +378,5 @@ void SMS_BUPSendEnergyLevel(rmsClass& rmsClassArg, ConfigurationStruct cfgStruct
     }
 }
 
-bool SMS_initConnection(){
-    // connection state
-    bool connected = false;
-
-    // If your SIM has PIN, pass it as a parameter of begin() in quotes
-    //TODO: change the while to a count up to 5 tries
-    uint8_t count = 0;
-    while (!connected && count <5) {
-        // if (nbAccess.begin(PINNUMBER) == NB_READY) {
-            //here is the problem
-        NB_NetworkStatus_t status = nbAccess.status();
-        Serial.print("NB status: ");
-        Serial.println(status);
-        if (status == NB_READY) {
-            connected = true;
-            Serial.println("NB initialized");
-        }
-        else {
-            Serial.println("Not connected");
-            count ++;
-            delay(1000);
-            Serial.println("NB not NB_ready. SHutting down and rebegining.");
-            Serial.print("Attempt: ");
-            Serial.println(count);
-            nbAccess.shutdown();
-            nbAccess.begin(PINNUMBER);
-            status = nbAccess.status();
-            Serial.println("new current status: ");
-            Serial.print(status);
-        }    
-    } 
 
 
-
-    // while (!connected) {
-    //     if (nbAccess.begin(PINNUMBER) == NB_READY) {
-    //         connected = true;
-    //     } 
-    //     else {
-    //         Serial.println("Not connected");
-    //         delay(1000);
-    //     }
-    // }
-
-    return connected;
-}
-
-bool SMS_sendMessage(char message[160], char remoteNumber[20]){
-    bool success = true;
-    // if (sendSMS){
-    Serial.println("SENDING");
-    Serial.println();
-    Serial.println("Message:");
-    Serial.println(message);
-
-    // send the message
-    success = sms.beginSMS(remoteNumber);
-    if (success == 1){
-        success = sms.print(message);
-    } else{
-        //TODO: could return an error code to know where it failed
-        return success;
-    }
-
-    if (success == 1){
-        success = sms.endSMS();
-    } else{
-        //TODO: could return an error code to know where it failed
-        return success;
-    }
-    
-    Serial.println("\nCOMPLETE!\n");
-    return success;
-    // }
-}
-
-void SMS_sendSMS(ConfigurationStruct cfgStructArg, char message[160]){
-    if (cfgStructArg.sendSMS){
-        if (SMS_initConnection()){
-            SMS_sendMessage(message,cfgStructArg.remoteNumber);
-        }
-    }
-}
