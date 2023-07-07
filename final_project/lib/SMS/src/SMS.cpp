@@ -8,9 +8,9 @@
 #include "RTC.h" //TODO: comment out
 #include "Tool.h"
 
-bool wm = false;
-bool ura = false;
-bool hb = false;
+bool wm = true;
+bool ura = true;
+bool hb = true;
 bool bup = true;
 
 void SMS_init(uint32_t timeout){

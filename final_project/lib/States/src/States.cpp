@@ -271,40 +271,34 @@ bool rmsClass::wm_canSendSMS(uint32_t new_currentAlarmEPochTime){
     return canSendSMS;
 }
 
-void rmsClass::update_wmAlarmSituation(uint32_t new_currentAlarmEPochTime){
-    bool debug = false;
-    
-    set_wmCurrentAlarmEPochTime(new_currentAlarmEPochTime);
-
-    if(debug){
-        Serial.print("get_wmCurrentAlarmEPochTime(): ");
-        Serial.println(get_wmCurrentAlarmEPochTime());
-        Serial.print("get_wmLastAlarmEPochTime(): ");
-        Serial.println(get_wmLastAlarmSMSEPochTime());
-        Serial.print("Time difference: ");
-        Serial.println(get_wmCurrentAlarmEPochTime()-get_wmLastAlarmSMSEPochTime());
-        Serial.print("Allowed interval: ");
-        Serial.println(get_wmAllowedIntervalBetweenSMS());
-        Serial.print("second condition: ");
-        bool test = (get_wmCurrentAlarmEPochTime()-get_wmLastAlarmSMSEPochTime() > get_wmAllowedIntervalBetweenSMS());
-        Serial.println (test);
-    }
-
-
-    if ((get_wmAlarmSituation() == 0) && (get_rmsState() == UWQ || get_rmsState() == FWQ)){
-        set_wmLastAlarmSMSEPochTime(get_wmCurrentAlarmEPochTime());
-
-        set_wmAlarmSituation(FIRSTANOMALY);
-    }
-    else if ((get_wmAlarmSituation() == HWANOMALIES) && (get_wmCurrentAlarmEPochTime()-get_wmLastAlarmSMSEPochTime() > get_wmAllowedIntervalBetweenSMS())){
-        set_wmAlarmSituation(HWANOMALIES);
-        set_wmLastAlarmSMSEPochTime(get_wmCurrentAlarmEPochTime());
-
-        if (get_rmsState() == SWQ){ // THIS is where we can tune the settings to stop the alarm sending
-            set_wmAlarmSituation(NORMALOCCURENCE);
-        }
-    }
-}
+// void rmsClass::update_wmAlarmSituation(uint32_t new_currentAlarmEPochTime){
+//     bool debug = false;
+//     set_wmCurrentAlarmEPochTime(new_currentAlarmEPochTime);
+//     if(debug){
+//         Serial.print("get_wmCurrentAlarmEPochTime(): ");
+//         Serial.println(get_wmCurrentAlarmEPochTime());
+//         Serial.print("get_wmLastAlarmEPochTime(): ");
+//         Serial.println(get_wmLastAlarmSMSEPochTime());
+//         Serial.print("Time difference: ");
+//         Serial.println(get_wmCurrentAlarmEPochTime()-get_wmLastAlarmSMSEPochTime());
+//         Serial.print("Allowed interval: ");
+//         Serial.println(get_wmAllowedIntervalBetweenSMS());
+//         Serial.print("second condition: ");
+//         bool test = (get_wmCurrentAlarmEPochTime()-get_wmLastAlarmSMSEPochTime() > get_wmAllowedIntervalBetweenSMS());
+//         Serial.println (test);
+//     }
+//     if ((get_wmAlarmSituation() == 0) && (get_rmsState() == UWQ || get_rmsState() == FWQ)){
+//         set_wmLastAlarmSMSEPochTime(get_wmCurrentAlarmEPochTime());
+//         set_wmAlarmSituation(FIRSTANOMALY);
+//     }
+//     else if ((get_wmAlarmSituation() == HWANOMALIES) && (get_wmCurrentAlarmEPochTime()-get_wmLastAlarmSMSEPochTime() > get_wmAllowedIntervalBetweenSMS())){
+//         set_wmAlarmSituation(HWANOMALIES);
+//         set_wmLastAlarmSMSEPochTime(get_wmCurrentAlarmEPochTime());
+//         if (get_rmsState() == SWQ){ // THIS is where we can tune the settings to stop the alarm sending
+//             set_wmAlarmSituation(NORMALOCCURENCE);
+//         }
+//     }
+// }
 
 void rmsClass::set_wmAlarmSituation(SMSState new_wmAlarmSituation){
     _wmStruct.alarmSituation = new_wmAlarmSituation;
@@ -412,7 +406,7 @@ void rmsClass::reset_History(){
 
 
 
-// Power struct
+// Power supply
 void rmsClass::set_powerStructBatteryVoltage(float new_batteryVoltage){
     _powerStruct.batteryVoltage = new_batteryVoltage;
     float batteryPercentage = Battery_getBatteryPercentage(_powerStruct.batteryVoltage);

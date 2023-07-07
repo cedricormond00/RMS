@@ -233,14 +233,9 @@ class rmsClass {
       /** @brief tells wether a SMS may be sent or not, for the WM situation*/
       bool wm_canSendSMS(uint32_t new_currentAlarmEPochTime);
 
-      void update_wmAlarmSituation(uint32_t new_currentAlarmEPochTime);
+      // void update_wmAlarmSituation(uint32_t new_currentAlarmEPochTime);
       void set_wmAlarmSituation(SMSState new_wmAlarmSituation);
       SMSState get_wmAlarmSituation();
-
-
-
-
-
 
 
 
@@ -262,6 +257,12 @@ class rmsClass {
       void set_stateHistorySuccess(bool new_success);
       bool get_stateHistorySuccess();
       
+      /* 
+      based on the state, updates:
+      - the count fr this state
+      - updates the total state changes
+      - updates the state History percentage (only for the particular corresponding state)
+      TODO: could update all states. COuld also create a function which updates all percentages at once*/
       void set_stateHistoryCount(RMSState stateOfInterest, uint8_t countState);
       uint8_t get_stateHistoryCount(RMSState stateOfInterest);
 
@@ -270,11 +271,11 @@ class rmsClass {
       void set_stateHistoryPercentage(RMSState stateOfInterest);
       float get_stateHistoryPercentage(RMSState stateOfInterest);
 
-      
-
       void reset_History();
 
-      // Battery 
+
+
+      // Power Supply Situation 
       enum BatteryEnergyLevelState{
          criticalEL,
          lowEL,
@@ -290,7 +291,11 @@ class rmsClass {
          BatteryEnergyLevelState batteryELState;
       };
 
-      /** Also sets the battery EL States*/
+      /**
+       * Based on thew battery voltage, updates
+       * - the battery volatage,
+       * - the ENergy level state
+       */
       void set_powerStructBatteryVoltage(float new_batteryVoltage);
       float get_powerStructBatteryVoltage();
 
@@ -324,14 +329,6 @@ class rmsClass {
 
       uint32_t get_smsPowerStructEnergyLevelSMSSentEPochTime();
       uint32_t get_smsPowerStructIsStablePowerSupplySMSSentEPochTime();
-
-
-
-      // void set_powerStructMember(uint8_t memberIndex, float new_batteryVoltage);
-      // uint8_t get_powerStructMember(uint8_t memberIndex);
-
-
-
       
 
 

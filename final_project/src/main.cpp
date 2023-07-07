@@ -233,19 +233,19 @@ void loop() {
       break;
 
     case SWQ: 
-      if (debug_main) {Serial.println("-in SWQ State");}
+      if (debug_main && !Tool_isBitOn(rms.get_inputEventCode(), URA_WAIT_INPUTBIT)) {Serial.println("-in SWQ State");}
       digitalWrite(REDLED_PIN, LOW);
       digitalWrite(GREENLED_PIN, HIGH);
 
       LP_goToLowPowerConsumption(rms, rtc, &triggeredInputEvent);
 
       FSM_updateInputEventCode(rms, rtc, cfg, &triggeredInputEvent);
-      if (debug_main) {Serial.println("-end SWQ State");}
+      if (debug_main && !Tool_isBitOn(rms.get_inputEventCode(), URA_WAIT_INPUTBIT)) {Serial.println("-end SWQ State");}
       
       break;
 
     case UWQ:
-      if (debug_main) {Serial.println("-in UWQ State");}
+      if (debug_main && !Tool_isBitOn(rms.get_inputEventCode(), URA_WAIT_INPUTBIT)) {Serial.println("-in UWQ State");}
       digitalWrite(REDLED_PIN, HIGH);
       digitalWrite(GREENLED_PIN, LOW);
       // wakePeriod = 10000; // 20 sec
@@ -256,29 +256,29 @@ void loop() {
       FSM_updateInputEventCode(rms, rtc, cfg, &triggeredInputEvent);
 
 
-      if (debug_main) {Serial.println("-end UWQ State");}
+      if (debug_main && !Tool_isBitOn(rms.get_inputEventCode(), URA_WAIT_INPUTBIT)) {Serial.println("-end UWQ State");}
 
       break;
 
     case FWQ:
-      if (debug_main) {Serial.println("-in FWQ State");}
+      if (debug_main && !Tool_isBitOn(rms.get_inputEventCode(), URA_WAIT_INPUTBIT)) {Serial.println("-in FWQ State");}
       digitalWrite(REDLED_PIN, HIGH);
       digitalWrite(GREENLED_PIN, LOW);
 
       LP_goToLowPowerConsumption(rms, rtc, &triggeredInputEvent);
       FSM_updateInputEventCode(rms, rtc, cfg, &triggeredInputEvent);
-      if (debug_main) {Serial.println("-end FWQ State");}
+      if (debug_main && !Tool_isBitOn(rms.get_inputEventCode(), URA_WAIT_INPUTBIT)) {Serial.println("-end FWQ State");}
 
       break;
 
     case SLEEP:
-      if (debug_main) {Serial.println("-in SLEEP State");}
+      if (debug_main && !Tool_isBitOn(rms.get_inputEventCode(), URA_WAIT_INPUTBIT)) {Serial.println("-in SLEEP State");}
       digitalWrite(REDLED_PIN, HIGH);
       digitalWrite(GREENLED_PIN, LOW);
       digitalWrite(BLUELED_PIN, LOW);
       
       LP_goToDeepSleep(rms);
-      if (debug_main) {Serial.println("-end SLEEP State");}
+      if (debug_main && !Tool_isBitOn(rms.get_inputEventCode(), URA_WAIT_INPUTBIT)) {Serial.println("-end SLEEP State");}
 
       break;
 
