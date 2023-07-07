@@ -6,16 +6,7 @@
 
 #include "Battery.h"
 
-// Implement the constructor for the struct
-// rmsClass::alarmStruct::alarmStruct(uint32_t lastAlarmSMSEPochTime_initVal = 0, 
-//                      uint32_t currentAlarmEPochTime_initVal = 0, 
-//                      uint32_t allowedIntervalBetweenSMS_initVal = 20){
-//     lastAlarmSMSEPochTime = lastAlarmSMSEPochTime_initVal;
-//     currentAlarmEPochTime = currentAlarmEPochTime_initVal;
-//     allowedIntervalBetweenSMS = allowedIntervalBetweenSMS_initVal;
-// }
 
-//TODO: remove this constructor for the event URA and WM. Instead, create an initialisation function
 rmsClass::rmsClass(){ //: _uraStruct(0,0,SMS_HW_URA), _wmStruct(0,0,SMS_HW_WQ){
     _rmsState = INIT;
     _inputEventCode = 0b0;
@@ -78,6 +69,7 @@ void rmsClass::set_wakeUpEPochTime(uint32_t new_wakeUpEPochTime){
     _wakeUpEPochTime = new_wakeUpEPochTime;
 }
 
+
 // _wmWakeUpEPochTime
 uint32_t rmsClass::get_wmWakeUpEPochTime(){
     return _wmWakeUpEPochTime;
@@ -85,6 +77,16 @@ uint32_t rmsClass::get_wmWakeUpEPochTime(){
 
 void rmsClass::set_wmWakeUpEPochTime(uint32_t new_wmWakeUpEPochTime){
     _wmWakeUpEPochTime = new_wmWakeUpEPochTime;
+}
+
+
+// _wmReadEPochTime
+uint32_t rmsClass::get_wmReadEPochTime(){
+    return _wmReadEPochTime;
+}
+
+void rmsClass::set_wmReadEPochTime(uint32_t new_wmReadEPochTime){
+    _wmReadEPochTime = new_wmReadEPochTime;
 }
 
 
@@ -99,14 +101,6 @@ void rmsClass::set_nextWakeUpEPochTime(uint32_t new_nextWakeUpEPochTime){
 }
 
 
-// _wmReadEPochTime
-uint32_t rmsClass::get_wmReadEPochTime(){
-    return _wmReadEPochTime;
-}
-
-void rmsClass::set_wmReadEPochTime(uint32_t new_wmReadEPochTime){
-    _wmReadEPochTime = new_wmReadEPochTime;
-}
 
 // _toSleepEPochTime
 uint32_t rmsClass::get_toSleepEPochTime(){
@@ -152,34 +146,30 @@ void rmsClass::set_sleepPeriod(){
 
 }
 
- uint8_t rmsClass::get_sleepPeriod(RMSState anyState){
-    switch (anyState)
-    {
-    case (INIT):
-        return 0;
-    
-    case (SWQ):
-        return _SWQSleepPeriod;
+uint8_t rmsClass::get_sleepPeriod(RMSState anyState){
+    switch (anyState){
+        case (INIT):
+            return 0;
 
-    case (UWQ):
-        return _UWQSleepPeriod;
+        case (SWQ):
+            return _SWQSleepPeriod;
 
-    case (FWQ):
-        return _FWQSleepPeriod;
+        case (UWQ):
+            return _UWQSleepPeriod;
 
-    default:
-        break;
-    }
+        case (FWQ):
+            return _FWQSleepPeriod;
+
+        default:
+            break;
+        }
     return 0;
- }
+}
 
 
- // alarm raising
+// alarm raising
 
-
-//  initialize each instance of the private struct using the constructor and provide the desired values for each instance:
-// rmsClass::rmsClass() : _uraStruct(0,0,20){}
-
+// utils function for alarm struct
 void rmsClass::set_lastAlarmSMSEPochTime(alarmStruct& alarmStructArg, uint32_t new_lastAlarmSMSEPochTime){
     alarmStructArg.lastAlarmSMSEPochTime = new_lastAlarmSMSEPochTime;
 }
@@ -234,6 +224,7 @@ uint32_t rmsClass::get_URAallowedIntervalBetweenSMS(){
 bool rmsClass::ura_canSendSMS(uint32_t new_currentAlarmEPochTime){
     bool canSendSMS = true;
     set_URAcurrentAlarmEPochTime(new_currentAlarmEPochTime);
+    // elapsed time since last URA SMS sent is large enough
     if (get_URAcurrentAlarmEPochTime()-get_URAlastAlarmSMSEPochTime() > get_URAallowedIntervalBetweenSMS()){
         set_URAlastAlarmSMSEPochTime(get_URAcurrentAlarmEPochTime());
     }
@@ -278,6 +269,49 @@ bool rmsClass::wm_canSendSMS(uint32_t new_currentAlarmEPochTime){
         canSendSMS = false;
     }
     return canSendSMS;
+}
+
+void rmsClass::update_wmAlarmSituation(uint32_t new_currentAlarmEPochTime){
+    bool debug = false;
+    
+    set_wmCurrentAlarmEPochTime(new_currentAlarmEPochTime);
+
+    if(debug){
+        Serial.print("get_wmCurrentAlarmEPochTime(): ");
+        Serial.println(get_wmCurrentAlarmEPochTime());
+        Serial.print("get_wmLastAlarmEPochTime(): ");
+        Serial.println(get_wmLastAlarmSMSEPochTime());
+        Serial.print("Time difference: ");
+        Serial.println(get_wmCurrentAlarmEPochTime()-get_wmLastAlarmSMSEPochTime());
+        Serial.print("Allowed interval: ");
+        Serial.println(get_wmAllowedIntervalBetweenSMS());
+        Serial.print("second condition: ");
+        bool test = (get_wmCurrentAlarmEPochTime()-get_wmLastAlarmSMSEPochTime() > get_wmAllowedIntervalBetweenSMS());
+        Serial.println (test);
+    }
+
+
+    if ((get_wmAlarmSituation() == 0) && (get_rmsState() == UWQ || get_rmsState() == FWQ)){
+        set_wmLastAlarmSMSEPochTime(get_wmCurrentAlarmEPochTime());
+
+        set_wmAlarmSituation(FIRSTANOMALY);
+    }
+    else if ((get_wmAlarmSituation() == HWANOMALIES) && (get_wmCurrentAlarmEPochTime()-get_wmLastAlarmSMSEPochTime() > get_wmAllowedIntervalBetweenSMS())){
+        set_wmAlarmSituation(HWANOMALIES);
+        set_wmLastAlarmSMSEPochTime(get_wmCurrentAlarmEPochTime());
+
+        if (get_rmsState() == SWQ){ // THIS is where we can tune the settings to stop the alarm sending
+            set_wmAlarmSituation(NORMALOCCURENCE);
+        }
+    }
+}
+
+void rmsClass::set_wmAlarmSituation(SMSState new_wmAlarmSituation){
+    _wmStruct.alarmSituation = new_wmAlarmSituation;
+}
+
+rmsClass::SMSState rmsClass::get_wmAlarmSituation(){
+    return _wmStruct.alarmSituation;
 }
 
 
@@ -375,58 +409,8 @@ void rmsClass::reset_History(){
     set_stateHistoryPercentage(FWQ);
 }
 
-void rmsClass::update_wmAlarmSituation(uint32_t new_currentAlarmEPochTime){
-    set_wmCurrentAlarmEPochTime(new_currentAlarmEPochTime);
 
-    Serial.print("get_wmCurrentAlarmEPochTime(): ");
-    Serial.println(get_wmCurrentAlarmEPochTime());
-    Serial.print("get_wmLastAlarmEPochTime(): ");
-    Serial.println(get_wmLastAlarmSMSEPochTime());
-    Serial.print("Time difference: ");
-    Serial.println(get_wmCurrentAlarmEPochTime()-get_wmLastAlarmSMSEPochTime());
-    Serial.print("Allowed interval: ");
-    Serial.println(get_wmAllowedIntervalBetweenSMS());
-    Serial.print("second condition: ");
-    bool test = (get_wmCurrentAlarmEPochTime()-get_wmLastAlarmSMSEPochTime() > get_wmAllowedIntervalBetweenSMS());
-    Serial.println (test);
 
-    if ((get_wmAlarmSituation() == 0) && (get_rmsState() == UWQ || get_rmsState() == FWQ)){
-        set_wmLastAlarmSMSEPochTime(get_wmCurrentAlarmEPochTime());
-
-        set_wmAlarmSituation(FIRSTANOMALY);
-    }
-    else if ((get_wmAlarmSituation() == HWANOMALIES) && (get_wmCurrentAlarmEPochTime()-get_wmLastAlarmSMSEPochTime() > get_wmAllowedIntervalBetweenSMS())){
-        set_wmAlarmSituation(HWANOMALIES);
-        set_wmLastAlarmSMSEPochTime(get_wmCurrentAlarmEPochTime());
-
-        if (get_rmsState() == SWQ){ // THIS is where we can tune the settings to stop the alarm sending
-            set_wmAlarmSituation(NORMALOCCURENCE);
-        }
-    }
-}
-
-void rmsClass::set_wmAlarmSituation(SMSState new_wmAlarmSituation){
-    _wmStruct.alarmSituation = new_wmAlarmSituation;
-}
-
-rmsClass::SMSState rmsClass::get_wmAlarmSituation(){
-    return _wmStruct.alarmSituation;
-}
-// void rmsClass::set_inHistoryWindow(){
-//     RMSState currentState = get_rmsState();
-//     switch(currentState){
-//         case(SWQ):
-//             break;
-//         case(UWQ):
-//             _wmStruct.inSendingHistoryWindow = true;
-//             break;
-//         case(FWQ):
-//             _wmStruct.inSendingHistoryWindow = true;
-//             break;
-//         default:
-//             Serial.print("No state defined, no trigger");
-//     }
-// }
 
 // Power struct
 void rmsClass::set_powerStructBatteryVoltage(float new_batteryVoltage){
@@ -470,12 +454,9 @@ uint8_t rmsClass::get_powerStructChargeStatus(){
 //smsPowerStruct
 
 void rmsClass::init_smsPowerStruct(uint32_t ePochTime){
-    // set_smsPowerStructBatteryEnergyLevelState(get_powerStructBatteryELState(), ePochTime);
-    set_smsPowerStructBatteryEnergyLevelState(lowEL, ePochTime);
+    set_smsPowerStructBatteryEnergyLevelState(get_powerStructBatteryELState(), ePochTime);
 
     set_smsPowerStructIsStablePowerSupply(get_powerStructStablePowerSupply(), ePochTime);
-    // _smsPowerStruct.batteryEnergyLevelState = get_powerStructBatteryELState();
-    // _smsPowerStruct.isStablePowerSupply = get_powerStructStablePowerSupply();
 }
 
 void rmsClass::set_smsPowerStructBatteryEnergyLevelState(BatteryEnergyLevelState new_batteryELState, uint32_t ePochTime){
@@ -502,40 +483,7 @@ uint32_t rmsClass::get_smsPowerStructIsStablePowerSupplySMSSentEPochTime(){
     return _smsPowerStruct.isStablePowerSupplySMSSentEPochTime;
 }
 
-// void rmsClass::set_powerStructMember(uint8_t memberIndex, float new_value){
-//     switch (memberIndex) {
-//         case 1:
-//             _powerStruct.batteryVoltage = new_value;
-//             break;
-//         case 2:
-//             _powerStruct.chargeStatus = static_cast<uint8_t>(new_value);
-//             break;
-//         case 3:
-//             if (new_value == 0 || new_value == 1) {
-//                 _powerStruct.onBattery = static_cast<bool>(new_value);
-//             } else {
-//                 Serial.println("inputed value for memberIndex = 3 was not 1 or 0");
-//                 // Handle error: value is not 1 or 0
-//                 // You can throw an exception, print an error message, etc.
-//             }
-//         default:
-//             // Handle error or take no action
-//             break;
-//     }
-// }
 
-// uint8_t rmsClass::get_powerStructMember(uint8_t memberIndex){
-//     switch (memberIndex) {
-//         case 1:
-//             return _powerStruct.batteryVoltage ;
-//         case 2:
-//             return _powerStruct.chargeStatus ;
-//         case 3:
-//             return _powerStruct.onBattery;
-//         default:
-//             // Handle error or return a default value
-//             return 0;
-//     }
-// }
+
 
 

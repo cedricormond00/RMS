@@ -23,7 +23,32 @@
  */
 void FSM_initRMS(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg);
 
-void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, ConfigurationStruct cfgStructArg, volatile uint8_t* triggeredInputEvent);//input arguments: relevant function counter
+/**
+ * @brief Updates the input event code in the rms Class based on the triggered input events.
+ *
+ * @param rmsClassArg The rmsClass object containing system information.
+ * @param rtcClassArg The RTCZero object for real-time clock operations.
+ * @param cfgStructArg The configuration settings for the system.
+ * @param triggeredInputEvent The volatile pointer to the triggered input event tracker.
+ * @return void
+ *
+ * @details This function updates the input event code based on the triggered input events
+ * stored in the triggeredInputEvent globnal variable. It takes the necessary parameters for
+ * updating the code and performs the following steps:
+ *
+ * - Retrieve the current input event code from the rmsClassArg object.
+ * - If the WM (Water Monitoring) input event bit is triggered, set the WM input event bit
+ *   in the input event code and clear the triggered input event bit.
+ * - If the URA (User Response Analysis) input event bit is triggered, set the URA WAIT
+ *   input event bit and check if the button is still pressed for the required duration.
+ *   If the button is released before the duration, clear the triggered input event bit
+ *   and the URA WAIT input event bit. Otherwise, set the URA input event bit and clear
+ *   the triggered input event bit and the URA WAIT input event bit.
+ * - If the HB (Heartbeat) input event bit is triggered, set the HB input event bit and
+ *   clear the triggered input event bit.
+ * - Update the input event code in the rmsClassArg object.
+ */
+void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, ConfigurationStruct cfgStructArg, volatile uint8_t* triggeredInputEvent);
 
 
 /**

@@ -10,6 +10,9 @@
 
 
 // types
+/**
+ * @brief Enum defining the different states of the RMS.
+ */
 enum RMSState {
    INIT = 0,
    SWQ,
@@ -25,53 +28,132 @@ enum RMSState {
    // POWERSUPPLY_NOTSTABLE,
 };
 
-/* Class that contains 
-- current RMS State
-- previous RMS State
-- inputEvent Code
-- 
-
-djd
-*/ 
+/**
+ * @brief Class that contains the RMS state and related information.
+ */
 class rmsClass {
    public:
+      /**
+      * @brief Constructor for the rmsClass.
+      */
       rmsClass();
 
+      // RMS State
+
       //TODO: if I chopse to not use these values, but directly access the data from the configuration file, I can delete these functions and variables
+      /**
+       * @brief Setter function for the SWQ sleep period.
+       * @param new_SWQSleepPeriod The new SWQ sleep period value.
+       * @return None.
+       */
       void set_SWQSleepPeriod(uint16_t new_SWQSleepPeriod);
+      /**
+       * @brief Setter function for the UWQ sleep period.
+       * @param new_UWQSleepPeriod The new UWQ sleep period value.
+       * @return None.
+       */
       void set_UWQSleepPeriod(uint16_t new_UWQSleepPeriod);
+      /**
+       * @brief Setter function for the FWQ sleep period.
+       * @param new_FWQSleepPeriod The new FWQ sleep period value.
+       * @return None.
+       */
       void set_FWQSleepPeriod(uint16_t new_FWQSleepPeriod);
 
       /**
-       * @brief getter function for _rmsState
-       * @param none
-       * @return _rmsState
-       * */ 
+       * @brief Getter function for the current RMS state.
+       * @param None.
+       * @return _rmsState The current RMS state.
+       */
       RMSState get_rmsState();
       /**
-       * @brief setter function for _rmsState
-       * @param newState
-       * @return none
-       * */ 
+       * @brief Setter function for the RMS state.
+       * @param newState The new RMS state.
+       * @return None.
+       */
       void set_rmsState(RMSState newState);
 
-      // RMSState get_previousRMSState();
-
+      /**
+       * @brief Getter function for the input event code
+       * @param none 
+       * @return _inputEventCode.
+       * @details This is useful to know what function must be performed
+       */
       uint8_t get_inputEventCode();
+      /**
+       * @brief Setter function for the input event code.
+       * @param new_inputEventCode The new input event code.
+       * @return None.
+       */
       void set_inputEventCode(uint8_t new_inputEventCode);
 
-      uint32_t get_wmWakeUpEPochTime();
-      void set_wmWakeUpEPochTime(uint32_t new_wmWakeUpEPochTime);
 
-      uint32_t get_wmReadEPochTime();
-      void set_wmReadEPochTime(uint32_t new_wmReadEPochTime);
-      
+      /**
+       * @brief Getter function for the wakeUpEPochTime.
+       * @param None.
+       * @return The wakeUpEPochTime.
+       * @details this refers to the time at which the device has woken up. Regardless of the event causing the wakeup
+       */
       uint32_t get_wakeUpEPochTime();
+      /**
+       * @brief Setter function for the wakeUpEPochTime.
+       * @param new_wakeUpEPochTime The new wakeUpEPochTime.
+       * @return None.
+       * @details this refers to the time at which the device has woken up
+       */
       void set_wakeUpEPochTime(uint32_t new_WakeUpEPochTime);
 
-      //defined during the WM routine, since the next wakeup time depends on the RMSState
+
+      /**
+       * @brief Getter function for the wmReadEPochTime.
+       * @param None.
+       * @return The wmReadEPochTime.
+       * @details this refers to the time at which an alarm match occured. 
+       * This is updated only upon WM function execution
+       */
+      uint32_t get_wmWakeUpEPochTime();
+      /**
+       * @brief Setter function for the wmReadEPochTime.
+       * @param new_wmReadEPochTime The new wmReadEPochTime.
+       * @return None.
+       * @details this refers to the time at which an alarm match occured. 
+       * This is updated only upon WM function execution
+       */
+      void set_wmWakeUpEPochTime(uint32_t new_wmWakeUpEPochTime);
+
+      /**
+       * @brief Getter function for the wmWakeUpEPochTime.
+       * @param None.
+       * @return The wmWakeUpEPochTime.
+       * @details this time refers to any time a water sampling is performed, regardless of the event causing it (URA or WM), confusingly
+       */
+      uint32_t get_wmReadEPochTime();
+      /**
+       * @brief Setter function for the wmWakeUpEPochTime.
+       * @param new_wmWakeUpEPochTime The new wmWakeUpEPochTime.
+       * @return None.
+       */
+      void set_wmReadEPochTime(uint32_t new_wmReadEPochTime);
+      
+
+
+      /**
+       * @brief Getter function for the nextWakeUpEPochTime.
+       * @param None.
+       * @return The nextWakeUpEPochTime.
+       * @details This refers tot the time at which the device will need to wakeup
+       * This value is computed during the WM (this time function only, not from an URA) routine, since the next wakeup time depends on the RMSState
+       */
       uint32_t get_nextWakeUpEPochTime();
+      /**
+       * @brief Setter function for the nextWakeUpEPochTime.
+       * @param new_nextWakeUpEPochTime The new nextWakeUpEPochTime.
+       * @return None.
+       * @details This refers tot the time at which the device will need to wakeup
+       * This value is computed during the WM (this time function only, not from an URA) routine, since the next wakeup time depends on the RMSState
+       */
       void set_nextWakeUpEPochTime(uint32_t new_nextWakeUpEPochTime);
+
 
       uint32_t get_toSleepEPochTime();
       void set_toSleepEPochTime(uint32_t new_toSleepEPochTime);
@@ -82,10 +164,17 @@ class rmsClass {
       uint32_t get_sleepPeriod();
       void set_sleepPeriod();
 
-      //TODO: set sleep period from SD card in a setup routine to set the rms machine to a known state
       uint8_t get_sleepPeriod(RMSState anyState);
 
+
       
+
+      // SMS Alarm raising
+
+      /**
+       * @brief states for the SMS sending: 
+       * @details used to keep track of which SMS has been sent yet, during the water moiniotring function (WM)
+       */      
       enum SMSState{
          NOANOMALIES = 0,
          FIRSTANOMALY,
@@ -93,42 +182,45 @@ class rmsClass {
          NORMALOCCURENCE
       };
       
-      /** \brief Struct containing the information regarding the SMS sent from a certain trigger
-       * \remarks Use cases include URA or WM SMS multialarm management
+      /** 
+       * @brief Struct containing the information regarding the SMS sent from a certain trigger
+       * @remarks Use cases include URA or WM SMS multialarm management
       */
       struct alarmStruct{
+         // time at which the last SMS was sent
          uint32_t lastAlarmSMSEPochTime;
+         // time at which the current alarm match occured: larger or equalt to  lastAlarmSMSEPochTime
          uint32_t currentAlarmEPochTime; 
+         // how long in between each SMS is permitted
+         // UPGRADE: this is redundant: could either jsut us ethe info present in the confi file, or the private variables
          uint32_t allowedIntervalBetweenSMS;
-         bool inSendingHistoryWindow = true; //informs whether we are in a continuous sending window from the WaterMontioring
-         SMSState alarmSituation = NOANOMALIES;   /* 0 = first UWQ / FWQ -> go straight to sending SMS
-                                          1 = collate samples over HW. -> once the HW time has elapsed, go to send an SMS: If at that time, the last reading is an SWQ, go to send final SMS 
-                                          2 = if the final reading was SWQ (from HW collating) -> rthen set alarmsituation to 0 */
-         //constructor
-         /*TODO: isntead of using a constructor: set these up in the initialisation routine of rms
-         -> DONE
+         /* 
+         informs whether we are in a history window.
+         If we are, we may not send another SMS
+         If we are out of it, we may send another SMS
          */
-         // alarmStruct(uint32_t lastAlarmSMSEPochTime_initVal, 
-         //             uint32_t currentAlarmEPochTime_initVal, 
-         //             uint32_t allowedIntervalBetweenSMS_initVal);
+         bool inSendingHistoryWindow = true; 
+
+         SMSState alarmSituation = NOANOMALIES;   
 
       };
-      
 
-      //URA
+
+      // URA alarm management function
       void set_URAlastAlarmSMSEPochTime(uint32_t new_lastAlarmSMSEPochTime);
       uint32_t get_URAlastAlarmSMSEPochTime();
 
       void set_URAcurrentAlarmEPochTime(uint32_t new_currentAlarmEPochTime);
       uint32_t get_URAcurrentAlarmEPochTime();
 
-      //TODO: instead of using this,. directly use the value from the cfg file
+      //UPGRADE:  (TBC) instead of using this,. directly use the value from the cfg file
       void set_URAallowedIntervalBetweenSMS(uint32_t new_allowedIntervalBetweenSMS);
       uint32_t get_URAallowedIntervalBetweenSMS();
-
+     
+      /** @brief tells wether a SMS may be sent or not, for the URA situation*/
       bool ura_canSendSMS(uint32_t new_currentAlarmEPochTime);
 
-      //WM
+      // WM alarm management function
       void set_wmLastAlarmSMSEPochTime(uint32_t new_lastAlarmSMSEPochTime);
       uint32_t get_wmLastAlarmSMSEPochTime();
 
@@ -138,11 +230,21 @@ class rmsClass {
       void set_wmAllowedIntervalBetweenSMS(uint32_t new_allowedIntervalBetweenSMS);
       uint32_t get_wmAllowedIntervalBetweenSMS();
 
+      /** @brief tells wether a SMS may be sent or not, for the WM situation*/
       bool wm_canSendSMS(uint32_t new_currentAlarmEPochTime);
 
       void update_wmAlarmSituation(uint32_t new_currentAlarmEPochTime);
       void set_wmAlarmSituation(SMSState new_wmAlarmSituation);
       SMSState get_wmAlarmSituation();
+
+
+
+
+
+
+
+
+
 
       // file management
       /*add a file cursor to know where was the further most away timestamp*/
@@ -234,13 +336,8 @@ class rmsClass {
 
 
    private:
-      // enum RMSState {
-      //    INIT = 0,
-      //    SWQ,
-      //    UWQ,
-      //    FWQ,
-      //    SLEEP
-      // };
+
+      // RMS State
       enum RMSState _rmsState;
       // enum RMSState _previousRMSState;
 
@@ -274,9 +371,13 @@ class rmsClass {
       uint16_t _UWQSleepPeriod;// = 10-1; //sec
       uint16_t _FWQSleepPeriod;// = 10-1; //sec
 
+
+      //SMS ALarm raising 
+
       alarmStruct _uraStruct;
       alarmStruct _wmStruct;
 
+      // Alarm raising utils functions
       void set_lastAlarmSMSEPochTime(alarmStruct& alarmStructArg, uint32_t new_lastAlarmSMSEPochTime);
       uint32_t get_lastAlarmSMSEPochTime(alarmStruct& alarmStructArg);
 
@@ -286,10 +387,15 @@ class rmsClass {
       void set_allowedIntervalBetweenSMS(alarmStruct& alarmStructArg, uint32_t new_allowedIntervalBetweenSMS);
       uint32_t get_allowedIntervalBetweenSMS(alarmStruct& alarmStructArg);
 
+
+
+      // Data/FIle management
       stateHistoryStruct _stateHistoryStruct;
 
       uint8_t updateTotalStateChanges();
 
+
+      // Power Supply
       powerStruct _powerStruct;
 
       smsPowerStruct _smsPowerStruct;

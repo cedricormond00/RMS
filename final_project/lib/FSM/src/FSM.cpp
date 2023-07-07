@@ -74,43 +74,15 @@ void FSM_initRMS(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, ConfigurationStruct cfgStructArg, volatile uint8_t* triggeredInputEvent)
-//TODO: maybe the URA_WAIT bit is useless: just use triggerInput as a means to check 
 {
 
     bool debug=true;
     uint8_t inputEvenCode = rmsClassArg.get_inputEventCode();
 
-    // if (debug){
-    //     Serial.println("in FSM_updateInputEventCode, function");
-    //     Serial.print("inputEvenCode before update: ");
-    //     Serial.print(*inputEvenCode, BIN);
-    //     Serial.print(", ");
-    //     Serial.println(*inputEvenCode);
-    //     Serial.print("triggeredInputEvent before update: ");
-    //     Serial.print(*triggeredInputEvent, BIN);
-    //     Serial.print(", ");
-    //     Serial.println(*triggeredInputEvent);
-    // }
-
-
     if (Tool_isBitOn(*triggeredInputEvent, WM_INPUTBIT)) 
     {
-        //if include 9AM alarm -> add the check to see if we are just close to 9AM
-        // double gate: one for the time window, and one for a boolean to inform if the HB's been sent. Once out ot the time window, reset to the boolean
-        if (debug){
+        if (debug && debug_FSM){
             Serial.println("in FSM_updateInputEventCode, WM");
             Serial.print("inputEvenCode before update: ");
             Serial.print(inputEvenCode, BIN);
@@ -125,15 +97,16 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, Confi
         char buf[256];
 
         Tool_stringTime(currentTime, buf);
-        
-        Serial.print("Current unix time: ");
-        Serial.println(currentTime);
-        Serial.print("Current unix timestamp: ");
-        Serial.println(buf);
-        Serial.print("rmsClassArg.get_wakeUpEPochTime(): ");
-        Serial.println(rmsClassArg.get_wakeUpEPochTime());
-        Serial.print("rmsClassArg.get_wmWakeUpEPochTime(): ");
-        Serial.println(rmsClassArg.get_wmWakeUpEPochTime());
+        if (debug && debug_FSM){
+            Serial.print("Current unix time: ");
+            Serial.println(currentTime);
+            Serial.print("Current unix timestamp: ");
+            Serial.println(buf);
+            Serial.print("rmsClassArg.get_wakeUpEPochTime(): ");
+            Serial.println(rmsClassArg.get_wakeUpEPochTime());
+            Serial.print("rmsClassArg.get_wmWakeUpEPochTime(): ");
+            Serial.println(rmsClassArg.get_wmWakeUpEPochTime());
+        }
 
 
 
@@ -141,6 +114,8 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, Confi
         - Store the time at which the itnernal clock of the RMS matched the alarm
         - This usually occurs when the devie is asleep, and hence wakes the device up
         - Keeping this variable is very important: it allows to know at what time the device will need to wakeup next time
+        - UPGRADE: a bit amiguous: the wm in this case refers to the watermonitoring action only (that fo checking the water, on a specific time).
+        For clarity, we should differentiate between the action of simply monitoring the water quality (from URA or WM), and monitotinrg the water quality as a function (execited only from WM)
         */
         rmsClassArg.set_wmWakeUpEPochTime(alarmMatchEPochTime);
 
@@ -150,7 +125,7 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, Confi
         // reset the triggered input event tracker
         Tool_setBitOff(triggeredInputEvent, WM_INPUTBIT);
 
-         if (debug){
+         if (debug && debug_FSM){
             Serial.print("inputEvenCode after update: ");
             Serial.print(inputEvenCode, BIN);
             Serial.print(", ");
@@ -165,7 +140,7 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, Confi
 
     if (Tool_isBitOn(*triggeredInputEvent, URA_INPUTBIT)) 
     {
-        if (debug && debugDisplay){
+        if (debug && debugDisplay && debug_FSM){
             Serial.println("in FSM_updateInputEventCode, URA");
             Serial.print("inputEvenCode before update: ");
             Serial.print(inputEvenCode, BIN);
@@ -187,7 +162,6 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, Confi
                 ToggleLED(YELLOWLED_PIN);
                 previousMillis = currentMillis;
             }
-            // CONFIG: can change the delay
             if (currentMillis>=(millisOnExternalWakeUp + cfgStructArg.uraPressDuration)){
                 digitalWrite(YELLOWLED_PIN, LOW);
                 //inform the RMS the URA function may be performed
@@ -196,11 +170,10 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, Confi
 
                 // reset the triggered input event tracker
                 Tool_setBitOff(triggeredInputEvent, URA_INPUTBIT);
-
             }
         }
         else { // the button has been released before the 3 seconds have
-            // // no more URA alarm
+            // no more URA alarm
             Tool_setBitOff(triggeredInputEvent, URA_INPUTBIT);
             // no need to inform that we shall wait for 3 seconds
             Tool_setBitOff(&inputEvenCode, URA_WAIT_INPUTBIT);
@@ -226,11 +199,6 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, Confi
 
         // reset the triggered input event tracker
         Tool_setBitOff(triggeredInputEvent, HB_INPUTBIT);
-
-        // //Set a new time for the hbAlarmtrigger
-        //TODO: check if I can affor to keep and do this in the FSM_f_HB
-
-        // hbEPochTime = RTC_updateHBEPochTime(hbEPochTime, cfgStructArg);
     }
 
     rmsClassArg.set_inputEventCode(inputEvenCode);
@@ -473,6 +441,86 @@ void FSM_f_HB(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
 }
 
 
+
+void FSM_f_BUP(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
+    /* 
+    recall _WmReadTime is updated any time a modifiucation to the rmsClass is peformed, to vlaue related to the current state.
+    As such, since the BUP is performed after the wm input event, we must use the wmReadTime, as the time at which the BUP occured
+    */
+    // uint32_t currentEpochTime = rmsClassArg.get_wmReadEPochTime();
+
+    //for moreflexibility, ocould justuse the rtc.getEpoch wherever currentTuime is required
+    uint32_t currentEpochTime = rtc.getEpoch();
+
+    /* 
+    check whether the power stability situation is on the same state
+    as the sms sent to inform on power stabilit. If they are not the same, enter 
+    (falling/rising edge scheme)
+    */
+    if (rmsClassArg.get_smsPowerStructIsStablePowerSupply() != rmsClassArg.get_powerStructStablePowerSupply()){
+        /* Set
+        - what time we are sending an SMS for BUP Stable power supply situation
+        - update the sms BUP stable power supply state to the real power supply situation
+        */
+        rmsClassArg.set_smsPowerStructIsStablePowerSupply(rmsClassArg.get_powerStructStablePowerSupply(), currentEpochTime);
+
+        // send the SMS
+        SMS_BUPSendIsStablePowerSupply(rmsClassArg, cfgStructArg);
+
+
+        // //TODO: check if we can exchange both following line and then change the time we use in the SMS sending
+        // SMS_BUPSendIsStablePowerSupply(rmsClassArg, cfgStructArg);
+
+        // rmsClassArg.set_smsPowerStructIsStablePowerSupply(rmsClassArg.get_powerStructStablePowerSupply(), currentEpochTime);
+    }
+    /* 
+    ONly send an SMS if
+    - to prevent spamming (from hysterisis), only send an EL update, 
+    if the device is past the SMS_HW_BUP (time window)
+    - unstable power supply (ie, not running on the mains)
+    */
+    if (currentEpochTime > rmsClassArg.get_smsPowerStructEnergyLevelSMSSentEPochTime() + SMS_HW_BUP // this is to prevent spamming from flucutating changes
+    && !rmsClassArg.get_powerStructStablePowerSupply() ){
+        if (rmsClassArg.get_smsPowerStructBatteryEnergyLevelState() != rmsClassArg.get_powerStructBatteryELState()){
+            /* Set
+            - what time we are sending an SMS for BUP Energy Level situation
+            - update the sms BUP enery Level state to the real energy level situation
+            */
+            rmsClassArg.set_smsPowerStructBatteryEnergyLevelState(rmsClassArg.get_powerStructBatteryELState(), currentEpochTime);
+
+            //send SMS for energy level update
+            SMS_BUPSendEnergyLevel(rmsClassArg, cfgStructArg);
+
+        }
+    }
+    /*
+    - not on mains 
+    - critical energy level
+    */
+    if (!rmsClassArg.get_powerStructStablePowerSupply()){
+        if(rmsClassArg.get_powerStructBatteryELState() == rmsClassArg.criticalEL){
+            // Disable the RTC alarm triggering.
+            rtc.disableAlarm();
+
+            // Detach interrupt action on alarm match.
+            rtc.detachInterrupt();
+            // Detach the interrupt on button press
+            detachInterrupt(BUTTON_PIN);
+
+            rmsClassArg.set_rmsState(SLEEP);
+            // update rmsPowerState --> do this in FSM_setPowerSituation
+            // LowPower.attachInterruptWakeup(digitalPinToInterrupt(PIN_PA27))
+            // attach interrupt from BQ24195L
+
+
+
+            // send SMS to deepSleep
+
+        }
+    }
+}
+
+
 RMSState FSM_decideState(Ezo_board& ezoORPClassArg, ConfigurationStruct cfgStructArg){
     RMSState state = UWQ;
     //Could successfully read a value from the sensor
@@ -615,157 +663,4 @@ void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, ConfigurationStruct cfgS
         Serial.println(rmsClassArg.get_wmAlarmSituation());
     }
 }
-
-
-
-
-void FSM_f_BUP(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
-    /* 
-    recall _WmReadTime is updated any time a modifiucation to the rmsClass is peformed, to vlaue related to the current state.
-    As such, since the BUP is performed after the wm input event, we must use the wmReadTime, as the time at which the BUP occured
-    */
-    // uint32_t currentEpochTime = rmsClassArg.get_wmReadEPochTime();
-
-    //for moreflexibility, ocould justuse the rtc.getEpoch wherever currentTuime is required
-    uint32_t currentEpochTime = rtc.getEpoch();
-
-    /* 
-    check whether the power stability situation is on the same state
-    as the sms sent to inform on power stabilit. If they are not the same, enter 
-    (falling/rising edge scheme)
-    */
-    if (rmsClassArg.get_smsPowerStructIsStablePowerSupply() != rmsClassArg.get_powerStructStablePowerSupply()){
-        /* Set
-        - what time we are sending an SMS for BUP Stable power supply situation
-        - update the sms BUP stable power supply state to the real power supply situation
-        */
-        rmsClassArg.set_smsPowerStructIsStablePowerSupply(rmsClassArg.get_powerStructStablePowerSupply(), currentEpochTime);
-
-        // send the SMS
-        SMS_BUPSendIsStablePowerSupply(rmsClassArg, cfgStructArg);
-
-
-        // //TODO: check if we can exchange both following line and then change the time we use in the SMS sending
-        // SMS_BUPSendIsStablePowerSupply(rmsClassArg, cfgStructArg);
-
-        // rmsClassArg.set_smsPowerStructIsStablePowerSupply(rmsClassArg.get_powerStructStablePowerSupply(), currentEpochTime);
-    }
-    /* 
-    ONly send an SMS if
-    - to prevent spamming (from hysterisis), only send an EL update, 
-    if the device is past the SMS_HW_BUP (time window)
-    - unstable power supply (ie, not running on the mains)
-    */
-    if (currentEpochTime > rmsClassArg.get_smsPowerStructEnergyLevelSMSSentEPochTime() + SMS_HW_BUP // this is to prevent spamming from flucutating changes
-    && !rmsClassArg.get_powerStructStablePowerSupply() ){
-        if (rmsClassArg.get_smsPowerStructBatteryEnergyLevelState() != rmsClassArg.get_powerStructBatteryELState()){
-            
-            rmsClassArg.set_smsPowerStructBatteryEnergyLevelState(rmsClassArg.get_powerStructBatteryELState(), currentEpochTime);
-
-            SMS_BUPSendEnergyLevel(rmsClassArg, cfgStructArg);
-
-        }
-    }
-
-    // time comparison: current vs previous sms sent time using the HW
-        // check staus of current SMS sent vs real situation
-    if (!rmsClassArg.get_powerStructStablePowerSupply()){
-        if(rmsClassArg.get_powerStructBatteryELState() == rmsClassArg.criticalEL){
-            rtc.disableAlarm();
-            rtc.detachInterrupt();
-            detachInterrupt(BUTTON_PIN);
-
-            rmsClassArg.set_rmsState(SLEEP);
-            // update rmsPowerState --> do this in FSM_setPowerSituation
-            // LowPower.attachInterruptWakeup(digitalPinToInterrupt(PIN_PA27))
-            // attach interrupt from BQ24195L
-
-
-
-            // send SMS to deepSleep
-
-        }
-    }
-
-}
-// void FSM_f_BUP(rmsClass& rmsClassArg){
-//     if (rmsClassArg.get_powerStructStablePowerSupply())
-// }
-// void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, uint32_t currentTime){
-//     Serial.print("AlarmSituation beofre update: ");
-//     Serial.println(rmsClassArg.get_wmAlarmSituation());
-//     rmsClassArg.update_wmAlarmSituation(currentTime);
-//     Serial.print("AlarmSituation after update: ");
-//     Serial.println(rmsClassArg.get_wmAlarmSituation());
-//     if (rmsClassArg.get_wmAlarmSituation()>0){
-//         // if (rmsClassArg.get_wmAlarmSituation()>1){//to save time
-//             // perform thecount of UWQ/FWQ/SWQ eventsS
-//             Data_updateStateHistory(rmsClassArg, dataFileName);
-//             Serial.print("rmsClassArg.get_stateHistoryCount(UWQ)");
-//             Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
-//             Serial.print("rmsClassArg.get_totalStateChanges()");
-//             Serial.println(rmsClassArg.get_totalStateChanges());   
-//             //update percentage:
-//             rmsClassArg.set_stateHistoryPercentage(SWQ);
-//             rmsClassArg.set_stateHistoryPercentage(UWQ);
-//             rmsClassArg.set_stateHistoryPercentage(FWQ);
-//             SMS_wmSend(rmsClassArg);
-//             rmsClassArg.reset_History();
-//             Serial.print("rmsClassArg.get_stateHistoryCount(UWQ)");
-//             Serial.println(rmsClassArg.get_stateHistoryCount(UWQ));
-//             Serial.print("rmsClassArg.get_totalStateChanges()");
-//             Serial.println(rmsClassArg.get_totalStateChanges());
-//         // }
-//     }
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// void FSM_updateState(Ezo_board* classArg, RMSState* currentState){
-//     float ORPValue = classArg->get_last_received_reading();
-//     if (ORPValue > 230) {
-//         digitalWrite(REDLED_PIN, LOW);
-//         digitalWrite(GREENLED_PIN, HIGH);
-//         rmsState = SWQ;
-//     }
-//     else 
-//     {
-//         digitalWrite(REDLED_PIN, HIGH);
-//         digitalWrite(GREENLED_PIN, LOW);
-//     }
-// }
-
-// void FSM_waterMonitoring(char ORPData_[]){
-//     bool debug = false;
-//     uint8_t commandLength = 1;
-//     char ORPCommand[commandLength] = {'r'};
-//     I2c_sendReceiveORP(ORPData_, ORPCommand, commandLength);
-//     if (debug){
-//         Serial.print("ORP value: ");
-//         Serial.println(ORPData_);
-//     }
-// }
-
-// void FSM_getEzoWaterReading(Ezo_board* classArg){
-//     classArg->send_read_cmd();
-//     delay(815); // delay required for reading command
-//     // TODO: eventually, will need to create my own fuction that only reads the values and that can then be used to store
-//     receive_and_print_reading(*classArg);
-//     // put device to sleep
-//     classArg->send_cmd("Sleep");
-// }
-
-
 
