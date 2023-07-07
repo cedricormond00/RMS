@@ -187,6 +187,8 @@ class rmsClass {
          uint8_t chargeStatus;
          BatteryEnergyLevelState batteryELState;
       };
+
+      /** Also sets the battery EL States*/
       void set_powerStructBatteryVoltage(float new_batteryVoltage);
       float get_powerStructBatteryVoltage();
 
@@ -244,7 +246,10 @@ class rmsClass {
 
       uint8_t _inputEventCode;
 
-      //useful for datalogging
+      /*
+      Useful for datalogging
+      Beware: this is not only the time at which the watermonitoring from the WM function occured. it may also be used from an URA event: This value holds the time at which a sampling from the water occured
+      */
       uint32_t _wmReadEPochTime;
       // useful for computing the right time to wakeup
       uint32_t _wmWakeUpEPochTime;

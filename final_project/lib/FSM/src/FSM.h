@@ -26,7 +26,26 @@ void FSM_initRMS(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg);
 void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, ConfigurationStruct cfgStructArg, volatile uint8_t* triggeredInputEvent);//input arguments: relevant function counter
 
 
+/**
+ * @brief Executes the appropriate function based on the input event code.
+ *
+ * @param EZO_ORP The Ezo_board object for ORP measurement.
+ * @param rmsClassArg The rmsClass object containing system information.
+ * @param rtcClassArg The RTCZero object for real-time clock operations.
+ * @param cfgStructArg The configuration settings for the system.
+ * @param dataFileName The name of the data file.
+ * @return void
+ *
+ * @details  * This function is responsible for executing the appropriate function based on the input event code.
+ * It takes the necessary parameters for function execution and performs the following steps:
+ - Find the function to execute based on the input event code obtained from rmsClassArg.
+ - Execute the water monitoring function (FSM_f_WM_EZO) if the WM (Water Monitoring) input event bit is set.
+ - Execute the user response analysis function (FSM_f_URA) if the URA (User Response Analysis) input event bit is set.
+ - Execute the heartbeat function (FSM_f_HB) if the HB (Heartbeat) input event bit is set.
+ - Execute the backup power function (FSM_f_BUP) if the BUP input event bit is set.
+ */
 void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtcClassArg, ConfigurationStruct cfgStructArg, char dataFileName[]);
+
 
 /**
  * @brief Water monitoring execution function
@@ -83,7 +102,45 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
     ConfigurationStruct cfgStructArg, char dataFileName[]);
 
 
+/**
+ * @brief Performs Heartbeat (HB) operations and sends the HB SMS message.
+ *
+ * @param rmsClassArg The rmsClass object containing system information.
+ * @param cfgStructArg The configuration settings for the system.
+ * @return void
+ *
+ * @details  This function is responsible for performing HB operations and sending an SMS message to indicate
+ * a heartbeat event. It updates the HB epoch time using the RTC_updateHBEPochTime() function, which
+ * calculates the next heartbeat time based on the current time and the HB interval specified in the
+ * configuration settings. It then sends the HB SMS message using the SMS_hbSend() function.
+ *
+ * @note The HB SMS message is sent only if the HB feature is enabled. 
+ * The LED toggling is performed only if the debug mode is enabled (debug = true).
+ */
 void FSM_f_HB(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg);
+
+
+/**
+ * @brief Performs Battery Unplugged/Plugged (BUP) operations and sends relevant SMS messages.
+ *
+ * @param rmsClassArg The rmsClass object containing system information.
+ * @param cfgStructArg The configuration settings for the system.
+ * @return void
+ *
+ * @details  This function is responsible for performing BUP operations and sending SMS messages to inform
+ * about the stability of the power supply and the energy level of the battery. It checks for changes
+ * in the power stability situation and sends an SMS if the stability status has changed. It also sends
+ * an SMS when the energy level of the battery reaches a critical or low level. Additionally, if the
+ * device is running on battery power and the energy level reaches a critical level, the function puts
+ * the device to sleep mode.
+ *
+ * @note This function assumes that the necessary SMS flags and state variables in the rmsClass object
+ * are correctly updated and reflect the current power stability situation and battery energy level state.
+ * It relies on the SMS_BUPSendIsStablePowerSupply() and SMS_BUPSendEnergyLevel() functions to send the
+ * appropriate SMS messages.
+ *
+ * @warning The BUP SMS messages are sent only if the BUP feature is enabled
+ */
 void FSM_f_BUP(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg);
 
 /**
@@ -144,22 +201,6 @@ void FSM_setPowerSituation(rmsClass& rmsClassArg);
  * @param dataFileName The name of the data file containgin the data.
  */
 void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg, uint32_t currentTime, char dataFileName[]);
-
-
-// void FSM_executeFunction(uint8_t* eventInputCode_, char ORPData_[]);
-
-// void FSM_executeFunction(uint8_t* eventInputCode_, Ezo_board* EZO_ORP, RMSState* currentState);
-// void FSM_f_WaterMonitoring_EZO(Ezo_board* classArg, RMSState* currentState);
-
-
-
-
-
-
-
-
-
-// void FSM_getEzoWaterReading(Ezo_board* classArg);
 
 
 #endif

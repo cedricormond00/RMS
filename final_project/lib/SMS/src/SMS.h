@@ -144,9 +144,50 @@ void SMS_uraSend(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg);
 void SMS_hbSend(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg);
 
 
-
-void SMS_BUPSendEnergyLevel(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg);
+/**
+ * @brief Sends a Back-Up Power supply (BUP) SMS message indicating a change in power supply.
+ *
+ * @param rmsClassArg The rmsClass object containing system information.
+ * @param cfgStructArg The configuration settings for the system.
+ * @return void
+ * 
+ * @details  This function composes a BUP SMS message indicating whether the power supply has switched
+ * from mains to external battery or from external battery to mains. The message is sent via SMS
+ * if the BUP feature is enabled.
+ * 
+ * @note This function assumes that the SMS power structure (smsPowerStruct) in the rmsClass object
+ * is correctly updated and reflects the current power supply status. It also relies on the
+ * Tool_stringTime() function to format the timestamp as a string.
+ * 
+ * @warning The BUP SMS message is sent only if the BUP feature is enabled in the SMS.cpp
+ */
 void SMS_BUPSendIsStablePowerSupply(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg);
+
+/**
+ * @brief Sends a Back-Up Power supply (BUP) SMS message indicating the energy level of the battery.
+ *
+ * This function composes a BUP SMS message indicating the energy level of the battery, such as
+ * when the critical energy level is reached or when the energy level is low or sufficient. The
+ * message is sent via SMS if the BUP feature is enabled.
+ *
+ * @param rmsClassArg The rmsClass object containing system information.
+ * @param cfgStructArg The configuration settings for the system.
+ * @return void
+ * 
+ * @details The function retrieves the timestamp when the energy level SMS was sent and formats
+ * it as a string using the Tool_stringTime() function. Depending on the energy level of the
+ * battery stored in the power structure of the rmsClass object, the function composes the BUP
+ * SMS message indicating the energy level and the battery voltage. The message is then sent via
+ * SMS using the SMS_sendSMS() function if the BUP feature is enabled in the configuration settings.
+ * 
+ * @note This function assumes that the SMS power structure (smsPowerStruct) in the rmsClass object
+ * is correctly updated and reflects the current energy level of the battery. It also relies on the
+ * Tool_stringTime() function to format the timestamp as a string.
+ * 
+ * @warning The BUP SMS message is sent only if the BUP feature is enabled in the configuration
+ * settings (cfgStructArg.bup).
+ */
+void SMS_BUPSendEnergyLevel(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg);
 
 
 #endif

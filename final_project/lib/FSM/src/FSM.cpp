@@ -353,7 +353,7 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
     //Storing this value is useful for datalogging purpose
     rmsClassArg.set_wmReadEPochTime(currentTime);
     if (debug && debug_FSM){
-        Serial.print("rmsClassArg.get_wmReadEPochTime(): ");
+        Serial.print("in WM function, rmsClassArg.get_wmReadEPochTime(): ");
         Serial.println(rmsClassArg.get_wmReadEPochTime());
     }
     
@@ -394,12 +394,21 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
 
 
 void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg, ConfigurationStruct cfgStructArg, char dataFileName[]){
-    bool debug = true;
-    // time of URA miught be different from Wakeup, especially if the device woke up, performed a WM. Also consider that 3 secondsat least happen between wakeup and URA function
-    uint32_t currentTime = rtcClassArg.getEpoch();
-    
     // for debugging purpose
     debugDisplay = 1;
+    bool debug = true;
+
+    // time of URA miught be different from Wakeup, especially if the device woke up, performed a WM. Also consider that 3 secondsat least happen between wakeup and URA function
+    uint32_t currentTime = rtcClassArg.getEpoch();
+
+    //Storing this value is useful for datalogging purpose
+    // recall that wmRead is the time at which a water sampling occured, rgardless of the event causing it
+    rmsClassArg.set_wmReadEPochTime(currentTime);
+    if (debug && debug_FSM){
+        Serial.print("in URA function, rmsClassArg.get_wmReadEPochTime(): ");
+        Serial.println(rmsClassArg.get_wmReadEPochTime());
+    }
+
 
     // get and print the ORP reading from the ORP sensor
     EZO_getEzoORPReading(ezoClassArg);
@@ -611,20 +620,50 @@ void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, ConfigurationStruct cfgS
 
 
 void FSM_f_BUP(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
-    uint32_t currentEpochTime = rmsClassArg.get_wmReadEPochTime();
+    /* 
+    recall _WmReadTime is updated any time a modifiucation to the rmsClass is peformed, to vlaue related to the current state.
+    As such, since the BUP is performed after the wm input event, we must use the wmReadTime, as the time at which the BUP occured
+    */
+    // uint32_t currentEpochTime = rmsClassArg.get_wmReadEPochTime();
+
+    //for moreflexibility, ocould justuse the rtc.getEpoch wherever currentTuime is required
+    uint32_t currentEpochTime = rtc.getEpoch();
+
+    /* 
+    check whether the power stability situation is on the same state
+    as the sms sent to inform on power stabilit. If they are not the same, enter 
+    (falling/rising edge scheme)
+    */
     if (rmsClassArg.get_smsPowerStructIsStablePowerSupply() != rmsClassArg.get_powerStructStablePowerSupply()){
-        //TODO: check if we can exchange both following line and then change the time we use in the SMS sending
+        /* Set
+        - what time we are sending an SMS for BUP Stable power supply situation
+        - update the sms BUP stable power supply state to the real power supply situation
+        */
+        rmsClassArg.set_smsPowerStructIsStablePowerSupply(rmsClassArg.get_powerStructStablePowerSupply(), currentEpochTime);
+
+        // send the SMS
         SMS_BUPSendIsStablePowerSupply(rmsClassArg, cfgStructArg);
 
-        rmsClassArg.set_smsPowerStructIsStablePowerSupply(rmsClassArg.get_powerStructStablePowerSupply(), currentEpochTime);
-    }
 
+        // //TODO: check if we can exchange both following line and then change the time we use in the SMS sending
+        // SMS_BUPSendIsStablePowerSupply(rmsClassArg, cfgStructArg);
+
+        // rmsClassArg.set_smsPowerStructIsStablePowerSupply(rmsClassArg.get_powerStructStablePowerSupply(), currentEpochTime);
+    }
+    /* 
+    ONly send an SMS if
+    - to prevent spamming (from hysterisis), only send an EL update, 
+    if the device is past the SMS_HW_BUP (time window)
+    - unstable power supply (ie, not running on the mains)
+    */
     if (currentEpochTime > rmsClassArg.get_smsPowerStructEnergyLevelSMSSentEPochTime() + SMS_HW_BUP // this is to prevent spamming from flucutating changes
     && !rmsClassArg.get_powerStructStablePowerSupply() ){
         if (rmsClassArg.get_smsPowerStructBatteryEnergyLevelState() != rmsClassArg.get_powerStructBatteryELState()){
+            
+            rmsClassArg.set_smsPowerStructBatteryEnergyLevelState(rmsClassArg.get_powerStructBatteryELState(), currentEpochTime);
+
             SMS_BUPSendEnergyLevel(rmsClassArg, cfgStructArg);
 
-            rmsClassArg.set_smsPowerStructBatteryEnergyLevelState(rmsClassArg.get_powerStructBatteryELState(), currentEpochTime);
         }
     }
 

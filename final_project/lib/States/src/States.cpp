@@ -470,7 +470,9 @@ uint8_t rmsClass::get_powerStructChargeStatus(){
 //smsPowerStruct
 
 void rmsClass::init_smsPowerStruct(uint32_t ePochTime){
-    set_smsPowerStructBatteryEnergyLevelState(get_powerStructBatteryELState(), ePochTime);
+    // set_smsPowerStructBatteryEnergyLevelState(get_powerStructBatteryELState(), ePochTime);
+    set_smsPowerStructBatteryEnergyLevelState(lowEL, ePochTime);
+
     set_smsPowerStructIsStablePowerSupply(get_powerStructStablePowerSupply(), ePochTime);
     // _smsPowerStruct.batteryEnergyLevelState = get_powerStructBatteryELState();
     // _smsPowerStruct.isStablePowerSupply = get_powerStructStablePowerSupply();

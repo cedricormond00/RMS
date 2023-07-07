@@ -11,7 +11,7 @@
 bool wm = false;
 bool ura = false;
 bool hb = false;
-bool bup = false;
+bool bup = true;
 
 void SMS_init(uint32_t timeout){
     nbAccess.setTimeout(timeout); 
@@ -230,27 +230,35 @@ void SMS_hbSend(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
 }
 
 
-
-
-
 void SMS_BUPSendIsStablePowerSupply(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
     char message[160];
     char dateTime[21];
-    //use wmreadEPochTime becuase we update just after both the stablePowerSUpplyStauts and time after the emssage was sent, at once
-    Tool_stringTime(rmsClassArg.get_wmReadEPochTime(), dateTime);
+    // use wmreadEPochTime becuase we update just after both the stablePowerSUpplyStauts and time after the emssage was sent, at once
+    
+    // put in human readable format the epoch time at which the stable s^power supply was performed
+    Tool_stringTime(rmsClassArg.get_smsPowerStructIsStablePowerSupplySMSSentEPochTime(), dateTime);
+    /*
+    Check whether we have sent an SMS informing the power is unstable. (battery is now the power supply)
+    This implies that the smsPowerStructIsStablePowerSupply is true: 
+    the RMS has not yet sent an SMS to inform that there is unstable power supply: 
+    it still thinks the power source is stable, hence why true
+    */
     if(rmsClassArg.get_smsPowerStructIsStablePowerSupply()){
         /*TODO: could add a further test to ensure that the energy level of the battery is sufficiently high.
         if it is, then send this sms. Ohterwise, dont send the sms, and wait for the next test to send both info at the same time
+        REPLY: For the operator, it might be easier if they get separate SMS, one per situation, to differentiate more easily
         */
         Serial.println("");
         Serial.println("---");
         sprintf(message,"%d\n"//+ 1
                         "%s\n"//+ 1
                         "BUP\n"//3 + 1
-                        "Power supply switched from mains to external battery"//51
+                        "Power supply switched from mains to external battery\n"//51
+                        "Battery voltage %.2f"//16
                         , RMS_ID, //2
-                        dateTime);//21
-                        //80
+                        dateTime,//21
+                        rmsClassArg.get_powerStructBatteryVoltage());//4
+                        //100
         Serial.println(message);
         Serial.println("---");
         
@@ -288,11 +296,13 @@ void SMS_BUPSendIsStablePowerSupply(rmsClass& rmsClassArg, ConfigurationStruct c
     }
 }
 
+
 void SMS_BUPSendEnergyLevel(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
     char message[160];
     char dateTime[21];
-    //use wmreadEPochTime becuase we update just after both the stablePowerSUpplyStauts and time after the emssage was sent, at once
-    Tool_stringTime(rmsClassArg.get_wmReadEPochTime(), dateTime);
+
+    Tool_stringTime(rmsClassArg.get_smsPowerStructEnergyLevelSMSSentEPochTime(), dateTime);
+    
     switch(rmsClassArg.get_powerStructBatteryELState())
     {
     case rmsClass::criticalEL :
@@ -302,9 +312,11 @@ void SMS_BUPSendEnergyLevel(rmsClass& rmsClassArg, ConfigurationStruct cfgStruct
                         "%s\n"//+ 1
                         "Critical Energy Level reached\n"//29 + 1
                         "Device will go to deepsleep"//27
+                        "Battery voltage %.2f"//16
                         , RMS_ID,//2
-                        dateTime);//21
-                        //82
+                        dateTime,//21
+                        rmsClassArg.get_powerStructBatteryVoltage());//4
+                        //106
         Serial.println(message);
         Serial.println("---");
         
@@ -315,51 +327,41 @@ void SMS_BUPSendEnergyLevel(rmsClass& rmsClassArg, ConfigurationStruct cfgStruct
         // Serial.println("Device will go to deepsleep");
         // Serial.println("---");
         break;
+
     case rmsClass::lowEL :
-        
         Serial.println("");
         Serial.println("---");
         sprintf(message,"%d\n"//+ 1
                         "%s\n"//+ 1
                         "Low Energy Level reached"//25
+                        "Battery voltage %.2f"//16
                         , RMS_ID,//2
-                        dateTime);//21
-                        //50
+                        dateTime,//21
+                        rmsClassArg.get_powerStructBatteryVoltage());//4
+                        //70
         Serial.println(message);
         Serial.println("---");
-
-        // Serial.println("---");
-        // Serial.print("RMS ");
-        // Serial.println(RMS_ID);
-        // Serial.println("Low Energy Level reached");
-        // // Serial.println("Device will soon go to deepsleep");
-        // Serial.println("---");
         break;
+
     case rmsClass::sufficientEL :
         Serial.println("");
         Serial.println("---");
         sprintf(message,"%d\n"//+ 1
                         "%s\n"//+ 1
                         "Sufficient Energy Level reached"//31
+                        "Battery voltage %.2f"//16
                         , RMS_ID,//2
-                        dateTime);//21
-                        //57
+                        dateTime,//21
+                        rmsClassArg.get_powerStructBatteryVoltage());//4
+                        //77
         Serial.println(message);
         Serial.println("---");
-
-        // Serial.println("---");
-        // Serial.print("RMS ");
-        // Serial.println(RMS_ID);
-        // Serial.println("Sufficient Energy Level reached");
-        // Serial.println("---");
         break;
+
     default:
         break;
-    }
-    Serial.println();
-    Serial.println("test break");
-    Serial.println();
 
+    }
     if (bup){
         SMS_sendSMS(cfgStructArg, message);
     }
