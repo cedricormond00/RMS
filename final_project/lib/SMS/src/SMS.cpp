@@ -238,12 +238,10 @@ void SMS_BUPSendIsStablePowerSupply(rmsClass& rmsClassArg, ConfigurationStruct c
     // put in human readable format the epoch time at which the stable s^power supply was performed
     Tool_stringTime(rmsClassArg.get_smsPowerStructIsStablePowerSupplySMSSentEPochTime(), dateTime);
     /*
-    Check whether we have sent an SMS informing the power is unstable. (battery is now the power supply)
-    This implies that the smsPowerStructIsStablePowerSupply is true: 
-    the RMS has not yet sent an SMS to inform that there is unstable power supply: 
-    it still thinks the power source is stable, hence why true
+    If battery is now the power supply, 
+    This implies that the smsPowerStructIsStablePowerSupply is false: 
     */
-    if(rmsClassArg.get_smsPowerStructIsStablePowerSupply()){
+    if(!rmsClassArg.get_smsPowerStructIsStablePowerSupply()){
         /*TODO: could add a further test to ensure that the energy level of the battery is sufficiently high.
         if it is, then send this sms. Ohterwise, dont send the sms, and wait for the next test to send both info at the same time
         REPLY: For the operator, it might be easier if they get separate SMS, one per situation, to differentiate more easily

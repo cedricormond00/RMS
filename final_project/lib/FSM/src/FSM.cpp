@@ -453,6 +453,7 @@ void FSM_f_BUP(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
     uint32_t currentEpochTime = rtc.getEpoch();
 
     /* 
+    Check whether we have sent an SMS informing the power is unstable. ->
     check whether the power stability situation is on the same state
     as the sms sent to inform on power stabilit. If they are not the same, enter 
     (falling/rising edge scheme)
