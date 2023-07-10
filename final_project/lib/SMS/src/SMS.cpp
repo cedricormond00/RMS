@@ -170,10 +170,7 @@ void SMS_wmHistoryWindow(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg
                 , RMS_ID, // 2
                 dateTime,//21
                 rmsClassArg.get_rmsState(), //1
-                rmsClassArg.get_orpReading(), //7
-                rmsClassArg.get_stateHistoryPercentage(SWQ), //4
-                rmsClassArg.get_stateHistoryPercentage(UWQ), //4
-                rmsClassArg.get_stateHistoryPercentage(FWQ)); //4
+                rmsClassArg.get_orpReading()); //4
                 // 112
         Serial.println(message);  
     } 
