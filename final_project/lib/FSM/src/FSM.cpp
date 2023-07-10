@@ -35,7 +35,7 @@ have an additional debug boolean, so as to be more granular
 */
 bool debugDisplay = 1;
 
-bool debug_FSM = false;
+bool debug_FSM = true;
 
 void FSM_initRMS(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
     uint32_t currentEPochTime = rtc.getEpoch();

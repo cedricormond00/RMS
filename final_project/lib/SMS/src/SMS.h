@@ -189,5 +189,6 @@ void SMS_BUPSendIsStablePowerSupply(rmsClass& rmsClassArg, ConfigurationStruct c
  */
 void SMS_BUPSendEnergyLevel(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg);
 
+void SMS_deepSleepWakeUp (rmsClass& rmsClassArg, ConfigurationStruct& cfgStructArg);
 
 #endif

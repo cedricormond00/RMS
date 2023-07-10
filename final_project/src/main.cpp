@@ -277,7 +277,7 @@ void loop() {
       digitalWrite(GREENLED_PIN, LOW);
       digitalWrite(BLUELED_PIN, LOW);
       
-      LP_goToDeepSleep(rms);
+      LP_goToDeepSleep(rms, cfg);
       if (debug_main && !Tool_isBitOn(rms.get_inputEventCode(), URA_WAIT_INPUTBIT)) {Serial.println("-end SLEEP State");}
 
       break;

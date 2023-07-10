@@ -11,7 +11,7 @@
 #include "Tool.h"
 
 
-bool debug_RTC = false;
+bool debug_RTC = true;
 
 
 bool RTC_init(void){

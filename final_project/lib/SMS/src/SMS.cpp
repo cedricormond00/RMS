@@ -12,6 +12,7 @@ bool wm = true;
 bool ura = true;
 bool hb = true;
 bool bup = true;
+bool ds = true;
 
 void SMS_init(uint32_t timeout){
     nbAccess.setTimeout(timeout); 
@@ -41,13 +42,14 @@ bool SMS_initConnection(){
         }
         else {
             Serial.println("Not connected");
-            count ++;
+            
             delay(1000);
             if (count!=0){
                 Serial.println("NB not NB_ready. Shutting down and rebegining.");
                 Serial.print("Connection attempt: ");
                 Serial.println(count);
             }
+            count ++;
             nbAccess.shutdown();
             nbAccess.begin(PINNUMBER);
             status = nbAccess.status();
@@ -365,5 +367,26 @@ void SMS_BUPSendEnergyLevel(rmsClass& rmsClassArg, ConfigurationStruct cfgStruct
     }
 }
 
+void SMS_deepSleepWakeUp (rmsClass& rmsClassArg, ConfigurationStruct& cfgStructArg){
+    char message[160];
+    char dateTime[21];
 
+    Tool_stringTime(rmsClassArg.get_wakeUpEPochTime(), dateTime);
+
+    Serial.println("");
+    Serial.println("---");
+    sprintf(message,"%d\n"//+ 1
+                    "%s\n"//+ 1
+                    "Device woke Up from deep Sleep\n"//32 + 1
+                    "Battery voltage %.2f"//16
+                    , RMS_ID,//2
+                    dateTime,//21
+                    rmsClassArg.get_powerStructBatteryVoltage());//4
+                    //81
+    Serial.println(message);
+    Serial.println("---");
+    if (ds){
+        SMS_sendSMS(cfgStructArg, message);
+    }
+}
 

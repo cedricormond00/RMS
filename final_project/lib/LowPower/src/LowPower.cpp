@@ -3,9 +3,11 @@
 #include <RTCZero.h>
 
 #include "States.h"
+#include "Configuration.h"
 
 #include "LowPower.h"
 #include "RTC.h"
+#include "SMS.h"
 
 #include "Constant.h"
 // requires the global triggeredInputEvent
@@ -91,7 +93,7 @@ void LP_callbackURA(){
 }
 
 
-void LP_goToDeepSleep(rmsClass& rmsClassArg){
+void LP_goToDeepSleep(rmsClass& rmsClassArg, ConfigurationStruct& cfgStructArg){
     
     LowPower.attachInterruptWakeup(digitalPinToInterrupt(PMIC_IRQ_PIN), LP_callbackDeepSleep, RISING);
 
@@ -100,11 +102,15 @@ void LP_goToDeepSleep(rmsClass& rmsClassArg){
     LowPower.deepSleep();
 
     Serial.println("woke up from deepSleep");
+        //TODO: send SM wokeup from deeplsleep: 
+    SMS_deepSleepWakeUp(rmsClassArg, cfgStructArg);
+
+    rmsClassArg.set_wakeUpEPochTime(rtc.getEpoch());
     detachInterrupt(digitalPinToInterrupt(PMIC_IRQ_PIN));
 
     rmsClassArg.set_rmsState(INIT);
-    //TODO: send SM wokeup from deeplsleep: 
     RTC_init();
+    RTC_setUpHB(cfgStructArg);
     LP_setupURAInterrupt();
 }
 

@@ -10,7 +10,7 @@ void LP_setupURAInterrupt();
 
 void LP_callbackURA();
 
-void LP_goToDeepSleep(rmsClass& rmsClassArg);
+void LP_goToDeepSleep(rmsClass& rmsClassArg, ConfigurationStruct& cfgStructArg);
 
 void LP_callbackDeepSleep();
 
