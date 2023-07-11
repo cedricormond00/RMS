@@ -285,6 +285,55 @@ void loop() {
     case BATTERY_LOW:
       LED_showBatteryLowSignal();
       delay(2000);
+
+      rms.set_powerStructStablePowerSupply(Battery_getIsStablePowerSupply());
+      if (!rms.get_powerStructStablePowerSupply())
+      {
+          Serial.println("NO stable power supply.");
+      }
+      else{
+          Serial.println("Stable power supply");
+      }
+          
+      rms.set_powerStructChargeStatus(Battery_getChargeStatus());
+      if (rms.get_powerStructChargeStatus() == 0
+      && rms.get_powerStructStablePowerSupply()){
+          //TODO: could maybe make this a state instead
+          Serial.println("Battery not connected");
+          Serial.println("Please connect immediately a battery");
+      }
+      else{
+          Serial.println("Battery connected");
+          switch (rms.get_powerStructChargeStatus())
+              {
+              case 0b010000:
+                  Serial.println("Battery precharging");
+                  break;
+              case 0b100000:
+                  Serial.println("Battery fast charging");
+                  break;
+              case 0b110000:
+                  Serial.println("Battery charge termination done");
+                  break;
+              default:
+                  break;
+              }
+          rms.set_powerStructBatteryVoltage(Battery_getBatteryVoltage());
+          Serial.print("Battery voltage: ");
+          Serial.println (rms.get_powerStructBatteryVoltage());
+          Serial.print("Battery percentage: ");
+          Serial.println(Battery_getBatteryPercentage(rms.get_powerStructBatteryVoltage()));
+          Serial.print("Battery Energy level: ");
+          Serial.println(rms.get_powerStructBatteryELState());
+
+          Serial.print("Battery_getIsStablePowerSupply(): ");
+          Serial.println(Battery_getIsStablePowerSupply());
+          Serial.print("Battery_getChargeStatus(): ");
+          Serial.println(Battery_getChargeStatus());
+          Serial.print("Battery_getBatteryVoltage");
+          Serial.println(Battery_getBatteryVoltage());
+      }
+      
       break;
 
     case BATTERY_NOTCONNECTED:

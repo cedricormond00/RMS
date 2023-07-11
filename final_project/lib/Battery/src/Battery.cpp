@@ -56,7 +56,7 @@ bool Battery_runInitSequence(rmsClass& rmsClassArg){
     rmsClassArg.set_powerStructStablePowerSupply(Battery_getIsStablePowerSupply());
     if (!rmsClassArg.get_powerStructStablePowerSupply())
     {
-        Serial.print("NO stable power supply.");
+        Serial.println("NO stable power supply.");
     }
     else{
         Serial.println("Stable power supply");
@@ -148,7 +148,7 @@ uint8_t Battery_getBatteryPercentage(float batteryVoltage){
         batteryPercentage = 0;
     }
     else{
-        uint8_t batteryPercentage = (batteryVoltage - batteryEmptyVoltage) * (100) / (batteryFullVoltage - batteryEmptyVoltage);    //custom float friendly map function
+        batteryPercentage = (batteryVoltage - batteryEmptyVoltage) * (100) / (batteryFullVoltage - batteryEmptyVoltage);    //custom float friendly map function
     }
     return batteryPercentage;
 }
