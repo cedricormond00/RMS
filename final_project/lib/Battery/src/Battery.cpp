@@ -143,7 +143,13 @@ float Battery_getBatteryVoltage(void){
 
 
 uint8_t Battery_getBatteryPercentage(float batteryVoltage){
-    uint8_t batteryPercentage = (batteryVoltage - batteryEmptyVoltage) * (100) / (batteryFullVoltage - batteryEmptyVoltage);    //custom float friendly map function
+    uint8_t batteryPercentage;
+    if (batteryVoltage<=batteryEmptyVoltage){
+        batteryPercentage = 0;
+    }
+    else{
+        uint8_t batteryPercentage = (batteryVoltage - batteryEmptyVoltage) * (100) / (batteryFullVoltage - batteryEmptyVoltage);    //custom float friendly map function
+    }
     return batteryPercentage;
 }
 

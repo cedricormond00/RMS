@@ -120,10 +120,15 @@ void SMS_wmImmediate(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
                     "State %d\n" //6 + 1
                     "Last ORP %.2f\n" //9 + 1
                     "Regular updates until SWQ at end of HW" //38
+                    "Battery voltage %.2f\n" //21
                     // , RMS_ID, dateTime, rmsClassArg.get_rmsState(), rmsClassArg.get_orpReading());
-                    , RMS_ID, dateTime, rmsClassArg.get_rmsState(), rmsClassArg.get_orpReading());
+                    , RMS_ID, 
+                    dateTime, 
+                    rmsClassArg.get_rmsState(), 
+                    rmsClassArg.get_orpReading(),
+                    rmsClassArg.get_powerStructBatteryVoltage()); //4
                     // 2 + 21 + 1 + 7
-                    // = 90
+                    // = 115
     Serial.println(message);
     Serial.println("---");
     if (wm){
@@ -149,14 +154,16 @@ void SMS_wmHistoryWindow(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg
                         "SWQ %.2f\n"//4 + 1
                         "UWQ %.2f\n"//4 + 1
                         "FWQ %.2f"//4 + 1
+                        "Battery voltage %.2f\n" //21
                         , RMS_ID, // 2
                         dateTime,//21
                         rmsClassArg.get_rmsState(), //1
                         rmsClassArg.get_orpReading(), //7
                         rmsClassArg.get_stateHistoryPercentage(SWQ), //4
                         rmsClassArg.get_stateHistoryPercentage(UWQ), //4
-                        rmsClassArg.get_stateHistoryPercentage(FWQ)); //4
-                        // 80
+                        rmsClassArg.get_stateHistoryPercentage(FWQ), //4
+                        rmsClassArg.get_powerStructBatteryVoltage()); //4
+                        // 105
         Serial.println(message);
     }
     // if we were unsucceessful in updating the state History
@@ -167,10 +174,12 @@ void SMS_wmHistoryWindow(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg
                 "State %d\n"//6 + 1
                 "Last ORP %.2f\n"//9 + 1
                 "Failed to compute states' percentage over the HW"//46 + 1
+                "Battery voltage %.2f\n" //21
                 , RMS_ID, // 2
                 dateTime,//21
                 rmsClassArg.get_rmsState(), //1
-                rmsClassArg.get_orpReading()); //4
+                rmsClassArg.get_orpReading(),//7
+                rmsClassArg.get_powerStructBatteryVoltage());//4
                 // 112
         Serial.println(message);  
     } 
@@ -192,11 +201,13 @@ void SMS_uraSend(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
                     "URA\n"//3 + 1
                     "State %d\n"//6 + 1
                     "Last ORP %.2f\n"//9 + 1
+                    "Battery voltage %.2f\n" //21
                     , RMS_ID, //2
                     dateTime, //21
                     rmsClassArg.get_rmsState(), //1
-                    rmsClassArg.get_orpReading()); //7
-                    //53
+                    rmsClassArg.get_orpReading(),//7
+                    rmsClassArg.get_powerStructBatteryVoltage());//4
+                    //78
     Serial.println(message);
     Serial.println("---");
     if (ura){
@@ -216,11 +227,13 @@ void SMS_hbSend(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
                     "HB\n"//2 + 1
                     "State %d\n"//6 + 1
                     "Last ORP %.2f\n"//9 + 1
+                    "Battery voltage %.2f\n" //21
                     , RMS_ID,//2
                     buf,//40
                     rmsClassArg.get_rmsState(),//1
-                    rmsClassArg.get_orpReading());//7
-                    //72
+                    rmsClassArg.get_orpReading(),//7
+                    rmsClassArg.get_powerStructBatteryVoltage());//4
+                    //97
     Serial.println(message);
     Serial.println("---");
     if (hb){
@@ -274,19 +287,13 @@ void SMS_BUPSendIsStablePowerSupply(rmsClass& rmsClassArg, ConfigurationStruct c
                         "%s\n"//+ 1
                         "BUP\n"//3 + 1
                         "Power supply switched from external battery to mains"//51
+                        "Battery voltage %.2f\n" //21
                         , RMS_ID, //2
-                        dateTime);//21
-                        //80
+                        dateTime, //21
+                        rmsClassArg.get_powerStructBatteryVoltage());//4
+                        //105
         Serial.println(message);
         Serial.println("---");
-       
-
-        // Serial.println("---");
-        // Serial.print("RMS ");
-        // Serial.println(RMS_ID);
-        // Serial.println("BUP situation back to normal");
-        // Serial.println("power source switched from external battery to mains");
-        // Serial.println("---");
     }
     if (bup){
         SMS_sendSMS(cfgStructArg, message);
@@ -317,12 +324,6 @@ void SMS_BUPSendEnergyLevel(rmsClass& rmsClassArg, ConfigurationStruct cfgStruct
         Serial.println(message);
         Serial.println("---");
         
-        // Serial.println("---");
-        // Serial.print("RMS ");
-        // Serial.println(RMS_ID);
-        // Serial.println("Critical Energy Level reached");
-        // Serial.println("Device will go to deepsleep");
-        // Serial.println("---");
         break;
 
     case rmsClass::lowEL :
