@@ -10,8 +10,8 @@ For varying values,
 
 
 # Component selection
-the following components were used for the prototype. For ease of reproducibility, links to the used suppliers are provided.
-The final cost of the hardware amounts to just under CHF 360.
+The following components were used for the prototype. For ease of reproducibility, links to the used suppliers are provided.
+The final cost of the hardware amounts to just under CHF 380.
 
 | Item description 	| Comment 	| Brand 	| Quantity 	| Unitary cost 	| Total cost 	| manufacturer link 	| Manufacturer code 	| Supplier link 	|
 |---	|---	|---	|---	|---	|---	|---	|---	|---	|
@@ -81,20 +81,30 @@ _uraSMSInterval_ : (ms) how much time should elapse, before a new SMS can be sen
 
 _wmSMSInterval_ : (ms) how much time should elapse, before a new SMS can be sent to the operator, updating them on the waterquality status, after an unsafe or faulty reading was first detected. This is to prevent spamming the operator with notification in the case of unsafe water quality or faulty reading.
 
-_sendSMS_
+_sendSMS_ : (boolean) sets whether the SMS should be sent to the operator or not.
 
-_remoteNumberLength_
+_remoteNumberLength_ : (integer) tells how long the operator phone number is.
 
-_remoteNumber_
-
-
-This
+_remoteNumber_ : (string) holds the operator phone number.
 
 
+### LED error signal description
+
+In case the RMS is started without being connected to a PC, the LEDs provide some feedback in case some problems occured during initialisation. There is always one or two LEDs on, to indicate what region is affected, while another LED will blink to differentiate between the possible causes for the issue.
+
+| Region 	| Exact problem 	| On LED 	| Blinking LED 	|
+|---	|---	|---	|---	|
+| Battery 	| Battery not conected 	| Orange 	| Red 	|
+| Battery 	| Low battery energy level 	| Orange 	| Yellow 	|
+| SD Card 	| Failed to initialise 	| Green 	| Red 	|
+| SD Card 	| Failed to create a valid filename 	| Green 	| Yellow 	|
+| SMS 	| Inappropriate phone number 	| Yellow 	| Red 	|
+| RTC 	| Failed to initialise internal RTC using external RTC 	| Green + orange 	| Red 	|
+| RTC 	| Failed to set-up heartbeat 	| Green + orange 	| Yellow 	|
+| Unknow 	| Unknown error 	| Red 	| Blue 	|
 
 
-
-## development environment
+## Development environment
 This project was developped using VSCode and the platformIO extension.
 
 # Known bugs
