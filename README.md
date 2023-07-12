@@ -1,7 +1,4 @@
-to monito# RMS
-Master thesis code repo. This repository will contain all the source code
-
-## General description of project
+# General description of project
 This project is a remote monitoring system to be used on the [Blue Diversion Autarky Project](https://www.eawag.ch/en/research/humanwelfare/wastewater/projects/autarky/), developed at EAWAG. 
 
 The waterfall, currently only a prototype, requires that an operator come onsite regularly, to monitor the microbial water quality in the clean water tank. This is time-consuming and limits the possibility of performing high-quality field tests.
@@ -12,10 +9,9 @@ For example a XXX and LRT XXX, the ORP value was found to be at.
 For varying values, 
 
 
-## Component selection
+# Component selection
 the following components were used for the prototype. For ease of reproducibility, links to the used suppliers are provided.
-The final cost of the hardware amounts to CHF 350.
-
+The final cost of the hardware amounts to just under CHF 360.
 
 | Item description 	| Comment 	| Brand 	| Quantity 	| Unitary cost 	| Total cost 	| manufacturer link 	| Manufacturer code 	| Supplier link 	|
 |---	|---	|---	|---	|---	|---	|---	|---	|---	|
@@ -45,50 +41,51 @@ The final cost of the hardware amounts to CHF 350.
 | velcro straps 	|  	| Velcro 	| 1 	| 7.35 	| CHF 7.35 	|  	|  	| https://www.distrelec.ch/en/velcro-fastener-200-13mm-fabric-polypropylene-black-velcro-vel-ow64301/p/30110092?trackQuery=velcro&pos=2&origPos=5&origPageSize=50&track=true 	|
 | Enclosure 150x200x100mm 	|  	|  	| 1 	| 14.4 	| CHF 14.40 	|  	| RL6685BK 	| https://www.distrelec.ch/en/plastic-enclosure-rl-150x200x100mm-black-abs-ip54-hammond-rl6685bk/p/30122546?queryFromSuggest=true 	|
 | Plastic platform to cut 	|  	|  	| 1 	| 1 	| CHF 1.00 	|  	|  	|  	|
-| TOTAL 	|  	|  	|  	|  	| CHF 350.00 	|  	|  	|  	|
+| micro SD Card 	|  	| Kingston 	| 1 	| 5.6 	| CHF 5.60 	|  	| SDCS2/32GBSP 	| https://www.distrelec.ch/en/memory-card-microsd-32gb-100mb-85mb-black-kingston-sdcs2-32gbsp/p/30201902?trackQuery=microSD+card&pos=18&origPos=18&origPageSize=50&track=true 	|
+| SIM card 	| dependent on country 	|  	| 1 	| 2 	| CHF 2.00 	|  	|  	|  	|
+| TOTAL 	|  	|  	|  	|  	| CHF 357.60 	|  	|  	|  	|
 
-
-## User guide
+# User guide
 <!--- The project is divided in 3 folders 
 - final project
 - RTC calibration
 - ML model --->
-### final_project
+## final_project
 This folder contains the source code for the project.
 To use the system, clone the repo, assemble the hardware as described in XXX (report DOI, + section link of circuit structure) and upload the platformIO project to the board.
 Once uploaded, the device will automatically start. 
 
-### Configuration settings
+## Configuration settings
 If the device is used for the first time, make sure the device is connected to a PC. This will help for debugging potential mis-settings. 
 
 The first automatic run will create a RMS_V1.CFG file, with default, hard-coded settings. Once the device has run at least run, you can safely disconnect all power supply, remove the SD card, and easily tune the configuration settings.
 
 Alternatively, if you can easily upload the RMS_V1.CFG file to the SD card before the first run. RMS_V1.CFG can be found in XXX (folder location on github)
 
-#### Configuration parameters
-˙_logitThreshold_ : (mv) any ORP reading above this value will translate into a safe waterquality. This setting is found from running the code found in XXX.
+### Configuration parameters
+_logitThreshold_ : (mv) any ORP reading above this value will translate into a safe waterquality. This setting is found from running the code found in XXX.
 
-uraPressDuration
+_uraPressDuration_ : (ms) how long the user should press the button for an alarm to be raised. In case an SMS has already been sent less then _uraSMSInterval_, only a water monitoring will occur, but no SMS will be spamming the user.
 
-hbTargetHour
+_hbTargetHour_ : (hour, 24) At what time should a heartbeat be sent to the operator.
 
-hbIntervalHour
+_hbIntervalHour_ : (hour) At what frequency should the heartbeat be sent, starting from the _hbTargetHour_. Ensure this value is less or equal to 24. For example, consider _hbTargetHour_ = 9 and _hbIntervalHour_ = 6. A heartbeat will be sent to the operator at 9:00, 15:00, 21:00, 03:00. Please note that the exact time at which a heartbeat is sent is the closest time to the aforementioned full hour, plus a maximum of _xwqSleepPeriod_. Indeed the heartbeat SMS is sent after the device woke up for a watermonitoring function.
 
-swqSleepPeriod
+_swqSleepPeriod_ : (ms) how much time should elapse between two water monitoring events, while the water quality is safe.
 
-uwqSleepPeriod
+_uwqSleepPeriod_ : (ms) how much time should elapse between two water monitoring events, while the water quality is unsafe.
 
-fwqSleepPeriod
+_fwqSleepPeriod_ : (ms) how much time should elapse between two water monitoring events, while there has been faulty reading.
 
-uraSMSInterval
+_uraSMSInterval_ : (ms) how much time should elapse, before a new SMS can be sent to the operator, informing them that the user raised an alarm. This is to prevent spamming the operator with notifications in case the user uses too often the button press
 
-wmSMSInterval
+_wmSMSInterval_ : (ms) how much time should elapse, before a new SMS can be sent to the operator, updating them on the waterquality status, after an unsafe or faulty reading was first detected. This is to prevent spamming the operator with notification in the case of unsafe water quality or faulty reading.
 
-sendSMS
+_sendSMS_
 
-remoteNumberLength
+_remoteNumberLength_
 
-remoteNumber 
+_remoteNumber_
 
 
 This
@@ -100,7 +97,11 @@ This
 ## development environment
 This project was developped using VSCode and the platformIO extension.
 
-## Known bugs
+# Known bugs
+
+# Appendix
 
 ## Master thesis report
+
+
 
