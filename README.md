@@ -12,14 +12,10 @@ For example a XXX and LRT XXX, the ORP value was found to be at.
 For varying values, 
 
 
-## User guide
-<!--- The project is divided in 3 folders 
-- final project
-- RTC calibration
-- ML model --->
-
 ## Component selection
-the following components were used for the prototype.
+the following components were used for the prototype. For ease of reproducibility, links to the used suppliers are provided.
+The final cost of the hardware amounts to CHF 350.
+
 
 | Item description 	| Comment 	| Brand 	| Quantity 	| Unitary cost 	| Total cost 	| manufacturer link 	| Manufacturer code 	| Supplier link 	|
 |---	|---	|---	|---	|---	|---	|---	|---	|---	|
@@ -51,9 +47,53 @@ the following components were used for the prototype.
 | Plastic platform to cut 	|  	|  	| 1 	| 1 	| CHF 1.00 	|  	|  	|  	|
 | TOTAL 	|  	|  	|  	|  	| CHF 350.00 	|  	|  	|  	|
 
+
+## User guide
+<!--- The project is divided in 3 folders 
+- final project
+- RTC calibration
+- ML model --->
 ### final_project
 This folder contains the source code for the project.
-To use the system, clone the repo, assemble the hardware as described in XXX and upload the platformIO project to the board
+To use the system, clone the repo, assemble the hardware as described in XXX (report DOI, + section link of circuit structure) and upload the platformIO project to the board.
+Once uploaded, the device will automatically start. 
+
+### Configuration settings
+If the device is used for the first time, make sure the device is connected to a PC. This will help for debugging potential mis-settings. 
+
+The first automatic run will create a RMS_V1.CFG file, with default, hard-coded settings. Once the device has run at least run, you can safely disconnect all power supply, remove the SD card, and easily tune the configuration settings.
+
+Alternatively, if you can easily upload the RMS_V1.CFG file to the SD card before the first run. RMS_V1.CFG can be found in XXX (folder location on github)
+
+#### Configuration parameters
+˙_logitThreshold_ : (mv) any ORP reading above this value will translate into a safe waterquality. This setting is found from running the code found in XXX.
+
+uraPressDuration
+
+hbTargetHour
+
+hbIntervalHour
+
+swqSleepPeriod
+
+uwqSleepPeriod
+
+fwqSleepPeriod
+
+uraSMSInterval
+
+wmSMSInterval
+
+sendSMS
+
+remoteNumberLength
+
+remoteNumber 
+
+
+This
+
+
 
 
 
