@@ -133,6 +133,7 @@ void multipin_pinMode(unsigned int pin_array[], unsigned int arraySize, unsigned
 
 
 // about battery -> orangeLED
+// (Yellow)
 void LED_showBatteryLowSignal(){
   digitalWrite(ORANGELED_PIN, HIGH);
   digitalWrite(YELLOWLED_PIN, LOW);
@@ -148,6 +149,7 @@ void LED_showBatteryLowSignal(){
   digitalWrite(YELLOWLED_PIN, LOW);
 }
 
+// (Red)
 void LED_showBatteryNotConnectedSignal(){
   digitalWrite(ORANGELED_PIN, HIGH);
   digitalWrite(REDLED_PIN, LOW);
@@ -163,8 +165,8 @@ void LED_showBatteryNotConnectedSignal(){
   digitalWrite(REDLED_PIN, LOW);
 }
 
-// about SDCard -> greenLED
-
+// about SDCard -> green LED
+// (Red)
 void LED_showSDCardNokSignal(){
   digitalWrite(GREENLED_PIN, HIGH);
   digitalWrite(REDLED_PIN, LOW);
@@ -179,7 +181,7 @@ void LED_showSDCardNokSignal(){
   digitalWrite(GREENLED_PIN, LOW);
   digitalWrite(REDLED_PIN, LOW);
 }
-
+// (Yellow)
 void LED_showSDCardFileNameNOkSignal(){
   digitalWrite(GREENLED_PIN, HIGH);
   digitalWrite(YELLOWLED_PIN, LOW);
@@ -196,8 +198,27 @@ void LED_showSDCardFileNameNOkSignal(){
 }
 
 
-// about RTC -> green + orange LED
 
+// about SMS -> yellow
+//(red)
+void LED_showSMSnbnok(){
+  digitalWrite(YELLOWLED_PIN, HIGH);
+  digitalWrite(REDLED_PIN, LOW);
+
+  delay(100);
+
+  for (int i = 0; i<4; i++){
+    ToggleLED(REDLED_PIN);
+    delay(100);
+  }
+
+  digitalWrite(YELLOWLED_PIN, LOW);
+  digitalWrite(REDLED_PIN, LOW);
+}
+
+
+// about RTC -> green + orange LED
+// (red)
 void LED_showRTCFailedInitSignal(){
   digitalWrite(GREENLED_PIN, HIGH);
   digitalWrite(ORANGELED_PIN, HIGH);
@@ -216,6 +237,7 @@ void LED_showRTCFailedInitSignal(){
   digitalWrite(REDLED_PIN, LOW);
 }
 
+// (yellow)
 void LED_showRTCFailedHBSetSignal(){
   digitalWrite(GREENLED_PIN, HIGH);
   digitalWrite(ORANGELED_PIN, HIGH);
@@ -235,7 +257,7 @@ void LED_showRTCFailedHBSetSignal(){
   digitalWrite(YELLOWLED_PIN, LOW);
 }
 
-// about unknown_Error -> red + blue LED
+// about unknown_Error -> red + (blue) LED
 void LED_showUnknownErrorSignal(){
   digitalWrite(REDLED_PIN, HIGH);
   digitalWrite(BLUELED_PIN, LOW);

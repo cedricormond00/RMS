@@ -177,6 +177,18 @@ void setup() {
   Serial.println("DONE.");
 
 
+  Serial.println("*Checking SMS functionnality*");
+  if (Config_checkSMS(cfg)){
+    Serial.println("DONE.");
+  }
+  else{
+    rms.set_rmsState(SMS_NBNOK);
+    Serial.println("NOK. problem with indicated phone number");
+    return;
+  }
+
+
+
   Serial.println("*Setting up next HB time*");
   if (RTC_setUpHB(cfg)){
     Serial.println("DONE.");
@@ -351,6 +363,11 @@ void loop() {
       delay(2000);
       break;
     
+    case SMS_NBNOK:
+      LED_showSMSnbnok();
+      delay(2000);
+      break;
+
     case RTC_FAILEDINIT:
       LED_showRTCFailedInitSignal();
       delay(2000);

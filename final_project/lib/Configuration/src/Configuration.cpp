@@ -191,5 +191,17 @@ void Config_saveConfigurationToSD(const ConfigurationStruct& cfg) {
 }
 
 
-
-
+bool Config_checkSMS(ConfigurationStruct& cfgStructArg){
+    bool success = true;
+    if (cfgStructArg.sendSMS){
+        if (strlen(cfgStructArg.remoteNumber) == cfgStructArg.remoteNumberLength
+        && cfgStructArg.remoteNumberLength!=0){
+            return success;
+        }
+        else{
+            success = false;
+            return success;
+        }
+    }
+    return success;
+}

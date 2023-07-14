@@ -101,4 +101,6 @@ void Config_printConfiguration(ConfigurationStruct cfg);
 void Config_saveConfigurationToSD(const ConfigurationStruct& cfg);
 
 
+bool Config_checkSMS(ConfigurationStruct& cfgStructArg);
+
 #endif // _CONFIGURATION_H_

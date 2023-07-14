@@ -34,6 +34,8 @@ void LED_showSDCardFileNameNOkSignal();
 void LED_showRTCFailedInitSignal();
 void LED_showRTCFailedHBSetSignal();
 void LED_showUnknownErrorSignal();
+void LED_showSMSnbnok();
+
 
 
 
