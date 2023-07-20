@@ -95,6 +95,7 @@ void LP_callbackURA(){
 
 void LP_goToDeepSleep(rmsClass& rmsClassArg, ConfigurationStruct& cfgStructArg){
     
+    //this should wake the device up from deepsleep
     LowPower.attachInterruptWakeup(digitalPinToInterrupt(PMIC_IRQ_PIN), LP_callbackDeepSleep, RISING);
 
     Serial.println("Going to deepSleep");
@@ -102,9 +103,11 @@ void LP_goToDeepSleep(rmsClass& rmsClassArg, ConfigurationStruct& cfgStructArg){
     LowPower.deepSleep();
 
     Serial.println("woke up from deepSleep");
-        //TODO: send SM wokeup from deeplsleep: 
+    
+    // Inform the operator that the device has woken up from deepsleep
     SMS_deepSleepWakeUp(rmsClassArg, cfgStructArg);
 
+    // reset to a known states some variables for proper reboot, after an unknown period of sleep
     rmsClassArg.set_wakeUpEPochTime(rtc.getEpoch());
     detachInterrupt(digitalPinToInterrupt(PMIC_IRQ_PIN));
 

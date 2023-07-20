@@ -49,7 +49,6 @@ const float batteryEmptyVoltage = 3.5;  //lower voltage limit for battery
 
 const float batteryCapacity = 2.9;            //set battery capacity in Ah
         
-
 bool Battery_runInitSequence(rmsClass& rmsClassArg){
     bool success = true;
 

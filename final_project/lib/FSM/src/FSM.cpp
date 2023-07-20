@@ -536,7 +536,6 @@ RMSState FSM_decideState(Ezo_board& ezoORPClassArg, ConfigurationStruct cfgStruc
 }
 
 RMSState FSM_implementMLDecision(Ezo_board& ezoORPClassArg, ConfigurationStruct cfgStructArg){
-    // TODO: allow the ORPValue threshold to be set at initialisation
     // UPGRADE: tune here the decision making criteria
     RMSState state = UWQ;
     float orpValue = ezoORPClassArg.get_last_received_reading();
