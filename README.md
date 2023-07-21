@@ -107,7 +107,28 @@ In case the RMS is started without being connected to a PC, the LEDs provide som
 ## Development environment
 This project was developped using VSCode and the platformIO extension.
 
-# Known bugs
+# Impreovements
+
+## codebase
+### wake up from deepsleep, from low battery
+If the RMS is off the grid power, and has been running on the battery for some time, the battery voltage will drop. We have set a batteryEmptyVoltage at 3.5V. If the voltage drops below 3.5V + 5%3.5V, the device enters a "criticalEL" state, and must go to deepSleep, so as to consume as little as power possibe, while informing the user that the device is not running.
+
+However, if the grid power eventually turns back on, we want the device to be able to power back up. For this to occur, we have implemented some measures to ensure the device wakes back up. Just before going to sleep, we attach an interrupt from the PMIC to the arduino. That way, if the PMIC detects a stable power supply, it may interrupt the Arduino, thus waking it up.
+
+Because of the amount of time it takes to deplete the battery, thorough test could not be performed
+
+What remains to be tested, is whether the device can effectively carry on its usual business after the device has woken up from a deep sleep.
+
+Also, we want to know what happens when the battery voltage gets too low. Will the circuit disconnect?
+
+### Storage optimisation
+Currently, a lot of variables are being stored inside the rms class. Some of which are updated during the setup phase with values from the configuration struct. These values where either read from the SD card, or set from the default settings. This is the case for 
+- SWQ sleep duration
+- UWQ sleep duration
+- FWQ sleep duration
+
+
+
 
 # Appendix
 
