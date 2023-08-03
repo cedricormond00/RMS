@@ -20,7 +20,7 @@
 // SMSWindow
 // #define SMS_HW_WQ 20
 // #define SMS_HW_URA 20
-#define SMS_HW_BUP 20
+#define SMS_HW_BUP 1200
 
 // pin assignment
 #define BLUELED_PIN 21
