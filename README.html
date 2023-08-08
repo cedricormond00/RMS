@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.433">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>readme</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="README_files/libs/clipboard/clipboard.min.js"></script>
+<script src="README_files/libs/quarto-html/quarto.js"></script>
+<script src="README_files/libs/quarto-html/popper.min.js"></script>
+<script src="README_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="README_files/libs/quarto-html/anchor.min.js"></script>
+<link href="README_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="README_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="README_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="README_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="README_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+
+
+<section id="general-description-of-project" class="level1">
+<h1>General description of project</h1>
+<p>This project is a remote monitoring system to be used on the <a href="https://www.eawag.ch/en/research/humanwelfare/wastewater/projects/autarky/">Blue Diversion Autarky Project</a>, developed at EAWAG <span class="citation" data-cites="RN32">[@RN32]</span>.</p>
+<p>The waterfall, currently only a prototype, requires that an operator come onsite regularly, to monitor the microbial water quality in the clean water tank. This is time-consuming and limits the possibility of performing high-quality field tests. This project aims to tackle this challenge by providing a real-time, online microbial water quality monitoring. This ensures that the water is of sufficiently high microbial water quality such that the waterwall may be used at no risk for the user.</p>
+<p>A machine model was developed by XXX link, and implemented here. The only parameter is the ORP reading. Decision making of water being safe or unsafe is based on a cut-off value found from the trained model. For example a XXX and LRT XXX, the ORP value was found to be at. For varying values,</p>
+</section>
+<section id="component-selection" class="level1">
+<h1>Component selection</h1>
+<p>The following components were used for the prototype. For ease of reproducibility, links to the used suppliers are provided. The final cost of the hardware amounts to just under CHF 380.</p>
+<table class="table">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Item description</th>
+<th>Comment</th>
+<th>Brand</th>
+<th>Quantity</th>
+<th>Unitary cost</th>
+<th>Total cost</th>
+<th>manufacturer link</th>
+<th>Manufacturer code</th>
+<th>Supplier link</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>MKR NB 1500</td>
+<td></td>
+<td>Arduino</td>
+<td>1</td>
+<td>CHF 71.39</td>
+<td>CHF 71.39</td>
+<td>https://store.arduino.cc/products/arduino-mkr-nb-1500</td>
+<td></td>
+<td>https://www.distrelec.ch/fr/arduino-mkr-nb-1500-arduino-abx00019/p/30117099?track=true&amp;no-cache=true&amp;marketingPopup=false</td>
+</tr>
+<tr class="even">
+<td>MKR MEM Shield</td>
+<td></td>
+<td>Arduino</td>
+<td>1</td>
+<td>CHF 22.84</td>
+<td>CHF 22.84</td>
+<td>https://docs.arduino.cc/hardware/mkr-mem-shield</td>
+<td></td>
+<td>https://www.distrelec.ch/fr/shield-arduino-mkr-mem-arduino-asx00008/p/30117217?trackQuery=Arduino+MKR+MEM+Shield&amp;pos=1&amp;origPos=1&amp;origPageSize=50&amp;track=true</td>
+</tr>
+<tr class="odd">
+<td>Electrically Isolated EZO™ Carrier Board</td>
+<td></td>
+<td>Atlas Scientific</td>
+<td>1</td>
+<td>CHF 28.95</td>
+<td>CHF 28.95</td>
+<td>https://atlas-scientific.com/orp</td>
+<td></td>
+<td>https://sensorsandprobes.com</td>
+</tr>
+<tr class="even">
+<td>EZO ORP Circuit</td>
+<td></td>
+<td>Atlas Scientific</td>
+<td>1</td>
+<td>CHF 43.00</td>
+<td>CHF 43.00</td>
+<td>https://atlas-scientific.com/orp</td>
+<td></td>
+<td>https://www.whiteboxes.ch/shop/ezo-orp/</td>
+</tr>
+<tr class="odd">
+<td>Mini Lab Grade ORP Probe</td>
+<td></td>
+<td>Atlas Scientific</td>
+<td>1</td>
+<td>CHF 62.00</td>
+<td>CHF 62.00</td>
+<td>https://atlas-scientific.com/orp</td>
+<td></td>
+<td>https://www.whiteboxes.ch/shop/mini-orp-probe/</td>
+</tr>
+<tr class="even">
+<td>RTC DS3231</td>
+<td></td>
+<td>Adafruit</td>
+<td>1</td>
+<td>CHF 25.00</td>
+<td>CHF 25.00</td>
+<td>https://www.adafruit.com/product/3013</td>
+<td></td>
+<td>https://www.distrelec.ch/fr/rtc-de-precision-ds3231-adafruit-3013/p/30091211?trackQuery=DS3231&amp;pos=1&amp;origPos=1&amp;origPageSize=50&amp;track=true</td>
+</tr>
+<tr class="odd">
+<td>Antenna</td>
+<td>not the exact on the prototype</td>
+<td>Arduino</td>
+<td>1</td>
+<td>CHF 5.70</td>
+<td>CHF 5.70</td>
+<td></td>
+<td>X000016</td>
+<td>https://www.distrelec.ch/fr/antenne-gsm-2g-3g-4g-dbi-fl-support-adhesif-arduino-x000016/p/30101972?&amp;cq_src=google_ads&amp;cq_cmp=18318188127&amp;cq_con=&amp;cq_term=&amp;cq_med=pla&amp;cq_plac=&amp;cq_net=x&amp;cq_pos=&amp;cq_plt=gp&amp;gclid=Cj0KCQjwnrmlBhDHARIsADJ5b_mY_m0nUqeMlJN3qyH_5C25cz63-XVXhBc8LV99wYNgYx2_ZzH7XpMaAo-4EALw_wcB&amp;gclsrc=aw.ds</td>
+</tr>
+<tr class="even">
+<td>Orange LED</td>
+<td></td>
+<td>RND Components</td>
+<td>1</td>
+<td>CHF 1.75</td>
+<td>CHF 1.75</td>
+<td></td>
+<td>RND 210-00674</td>
+<td>https://www.distrelec.ch/en/led-indicator-pcb-pins-fixed-orange-dc-2v-rnd-components-rnd-210-00674/p/30176538?trackQuery=LED+Indicator%2c+PCB+Pins%2c+Fixed%2c+Orange%2c+DC%2c+2V%2c+RND+Components&amp;pos=13&amp;origPos=13&amp;origPageSize=50&amp;track=true</td>
+</tr>
+<tr class="odd">
+<td>Yellow LED</td>
+<td></td>
+<td>RND Components</td>
+<td>1</td>
+<td>CHF 1.95</td>
+<td>CHF 1.95</td>
+<td></td>
+<td>RND 210-00675</td>
+<td>https://www.distrelec.ch/en/led-indicator-pcb-pins-fixed-yellow-dc-2v-rnd-components-rnd-210-00675/p/30176539?trackQuery=210-00675&amp;pos=1&amp;origPos=1&amp;origPageSize=50&amp;track=true</td>
+</tr>
+<tr class="even">
+<td>Green LED</td>
+<td></td>
+<td>RND Components</td>
+<td>1</td>
+<td>CHF 1.95</td>
+<td>CHF 1.95</td>
+<td></td>
+<td>RND 210-00673</td>
+<td>https://www.distrelec.ch/en/led-indicator-pcb-pins-fixed-green-dc-2v-rnd-components-rnd-210-00673/p/30176537?queryFromSuggest=true</td>
+</tr>
+<tr class="odd">
+<td>Red LED</td>
+<td></td>
+<td>RND Components</td>
+<td>1</td>
+<td>CHF 1.95</td>
+<td>CHF 1.95</td>
+<td></td>
+<td>RND 210-00672</td>
+<td>https://www.distrelec.ch/en/led-indicator-pcb-pins-fixed-red-dc-2v-rnd-components-rnd-210-00672/p/30176536?queryFromSuggest=true</td>
+</tr>
+<tr class="even">
+<td>Blue LED</td>
+<td></td>
+<td>RND Components</td>
+<td>1</td>
+<td>CHF 1.98</td>
+<td>CHF 1.98</td>
+<td></td>
+<td>RND 210-00676</td>
+<td>https://www.distrelec.ch/en/led-indicator-pcb-pins-fixed-blue-dc-2v-rnd-components-rnd-210-00676/p/30176540?trackQuery=LED+Indicator%2c+PCB+Pins%2c+Fixed%2c+Blue%2c+DC%2c+2V%2c+RND+Components&amp;pos=6&amp;origPos=6&amp;origPageSize=50&amp;track=true</td>
+</tr>
+<tr class="odd">
+<td>Toggle switch</td>
+<td>battery kill switch</td>
+<td>Bulgin</td>
+<td>1</td>
+<td>CHF 6.02</td>
+<td>CHF 6.02</td>
+<td></td>
+<td>C3910BAAAA</td>
+<td>https://www.distrelec.ch/en/toggle-switch-on-on-20-1co-ip67-bulgin-limited-c3910baaaa/p/30013174?track=true&amp;no-cache=true&amp;marketingPopup=false</td>
+</tr>
+<tr class="even">
+<td>Micro USB B to 5 pin header</td>
+<td>to be built manually</td>
+<td>NA</td>
+<td>1</td>
+<td>CHF 2.00</td>
+<td>CHF 2.00</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Mini USB B Bucaneer</td>
+<td></td>
+<td>Bulgin</td>
+<td>1</td>
+<td>11.97</td>
+<td>CHF 11.97</td>
+<td>https://www.distrelec.ch/Web/Downloads/_t/ds/PX0443_eng_tds.pdf</td>
+<td>PX0446</td>
+<td>https://www.distrelec.ch/en/usb-connector-ports-mini-usb-bulgin-limited-px0446/p/30092073?track=true&amp;no-cache=true&amp;marketingPopup=false</td>
+</tr>
+<tr class="even">
+<td>USB Cable gland sealing cap</td>
+<td></td>
+<td>Bulgin</td>
+<td>1</td>
+<td>4.12</td>
+<td>CHF 4.12</td>
+<td>https://www.distrelec.ch/Web/Downloads/_t/ds/PX0443_eng_tds.pdf</td>
+<td>PX0484</td>
+<td>https://www.distrelec.ch/en/sealing-cap-polyamide-size-bulgin-limited-px0484/p/30092076?track=true&amp;no-cache=true&amp;marketingPopup=false</td>
+</tr>
+<tr class="odd">
+<td>USB Connector USB-A Socket - USB Micro-B Plug</td>
+<td></td>
+<td>Bulgin</td>
+<td>1</td>
+<td>CHF 17.86</td>
+<td>CHF 17.86</td>
+<td>https://www.distrelec.ch/Web/Downloads/_t/ds/PX0443_eng_tds.pdf</td>
+<td>PX0441/2M00</td>
+<td>https://www.distrelec.ch/en/usb-connector-usb-socket-usb-micro-plug-2m-usb-black-bulgin-limited-px0441-2m00/p/30092069?track=true&amp;no-cache=true&amp;marketingPopup=false</td>
+</tr>
+<tr class="even">
+<td>Cable socket</td>
+<td>Alternative power supply</td>
+<td>Hirschmann</td>
+<td>1</td>
+<td>CHF 8.24</td>
+<td>CHF 8.24</td>
+<td></td>
+<td>ELKA 4012 PG7 BLACK</td>
+<td>https://www.distrelec.ch/en/cable-box-m12-pin-socket-poles-straight-screw-terminal-cable-mount-hirschmann-elka-4012-pg7-black/p/14436720?track=true&amp;no-cache=true&amp;marketingPopup=false</td>
+</tr>
+<tr class="odd">
+<td>Circular Sensor Connector Plug 4 Poles</td>
+<td>Alternative power supply</td>
+<td>RND Connect</td>
+<td>1</td>
+<td>CHF 8.25</td>
+<td>CHF 8.25</td>
+<td></td>
+<td>RND 205-01173</td>
+<td>https://www.distrelec.ch/en/circular-sensor-connector-plug-poles-straight-solder-panel-mount-rnd-connect-rnd-205-01173/p/30164698?track=true&amp;no-cache=true&amp;marketingPopup=false</td>
+</tr>
+<tr class="even">
+<td>resistors 3.7 kOhms</td>
+<td>pullup for I2C Sensor</td>
+<td>RND Connect</td>
+<td>2</td>
+<td></td>
+<td>CHF 0.00</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>resistors 10 kOhms</td>
+<td>pull-up for button press</td>
+<td>RND Connect</td>
+<td>1</td>
+<td>CHF 0.14</td>
+<td>CHF 0.14</td>
+<td></td>
+<td>MBB02070C1002FCT00</td>
+<td>https://www.distrelec.ch/fr/resistance-600mw-10kohm-vishay-mbb02070c1002fct00/p/16059239?trackQuery=10kOhms&amp;pos=21&amp;origPos=21&amp;origPageSize=50&amp;track=true</td>
+</tr>
+<tr class="even">
+<td>resistors 390 Ohms</td>
+<td>control current flow for LEDs</td>
+<td>RND Components</td>
+<td>5</td>
+<td>CHF 0.04</td>
+<td>CHF 0.19</td>
+<td></td>
+<td></td>
+<td>https://www.distrelec.ch/fr/resistance-fixe-couches-de-carbone-500mw-390ohm-rnd-components-rnd-155rd12jn391t52/p/30156013?trackQuery=390+Ohms+resistors&amp;pos=2&amp;origPos=2&amp;origPageSize=50&amp;track=true</td>
+</tr>
+<tr class="odd">
+<td>capacitor 0.1 microF</td>
+<td>Switch debouncer</td>
+<td></td>
+<td>1</td>
+<td></td>
+<td>CHF 0.00</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>velcro straps</td>
+<td></td>
+<td>Velcro</td>
+<td>1</td>
+<td>7.35</td>
+<td>CHF 7.35</td>
+<td></td>
+<td></td>
+<td>https://www.distrelec.ch/en/velcro-fastener-200-13mm-fabric-polypropylene-black-velcro-vel-ow64301/p/30110092?trackQuery=velcro&amp;pos=2&amp;origPos=5&amp;origPageSize=50&amp;track=true</td>
+</tr>
+<tr class="odd">
+<td>Enclosure 150x200x100mm</td>
+<td></td>
+<td></td>
+<td>1</td>
+<td>14.4</td>
+<td>CHF 14.40</td>
+<td></td>
+<td>RL6685BK</td>
+<td>https://www.distrelec.ch/en/plastic-enclosure-rl-150x200x100mm-black-abs-ip54-hammond-rl6685bk/p/30122546?queryFromSuggest=true</td>
+</tr>
+<tr class="even">
+<td>Plastic platform to cut</td>
+<td></td>
+<td></td>
+<td>1</td>
+<td>1</td>
+<td>CHF 1.00</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>micro SD Card</td>
+<td></td>
+<td>Kingston</td>
+<td>1</td>
+<td>5.6</td>
+<td>CHF 5.60</td>
+<td></td>
+<td>SDCS2/32GBSP</td>
+<td>https://www.distrelec.ch/en/memory-card-microsd-32gb-100mb-85mb-black-kingston-sdcs2-32gbsp/p/30201902?trackQuery=microSD+card&amp;pos=18&amp;origPos=18&amp;origPageSize=50&amp;track=true</td>
+</tr>
+<tr class="even">
+<td>SIM card</td>
+<td>dependent on country</td>
+<td></td>
+<td>1</td>
+<td>2</td>
+<td>CHF 2.00</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>TOTAL</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>CHF 357.60</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="user-guide" class="level1">
+<h1>User guide</h1>
+<!--- The project is divided in 3 folders 
+- final project
+- RTC calibration
+- ML model --->
+<section id="final_project" class="level2">
+<h2 class="anchored" data-anchor-id="final_project">final_project</h2>
+<p>This folder contains the source code for the project. To use the system, clone the repo, assemble the hardware as described in XXX (report DOI, + section link of circuit structure) and upload the platformIO project to the board. Once uploaded, the device will automatically start.</p>
+</section>
+<section id="configuration-settings" class="level2">
+<h2 class="anchored" data-anchor-id="configuration-settings">Configuration settings</h2>
+<p>If the device is used for the first time, make sure the device is connected to a PC. This will help for debugging potential mis-settings.</p>
+<p>The first automatic run will create a RMS_V1.CFG file, with default, hard-coded settings. Once the device has run at least run, you can safely disconnect all power supply, remove the SD card, and easily tune the configuration settings.</p>
+<p>Alternatively, if you can easily upload the RMS_V1.CFG file to the SD card before the first run. RMS_V1.CFG can be found in XXX (folder location on github)</p>
+<section id="configuration-parameters" class="level3">
+<h3 class="anchored" data-anchor-id="configuration-parameters">Configuration parameters</h3>
+<p><em>logitThreshold</em> : (mv) any ORP reading above this value will translate into a safe waterquality. This setting is found from running the code found in XXX.</p>
+<p><em>uraPressDuration</em> : (ms) how long the user should press the button for an alarm to be raised. In case an SMS has already been sent less then <em>uraSMSInterval</em>, only a water monitoring will occur, but no SMS will be spamming the user.</p>
+<p><em>hbTargetHour</em> : (hour, 24) At what time should a heartbeat be sent to the operator.</p>
+<p><em>hbIntervalHour</em> : (hour) At what frequency should the heartbeat be sent, starting from the <em>hbTargetHour</em>. Ensure this value is less or equal to 24. For example, consider <em>hbTargetHour</em> = 9 and <em>hbIntervalHour</em> = 6. A heartbeat will be sent to the operator at 9:00, 15:00, 21:00, 03:00. Please note that the exact time at which a heartbeat is sent is the closest time to the aforementioned full hour, plus a maximum of <em>xwqSleepPeriod</em>. Indeed the heartbeat SMS is sent after the device woke up for a watermonitoring function.</p>
+<p><em>swqSleepPeriod</em> : (ms) how much time should elapse between two water monitoring events, while the water quality is safe.</p>
+<p><em>uwqSleepPeriod</em> : (ms) how much time should elapse between two water monitoring events, while the water quality is unsafe.</p>
+<p><em>fwqSleepPeriod</em> : (ms) how much time should elapse between two water monitoring events, while there has been faulty reading.</p>
+<p><em>uraSMSInterval</em> : (ms) how much time should elapse, before a new SMS can be sent to the operator, informing them that the user raised an alarm. This is to prevent spamming the operator with notifications in case the user uses too often the button press</p>
+<p><em>wmSMSInterval</em> : (ms) how much time should elapse, before a new SMS can be sent to the operator, updating them on the waterquality status, after an unsafe or faulty reading was first detected. This is to prevent spamming the operator with notification in the case of unsafe water quality or faulty reading.</p>
+<p><em>sendSMS</em> : (boolean) sets whether the SMS should be sent to the operator or not.</p>
+<p><em>remoteNumberLength</em> : (integer) tells how long the operator phone number is.</p>
+<p><em>remoteNumber</em> : (string) holds the operator phone number.</p>
+</section>
+<section id="led-error-signal-description" class="level3">
+<h3 class="anchored" data-anchor-id="led-error-signal-description">LED error signal description</h3>
+<p>In case the RMS is started without being connected to a PC, the LEDs provide some feedback in case some problems occured during initialisation. There is always one or two LEDs on, to indicate what region is affected, while another LED will blink to differentiate between the possible causes for the issue.</p>
+<table class="table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Region</th>
+<th>Exact problem</th>
+<th>On LED</th>
+<th>Blinking LED</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Battery</td>
+<td>Battery not conected</td>
+<td>Orange</td>
+<td>Red</td>
+</tr>
+<tr class="even">
+<td>Battery</td>
+<td>Low battery energy level</td>
+<td>Orange</td>
+<td>Yellow</td>
+</tr>
+<tr class="odd">
+<td>SD Card</td>
+<td>Failed to initialise</td>
+<td>Green</td>
+<td>Red</td>
+</tr>
+<tr class="even">
+<td>SD Card</td>
+<td>Failed to create a valid filename</td>
+<td>Green</td>
+<td>Yellow</td>
+</tr>
+<tr class="odd">
+<td>SMS</td>
+<td>Inappropriate phone number</td>
+<td>Yellow</td>
+<td>Red</td>
+</tr>
+<tr class="even">
+<td>RTC</td>
+<td>Failed to initialise internal RTC using external RTC</td>
+<td>Green + orange</td>
+<td>Red</td>
+</tr>
+<tr class="odd">
+<td>RTC</td>
+<td>Failed to set-up heartbeat</td>
+<td>Green + orange</td>
+<td>Yellow</td>
+</tr>
+<tr class="even">
+<td>Unknow</td>
+<td>Unknown error</td>
+<td>Red</td>
+<td>Blue</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="development-environment" class="level2">
+<h2 class="anchored" data-anchor-id="development-environment">Development environment</h2>
+<p>This project was developped using VSCode and the platformIO extension.</p>
+</section>
+</section>
+<section id="impreovements" class="level1">
+<h1>Impreovements</h1>
+<section id="codebase" class="level2">
+<h2 class="anchored" data-anchor-id="codebase">codebase</h2>
+<section id="wake-up-from-deepsleep-from-low-battery" class="level3">
+<h3 class="anchored" data-anchor-id="wake-up-from-deepsleep-from-low-battery">wake up from deepsleep, from low battery</h3>
+<p>If the RMS is off the grid power, and has been running on the battery for some time, the battery voltage will drop. We have set a batteryEmptyVoltage at 3.5V. If the voltage drops below 3.5V + 5%3.5V, the device enters a “criticalEL” state, and must go to deepSleep, so as to consume as little as power possibe, while informing the user that the device is not running.</p>
+<p>However, if the grid power eventually turns back on, we want the device to be able to power back up. For this to occur, we have implemented some measures to ensure the device wakes back up. Just before going to sleep, we attach an interrupt from the PMIC to the arduino. That way, if the PMIC detects a stable power supply, it may interrupt the Arduino, thus waking it up.</p>
+<p>Because of the amount of time it takes to deplete the battery, thorough test could not be performed</p>
+<p>What remains to be tested, is whether the device can effectively carry on its usual business after the device has woken up from a deep sleep.</p>
+<p>Also, we want to know what happens when the battery voltage gets too low. Will the circuit disconnect?</p>
+</section>
+<section id="storage-optimisation" class="level3">
+<h3 class="anchored" data-anchor-id="storage-optimisation">Storage optimisation</h3>
+<p>Currently, a lot of variables are being stored inside the rms class. Some of which are updated during the setup phase with values from the configuration struct. These values where either read from the SD card, or set from the default settings. This is the case for - SWQ sleep duration - UWQ sleep duration - FWQ sleep duration</p>
+</section>
+</section>
+</section>
+<section id="appendix" class="level1">
+<h1>Appendix</h1>
+<section id="master-thesis-report" class="level2">
+<h2 class="anchored" data-anchor-id="master-thesis-report">Master thesis report</h2>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
