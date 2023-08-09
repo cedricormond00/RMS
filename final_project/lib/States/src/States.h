@@ -195,7 +195,7 @@ class rmsClass {
          uint32_t currentAlarmEPochTime; 
          // how long in between each SMS is permitted
          // UPGRADE: this is redundant: could either jsut us ethe info present in the confi file, or the private variables
-         uint32_t allowedIntervalBetweenSMS;
+         uint32_t allowedIntervalBetweenSMS; // in seconds
          /* 
          informs whether we are in a history window.
          If we are, we may not send another SMS

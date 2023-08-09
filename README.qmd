@@ -53,15 +53,15 @@ _hbTargetHour_ : (hour, 24) At what time should a heartbeat be sent to the opera
 
 _hbIntervalHour_ : (hour) At what frequency should the heartbeat be sent, starting from the _hbTargetHour_. Ensure this value is less or equal to 24. For example, consider _hbTargetHour_ = 9 and _hbIntervalHour_ = 6. A heartbeat will be sent to the operator at 9:00, 15:00, 21:00, 03:00. Please note that the exact time at which a heartbeat is sent is the closest time to the aforementioned full hour, plus a maximum of _xwqSleepPeriod_. Indeed the heartbeat SMS is sent after the device woke up for a watermonitoring function.
 
-_swqSleepPeriod_ : (ms) how much time should elapse between two water monitoring events, while the water quality is safe.
+_swqSleepPeriod_ : (s) how much time should elapse between two water monitoring events, while the water quality is safe.
 
-_uwqSleepPeriod_ : (ms) how much time should elapse between two water monitoring events, while the water quality is unsafe.
+_uwqSleepPeriod_ : (s) how much time should elapse between two water monitoring events, while the water quality is unsafe.
 
-_fwqSleepPeriod_ : (ms) how much time should elapse between two water monitoring events, while there has been faulty reading.
+_fwqSleepPeriod_ : (s) how much time should elapse between two water monitoring events, while there has been faulty reading.
 
-_uraSMSInterval_ : (ms) how much time should elapse, before a new SMS can be sent to the operator, informing them that the user raised an alarm. This is to prevent spamming the operator with notifications in case the user uses too often the button press
+_uraSMSInterval_ : (s) how much time should elapse, before a new SMS can be sent to the operator, informing them that the user raised an alarm. This is to prevent spamming the operator with notifications in case the user uses too often the button press
 
-_wmSMSInterval_ : (ms) how much time should elapse, before a new SMS can be sent to the operator, updating them on the waterquality status, after an unsafe or faulty reading was first detected. This is to prevent spamming the operator with notification in the case of unsafe water quality or faulty reading.
+_wmSMSInterval_ : (s) how much time should elapse, before a new SMS can be sent to the operator, updating them on the waterquality status, after an unsafe or faulty reading was first detected. This is to prevent spamming the operator with notification in the case of unsafe water quality or faulty reading.
 
 _sendSMS_ : (boolean) sets whether the SMS should be sent to the operator or not.
 

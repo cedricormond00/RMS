@@ -155,10 +155,16 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, Confi
         //because we haven't yet reached the 3 seconds
         Tool_setBitOn(&inputEvenCode, URA_WAIT_INPUTBIT);// This prevents to go back to sleep
         
+        // compute how long the flashing duration must be 
+        uint32_t flashDuration = cfgStructArg.uraPressDuration/6; // Integer division truncates the decimal part
+
+        if (cfgStructArg.uraPressDuration % 6 != 0){ // in case there is a remainder, we'd rather our beep is a milisecond longer, to prevent any additional flash
+            flashDuration ++;
+        }
         // check the button is still pressed 
         if (digitalRead(BUTTON_PIN)==LOW){
             unsigned long currentMillis = millis();
-            if (currentMillis - previousMillis >= 500){
+            if (currentMillis - previousMillis >= flashDuration){
                 ToggleLED(YELLOWLED_PIN);
                 previousMillis = currentMillis;
             }

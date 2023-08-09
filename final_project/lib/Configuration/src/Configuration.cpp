@@ -132,7 +132,7 @@ void Config_printConfiguration(ConfigurationStruct cfg){
     Serial.print("fwq: ");
     Serial.println(cfg.fwqSleepPeriod);
 
-    Serial.println("Interval between SMS:");
+    Serial.println("Interval between SMS (in sec):");
     Serial.print("URA: ");
     Serial.println(cfg.uraSMSInterval);
     Serial.print("WM: ");
