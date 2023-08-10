@@ -17,9 +17,13 @@
 
 #include "LED.h"
 
+bool debug_LowPower = false;
 
 void LP_goToLowPowerConsumption(rmsClass& rmsClassArg, RTCZero& rtcClassArg, volatile uint8_t* triggeredInputEvent){
     
+    bool debug = false;
+    char message[160]; // buf to hold text to be displayed
+    char dateTime[21]; // holds the string time
     
      /*ensure
       - all functions have been completed
@@ -27,17 +31,19 @@ void LP_goToLowPowerConsumption(rmsClass& rmsClassArg, RTCZero& rtcClassArg, vol
      */
     if (rmsClassArg.get_inputEventCode() == 0 && *triggeredInputEvent == 0){
         uint32_t wakeUpEpochTime = 0;
-
-        Serial.println("");
-        Serial.println("inputEventCode and trigger equal to zero");
-        Serial.print("rmsClassArg.get_inputEventCode(): ");
-        Serial.println(rmsClassArg.get_inputEventCode());
-        Serial.print("triggeredInputEvent: ");
-        Serial.println(*triggeredInputEvent);
-        Serial.print("rmsClassArg.get_nextWakeUpEPochTime(): ");
-        Serial.println(rmsClassArg.get_nextWakeUpEPochTime());
-        Serial.print("Unix time = ");
-        Serial.println(rtcClassArg.getEpoch());
+        if (debug_LowPower && debug){
+            Serial.println("");
+            Serial.println("inputEventCode and trigger equal to zero");
+            Serial.print("rmsClassArg.get_inputEventCode(): ");
+            Serial.println(rmsClassArg.get_inputEventCode());
+            Serial.print("triggeredInputEvent: ");
+            Serial.println(*triggeredInputEvent);
+            Serial.print("rmsClassArg.get_nextWakeUpEPochTime(): ");
+            Serial.println(rmsClassArg.get_nextWakeUpEPochTime());
+            Serial.print("Unix time = ");
+            Serial.println(rtcClassArg.getEpoch());
+        }
+        
         
         // ensure that the next wake up time is in the future
         while( rmsClassArg.get_nextWakeUpEPochTime() <= rtcClassArg.getEpoch()){
@@ -66,15 +72,17 @@ void LP_goToLowPowerConsumption(rmsClass& rmsClassArg, RTCZero& rtcClassArg, vol
         // store time at which device woke up
         wakeUpEpochTime = rtcClassArg.getEpoch();
         rmsClassArg.set_wakeUpEPochTime(wakeUpEpochTime);
+        Tool_stringTime(wakeUpEpochTime, dateTime);
 
         Serial.println("");
         Serial.println("Woke up");
         Serial.print("triggeredInputEvent: ");
         Serial.println(*triggeredInputEvent, BIN);
         Serial.print("Current unix time = ");
-        Serial.println(rtcClassArg.getEpoch());
-        Serial.print("triggeredInputEvent: ");
-        Serial.println(*triggeredInputEvent, BIN);
+        Serial.println(wakeUpEpochTime);
+        Serial.print("Readable time = ");
+        Serial.println(dateTime);
+
     }
 }
 

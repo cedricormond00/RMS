@@ -119,7 +119,7 @@ void SMS_wmImmediate(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
                     "WQ\n" //2 + 1
                     "State %d\n" //6 + 1
                     "Last ORP %.2f\n" //9 + 1
-                    "Regular updates until SWQ at end of HW" //38
+                    "Regular updates until SWQ at end of HW\n" //38
                     "Battery voltage %.2f\n" //21
                     // , RMS_ID, dateTime, rmsClassArg.get_rmsState(), rmsClassArg.get_orpReading());
                     , RMS_ID, 
@@ -153,7 +153,7 @@ void SMS_wmHistoryWindow(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg
                         "Last ORP %.2f\n"//9 + 1
                         "SWQ %.2f\n"//4 + 1
                         "UWQ %.2f\n"//4 + 1
-                        "FWQ %.2f"//4 + 1
+                        "FWQ %.2f\n"//4 + 1
                         "Battery voltage %.2f\n" //21
                         , RMS_ID, // 2
                         dateTime,//21
@@ -173,7 +173,7 @@ void SMS_wmHistoryWindow(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg
                 "WQ\n"//2 + 1
                 "State %d\n"//6 + 1
                 "Last ORP %.2f\n"//9 + 1
-                "Failed to compute states' percentage over the HW"//46 + 1
+                "Failed to compute states' percentage over the HW\n"//46 + 1
                 "Battery voltage %.2f\n" //21
                 , RMS_ID, // 2
                 dateTime,//21
@@ -286,7 +286,7 @@ void SMS_BUPSendIsStablePowerSupply(rmsClass& rmsClassArg, ConfigurationStruct c
         sprintf(message,"%d\n"//+ 1
                         "%s\n"//+ 1
                         "BUP\n"//3 + 1
-                        "Power supply switched from external battery to mains"//51
+                        "Power supply switched from external battery to mains\n"//51
                         "Battery voltage %.2f\n" //21
                         , RMS_ID, //2
                         dateTime, //21
@@ -315,7 +315,7 @@ void SMS_BUPSendEnergyLevel(rmsClass& rmsClassArg, ConfigurationStruct cfgStruct
         sprintf(message,"%d\n"//+ 1
                         "%s\n"//+ 1
                         "Critical Energy Level reached\n"//29 + 1
-                        "Device will go to deepsleep"//27
+                        "Device will go to deepsleep\n"//27
                         "Battery voltage %.2f"//16
                         , RMS_ID,//2
                         dateTime,//21
@@ -331,7 +331,7 @@ void SMS_BUPSendEnergyLevel(rmsClass& rmsClassArg, ConfigurationStruct cfgStruct
         Serial.println("---");
         sprintf(message,"%d\n"//+ 1
                         "%s\n"//+ 1
-                        "Low Energy Level reached"//25
+                        "Low Energy Level reached\n"//25
                         "Battery voltage %.2f"//16
                         , RMS_ID,//2
                         dateTime,//21
@@ -346,7 +346,7 @@ void SMS_BUPSendEnergyLevel(rmsClass& rmsClassArg, ConfigurationStruct cfgStruct
         Serial.println("---");
         sprintf(message,"%d\n"//+ 1
                         "%s\n"//+ 1
-                        "Sufficient Energy Level reached"//31
+                        "Sufficient Energy Level reached\n"//31
                         "Battery voltage %.2f"//16
                         , RMS_ID,//2
                         dateTime,//21

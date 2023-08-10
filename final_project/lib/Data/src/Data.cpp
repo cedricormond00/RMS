@@ -185,7 +185,7 @@ bool Data_saveDataPointToDataFile(uint32_t ePochTime,
 
 
 bool Data_updateStateHistory(rmsClass& rmsClassArg, char dataFileName[]){
-    bool debug = true;
+    bool debug = false;
     bool success = true;
     if (debug && debug_Data){
         Serial.println("before updating counts");

@@ -83,10 +83,12 @@ uint32_t RTC_findNextHBEPochTime(uint32_t currentEPochTime, ConfigurationStruct 
   uint32_t nextHBEPochtTime = makeTime(targetTime);
   if (debug_RTC){
     Serial.println("Next HB time: ");
-    Serial.println(nextHBEPochtTime);
+    // Serial.print("  ");
+    // Serial.println(nextHBEPochtTime);
     char buf[40];
     // convert the time to a human readable format
     Tool_stringTime(nextHBEPochtTime, buf);
+    Serial.print("  ");
     Serial.println(buf);
   }
   return nextHBEPochtTime;

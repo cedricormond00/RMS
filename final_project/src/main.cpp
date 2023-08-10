@@ -218,6 +218,7 @@ void setup() {
 
   Serial.println("***Setup complete***");
   Serial.println("------");
+  Serial.println();
 }
 
 void loop() {
@@ -260,13 +261,9 @@ void loop() {
       if (debug_main && !Tool_isBitOn(rms.get_inputEventCode(), URA_WAIT_INPUTBIT)) {Serial.println("-in UWQ State");}
       digitalWrite(REDLED_PIN, HIGH);
       digitalWrite(GREENLED_PIN, LOW);
-      // wakePeriod = 10000; // 20 sec
-      //wake every 2 minutes (2*60*1000ms = 120000)
-
 
       LP_goToLowPowerConsumption(rms, rtc, &triggeredInputEvent);
       FSM_updateInputEventCode(rms, rtc, cfg, &triggeredInputEvent);
-
 
       if (debug_main && !Tool_isBitOn(rms.get_inputEventCode(), URA_WAIT_INPUTBIT)) {Serial.println("-end UWQ State");}
 

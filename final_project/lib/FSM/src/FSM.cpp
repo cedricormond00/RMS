@@ -35,7 +35,7 @@ have an additional debug boolean, so as to be more granular
 */
 bool debugDisplay = 1;
 
-bool debug_FSM = true;
+bool debug_FSM = false;
 
 void FSM_initRMS(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
     uint32_t currentEPochTime = rtc.getEpoch();
@@ -78,12 +78,13 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, Confi
 {
 
     bool debug=true;
+    char buf[21]; // for readable time
     uint8_t inputEvenCode = rmsClassArg.get_inputEventCode();
 
     if (Tool_isBitOn(*triggeredInputEvent, WM_INPUTBIT)) 
     {
+        Serial.println("in FSM_updateInputEventCode, WM");
         if (debug && debug_FSM){
-            Serial.println("in FSM_updateInputEventCode, WM");
             Serial.print("inputEvenCode before update: ");
             Serial.print(inputEvenCode, BIN);
             Serial.print(", ");
@@ -94,13 +95,13 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, Confi
             Serial.println(*triggeredInputEvent);
         }
         uint32_t currentTime = rtcClassArg.getEpoch();
-        char buf[256];
+        
 
         Tool_stringTime(currentTime, buf);
         if (debug && debug_FSM){
             Serial.print("Current unix time: ");
             Serial.println(currentTime);
-            Serial.print("Current unix timestamp: ");
+            Serial.print("Current readable time: ");
             Serial.println(buf);
             Serial.print("rmsClassArg.get_wakeUpEPochTime(): ");
             Serial.println(rmsClassArg.get_wakeUpEPochTime());
@@ -135,6 +136,8 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, Confi
             Serial.print(", ");
             Serial.println(*triggeredInputEvent);
         }
+        Serial.println("end FSM_updateInputEventCode, WM");
+
 
     }
 
@@ -198,13 +201,18 @@ void FSM_updateInputEventCode(rmsClass& rmsClassArg, RTCZero& rtcClassArg, Confi
             Serial.print(", ");
             Serial.println(*triggeredInputEvent);
             debugDisplay = 0;
+            Serial.println("end FSM_updateInputEventCode, URA");
         }
     }
     if (Tool_isBitOn(*triggeredInputEvent, HB_INPUTBIT)){
+        Serial.println("in FSM_updateInputEventCode, HB");
+
         Tool_setBitOn(&inputEvenCode, HB_INPUTBIT);// code for WM function
 
         // reset the triggered input event tracker
         Tool_setBitOff(triggeredInputEvent, HB_INPUTBIT);
+        Serial.println("end FSM_updateInputEventCode, HB");
+
     }
 
     rmsClassArg.set_inputEventCode(inputEvenCode);
@@ -221,10 +229,15 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
 
     // execute a water monitoring
     if (Tool_isBitOn(inputEvenCode, WM_INPUTBIT)){
+        Serial.println("in FSM_executeFunction, WM");
         if (debug && debug_FSM){
-            Serial.println("in FSM_executeFunction, WM");
+            char dateTime[21];
+            uint32_t currEPochTime = rtcClassArg.getEpoch();
             Serial.print("Current unix time = ");
-            Serial.println(rtcClassArg.getEpoch());
+            Serial.println(currEPochTime);
+            Tool_stringTime(currEPochTime, dateTime);
+            Serial.print("Current readable time = ");
+            Serial.println(dateTime);
             Serial.print("event Input Code before update: ");
             Serial.print(inputEvenCode, BIN);
             Serial.print(", ");
@@ -248,12 +261,12 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
             Serial.print(", ");
             Serial.println(inputEvenCode);
         }
+        Serial.println("end FSM_executeFunction, WM");
     }
 
     if (Tool_isBitOn(inputEvenCode, URA_INPUTBIT)){
-        // Serial.println("in if");
+        Serial.println("in FSM_executeFunction, URA");
         if (debug && debug_FSM){
-            Serial.println("in FSM_executeFunction, URA");
             Serial.print("Current unix time = ");
             Serial.println(rtcClassArg.getEpoch());
             Serial.print("event Input Code before update: ");
@@ -276,13 +289,13 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
             Serial.print("event Input Code after update: ");
             Serial.print(inputEvenCode, BIN);
             Serial.print(", ");
-            Serial.println(inputEvenCode);
+            Serial.println(inputEvenCode);   
         }
+        Serial.println("end FSM_executeFunction, URA");
     }
     if (Tool_isBitOn(inputEvenCode, HB_INPUTBIT)){
-
+        Serial.println("in FSM_executeFunction, HB");
         if (debug && debug_FSM){
-            Serial.println("in FSM_executeFunction, HB");
             Serial.print("Current unix time = ");
             Serial.println(rtcClassArg.getEpoch());
             Serial.print("event Input Code before update: ");
@@ -294,7 +307,6 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
         //perform the function
         FSM_f_HB(rmsClassArg, cfgStructArg);
 
-        //HERE
 
         // set the input event code bit off
         Tool_setBitOff(&inputEvenCode, HB_INPUTBIT); // because inputEvenCode_ is already the address of the pointer
@@ -306,10 +318,36 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
             Serial.print(", ");
             Serial.println(inputEvenCode);
         }
+        Serial.println("end FSM_executeFunction, HB");
     }
     if (Tool_isBitOn(inputEvenCode, BUP_INPUTBIT)){
+        Serial.println("in FSM_executeFunction, BUP");
+        if (debug && debug_FSM){
+            char dateTime[21];
+            uint32_t currEPochTime = rtcClassArg.getEpoch();
+            Serial.print("Current unix time = ");
+            Serial.println(currEPochTime);
+            Tool_stringTime(currEPochTime, dateTime);
+            Serial.print("Current readable time = ");
+            Serial.println(dateTime);
+            Serial.print("event Input Code before update: ");
+            Serial.print(inputEvenCode, BIN);
+            Serial.print(", ");
+            Serial.println(inputEvenCode);
+        }
+
         FSM_f_BUP(rmsClassArg, cfgStructArg);
         Tool_setBitOff(&inputEvenCode, BUP_INPUTBIT);
+
+        if (debug && debug_FSM){
+            Serial.println("");
+            Serial.print("event Input Code after update: ");
+            Serial.print(inputEvenCode, BIN);
+            Serial.print(", ");
+            Serial.println(inputEvenCode);
+        }
+
+        Serial.println("end FSM_executeFunction, BUP");
     }
     rmsClassArg.set_inputEventCode(inputEvenCode);
     if (debug){
@@ -320,19 +358,26 @@ void FSM_executeFunction(Ezo_board& EZO_ORP, rmsClass& rmsClassArg, RTCZero& rtc
 
 
 void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassArg, ConfigurationStruct cfgStructArg, char dataFileName[]){
-    bool debug = false;
+    bool debug = true;
+    
+    Serial.println("in WM function");
     // Different time from the wakeUp time.
     uint32_t currentTime = rtcClassArg.getEpoch();
     
     //Storing this value is useful for datalogging purpose
     rmsClassArg.set_wmReadEPochTime(currentTime);
     if (debug && debug_FSM){
-        Serial.print("in WM function, rmsClassArg.get_wmReadEPochTime(): ");
+        char dateTime[21];
+        Serial.print("watermonitring epoch time: ");        
         Serial.println(rmsClassArg.get_wmReadEPochTime());
+        Tool_stringTime(rmsClassArg.get_wmReadEPochTime(), dateTime);
+        Serial.print("watermonitoring readable time: ");        
+        Serial.println(dateTime);
     }
     
     // get and print the ORP reading from the ORP sensor
     EZO_getEzoORPReading(ezoClassArg);          // value is stored in the ezoClassArg object
+    Serial.println("");
 
     float orpValue = ezoClassArg.get_last_received_reading();
 
@@ -364,6 +409,8 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
         Serial.println(writeSuccess);
     }
     FSM_multipleAlarmManagement(rmsClassArg, cfgStructArg, currentTime, dataFileName);
+
+    Serial.println("end of WM function");
 }
 
 
@@ -371,6 +418,8 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
     // for debugging purpose
     debugDisplay = 1;
     bool debug = true;
+
+    Serial.println("in URA function");
 
     // time of URA miught be different from Wakeup, especially if the device woke up, performed a WM. Also consider that 3 secondsat least happen between wakeup and URA function
     uint32_t currentTime = rtcClassArg.getEpoch();
@@ -431,11 +480,13 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
             ToggleLED(BLUELED_PIN);
         }
     }
+    Serial.println("end URA function");
 }
 
 
 void FSM_f_HB(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
     bool debug = true;
+    Serial.print("in HB function");
     //Set a new time for the hbAlarmtrigger
     hbEPochTime = RTC_updateHBEPochTime(hbEPochTime, cfgStructArg);
     //send the HB SMS
@@ -443,7 +494,7 @@ void FSM_f_HB(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
     if (debug && debug_FSM){
         ToggleLED(BLUELED_PIN);
     }
-    
+    Serial.print("end HB function");
 }
 
 
@@ -455,6 +506,7 @@ void FSM_f_BUP(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
     */
     // uint32_t currentEpochTime = rmsClassArg.get_wmReadEPochTime();
 
+    Serial.println("in BUP function");
     //for moreflexibility, ocould justuse the rtc.getEpoch wherever currentTuime is required
     uint32_t currentEpochTime = rtc.getEpoch();
 
@@ -525,6 +577,7 @@ void FSM_f_BUP(rmsClass& rmsClassArg, ConfigurationStruct cfgStructArg){
 
         }
     }
+    Serial.println("end BUP function");
 }
 
 
@@ -573,13 +626,13 @@ void FSM_setPowerSituation(rmsClass& rmsClassArg){
         Serial.println(Battery_getIsStablePowerSupply(), BIN);
         Serial.print("Battery_getChargeStatus: ");
         Serial.println(Battery_getChargeStatus(), BIN);
-        Serial.println("value from powerStruct function");
-        Serial.print("rmsClassArg.get_powerStructBatteryVoltage: ");
-        Serial.println(rmsClassArg.get_powerStructBatteryVoltage());
-        Serial.print("rmsClassArg.get_powerStructStablePowerSupply: ");
-        Serial.println(rmsClassArg.get_powerStructStablePowerSupply(), BIN);
-        Serial.print("rmsClassArg.get_powerStructChargeStatus: ");
-        Serial.println(rmsClassArg.get_powerStructChargeStatus(), BIN);
+        // Serial.println("value from powerStruct function");
+        // Serial.print("rmsClassArg.get_powerStructBatteryVoltage: ");
+        // Serial.println(rmsClassArg.get_powerStructBatteryVoltage());
+        // Serial.print("rmsClassArg.get_powerStructStablePowerSupply: ");
+        // Serial.println(rmsClassArg.get_powerStructStablePowerSupply(), BIN);
+        // Serial.print("rmsClassArg.get_powerStructChargeStatus: ");
+        // Serial.println(rmsClassArg.get_powerStructChargeStatus(), BIN);
     }
 }
 
@@ -603,7 +656,7 @@ void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, ConfigurationStruct cfgS
     }
     
     /* 
-    The alarm situation is in no anomaly mode (before the water was Safe)
+    The alarm situation is in no anomaly mode (the water was previously Safe)
     but the rms has just detected an UWQ of FWQ.
     */
     if ((rmsClassArg.get_wmAlarmSituation() == rmsClass::NOANOMALIES) 
