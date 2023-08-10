@@ -470,13 +470,24 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
 
     // message spamming management
     if (rmsClassArg.ura_canSendSMS(currentTime)){
+        // for a visual feedback that an SMS is being sent
+        ToggleLED(ORANGELED_PIN);
+        delay(200);
+        ToggleLED(ORANGELED_PIN);
         if (debug && debug_FSM){
             ToggleLED(ORANGELED_PIN);
         }
         SMS_uraSend(rmsClassArg, cfgStructArg);
     }
     else{
+        // for a visual feedback that a new monitoring is occuring
+
+        ToggleLED(BLUELED_PIN);
+        delay(200);
+        ToggleLED(BLUELED_PIN);
         if (debug && debug_FSM){
+            ToggleLED(BLUELED_PIN);
+            delay(200);
             ToggleLED(BLUELED_PIN);
         }
     }
