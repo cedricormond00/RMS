@@ -379,7 +379,13 @@ void FSM_f_WM_EZO(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcCla
     EZO_getEzoORPReading(ezoClassArg);          // value is stored in the ezoClassArg object
     Serial.println("");
 
+    //visual feedback that ORP reading occured
+    ToggleLED(BLUELED_PIN);
+    delay(200);
+    ToggleLED(BLUELED_PIN);
+
     float orpValue = ezoClassArg.get_last_received_reading();
+
 
     // store the ORP value inside the rmsClassArg object
     rmsClassArg.set_orpReading(orpValue);
@@ -482,9 +488,7 @@ void FSM_f_URA(Ezo_board& ezoClassArg, rmsClass& rmsClassArg, RTCZero& rtcClassA
     else{
         // for a visual feedback that a new monitoring is occuring
 
-        ToggleLED(BLUELED_PIN);
-        delay(200);
-        ToggleLED(BLUELED_PIN);
+
         if (debug && debug_FSM){
             ToggleLED(BLUELED_PIN);
             delay(200);
@@ -687,7 +691,7 @@ void FSM_multipleAlarmManagement(rmsClass& rmsClassArg, ConfigurationStruct cfgS
     and, we are now at the end of the History Window duration: we should update the operator on the situation
     */
     else if ((rmsClassArg.get_wmAlarmSituation() == rmsClass::HWANOMALIES) 
-    && (rmsClassArg.get_wmCurrentAlarmEPochTime()-rmsClassArg.get_wmLastAlarmSMSEPochTime() > rmsClassArg.get_wmAllowedIntervalBetweenSMS())){
+    && (rmsClassArg.get_wmCurrentAlarmEPochTime()-rmsClassArg.get_wmLastAlarmSMSEPochTime() >= rmsClassArg.get_wmAllowedIntervalBetweenSMS())){
         // we will send an SMS; so we update the lastAlarmSMSEPochTime
         rmsClassArg.set_wmLastAlarmSMSEPochTime(rmsClassArg.get_wmCurrentAlarmEPochTime());
         

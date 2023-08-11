@@ -225,7 +225,7 @@ bool rmsClass::ura_canSendSMS(uint32_t new_currentAlarmEPochTime){
     bool canSendSMS = true;
     set_URAcurrentAlarmEPochTime(new_currentAlarmEPochTime);
     // elapsed time since last URA SMS sent is large enough
-    if (get_URAcurrentAlarmEPochTime()-get_URAlastAlarmSMSEPochTime() > get_URAallowedIntervalBetweenSMS()){
+    if (get_URAcurrentAlarmEPochTime()-get_URAlastAlarmSMSEPochTime() >= get_URAallowedIntervalBetweenSMS()){
         set_URAlastAlarmSMSEPochTime(get_URAcurrentAlarmEPochTime());
     }
     else {
