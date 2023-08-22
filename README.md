@@ -77,21 +77,21 @@ heartbeat is sent is the closest time to the aforementioned full hour,
 plus a maximum of *xwqSleepPeriod*. Indeed the heartbeat SMS is sent
 after the device woke up for a watermonitoring function.
 
-*swqSleepPeriod* : (ms) how much time should elapse between two water
+*swqSleepPeriod* : (s) how much time should elapse between two water
 monitoring events, while the water quality is safe.
 
-*uwqSleepPeriod* : (ms) how much time should elapse between two water
+*uwqSleepPeriod* : (s) how much time should elapse between two water
 monitoring events, while the water quality is unsafe.
 
-*fwqSleepPeriod* : (ms) how much time should elapse between two water
+*fwqSleepPeriod* : (s) how much time should elapse between two water
 monitoring events, while there has been faulty reading.
 
-*uraSMSInterval* : (ms) how much time should elapse, before a new SMS
-can be sent to the operator, informing them that the user raised an
-alarm. This is to prevent spamming the operator with notifications in
-case the user uses too often the button press
+*uraSMSInterval* : (s) how much time should elapse, before a new SMS can
+be sent to the operator, informing them that the user raised an alarm.
+This is to prevent spamming the operator with notifications in case the
+user uses too often the button press
 
-*wmSMSInterval* : (ms) how much time should elapse, before a new SMS can
+*wmSMSInterval* : (s) how much time should elapse, before a new SMS can
 be sent to the operator, updating them on the waterquality status, after
 an unsafe or faulty reading was first detected. This is to prevent
 spamming the operator with notification in the case of unsafe water
@@ -221,11 +221,13 @@ should be included to the function `FSM_implementMLDecision`
 - PCA the input parameters, using the input parameter from the trained
   model
 - Pass the transformed input parameters, into the probability function
-  $p={e^{β+α_{0}+...+α_{n}}}{1+e^{β+α_{0}+...+α_{n}}}$
+  ![p={e^{β+α\_{0}+...+α\_{n}}}{1+e^{β+α\_{0}+...+α\_{n}}}](https://latex.codecogs.com/svg.latex?p%3D%7Be%5E%7B%CE%B2%2B%CE%B1_%7B0%7D%2B...%2B%CE%B1_%7Bn%7D%7D%7D%7B1%2Be%5E%7B%CE%B2%2B%CE%B1_%7B0%7D%2B...%2B%CE%B1_%7Bn%7D%7D%7D "p={e^{β+α_{0}+...+α_{n}}}{1+e^{β+α_{0}+...+α_{n}}}")
+
+  ![p=\frac{e^{\beta+\alpha\_{0}+...+\alpha\_{n}}}{1+e^{\beta+\alpha\_{0}+...+\alpha\_{n}}}](https://latex.codecogs.com/svg.latex?p%3D%5Cfrac%7Be%5E%7B%5Cbeta%2B%5Calpha_%7B0%7D%2B...%2B%5Calpha_%7Bn%7D%7D%7D%7B1%2Be%5E%7B%5Cbeta%2B%5Calpha_%7B0%7D%2B...%2B%5Calpha_%7Bn%7D%7D%7D "p=\frac{e^{\beta+\alpha_{0}+...+\alpha_{n}}}{1+e^{\beta+\alpha_{0}+...+\alpha_{n}}}")
 - Compute the probability
 - Compare the probability with the probability limit found from training
 
-$\dfrac{A}{B}$
+![\dfrac{A}{B}](https://latex.codecogs.com/svg.latex?%5Cdfrac%7BA%7D%7BB%7D "\dfrac{A}{B}")
 
 # Appendix
 

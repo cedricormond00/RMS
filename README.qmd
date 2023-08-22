@@ -1,6 +1,7 @@
 ---
 format: 
-  gfm: default
+  gfm: 
+    html-math-method: webtex
 execute: 
   echo: false
   warning: false
@@ -102,7 +103,7 @@ The final cost of the hardware amounts to just under CHF 380.
 | EZO ORP Circuit 	|  	| Atlas Scientific 	| 1 	| CHF 43.00 	| CHF 43.00 	| https://atlas-scientific.com/orp 	|  	| https://www.whiteboxes.ch/shop/ezo-orp/ 	|
 | Mini Lab Grade ORP Probe 	|  	| Atlas Scientific 	| 1 	| CHF 62.00 	| CHF 62.00 	| https://atlas-scientific.com/orp 	|  	| https://www.whiteboxes.ch/shop/mini-orp-probe/ 	|
 | RTC DS3231 	|  	| Adafruit 	| 1 	| CHF 25.00 	| CHF 25.00 	| https://www.adafruit.com/product/3013 	|  	| https://www.distrelec.ch/fr/rtc-de-precision-ds3231-adafruit-3013/p/30091211?trackQuery=DS3231&pos=1&origPos=1&origPageSize=50&track=true 	|
-| Antenna 	| not the exact on the prototype 	| Arduino 	| 1 	| CHF 5.70 	| CHF 5.70 	|  	| X000016 	| https://www.distrelec.ch/fr/antenne-gsm-2g-3g-4g-dbi-fl-support-adhesif-arduino-x000016/p/30101972?&cq_src=google_ads&cq_cmp=18318188127&cq_con=&cq_term=&cq_med=pla&cq_plac=&cq_net=x&cq_pos=&cq_plt=gp&gclid=Cj0KCQjwnrmlBhDHARIsADJ5b_mY_m0nUqeMlJN3qyH_5C25cz63-XVXhBc8LV99wYNgYx2_ZzH7XpMaAo-4EALw_wcB&gclsrc=aw.ds 	|
+| Antenna 	| not this exact one used in the prototype 	| Arduino 	| 1 	| CHF 5.70 	| CHF 5.70 	|  	| X000016 	| https://www.distrelec.ch/fr/antenne-gsm-2g-3g-4g-dbi-fl-support-adhesif-arduino-x000016/p/30101972?&cq_src=google_ads&cq_cmp=18318188127&cq_con=&cq_term=&cq_med=pla&cq_plac=&cq_net=x&cq_pos=&cq_plt=gp&gclid=Cj0KCQjwnrmlBhDHARIsADJ5b_mY_m0nUqeMlJN3qyH_5C25cz63-XVXhBc8LV99wYNgYx2_ZzH7XpMaAo-4EALw_wcB&gclsrc=aw.ds 	|
 | Orange LED 	|  	| RND Components 	| 1 	| CHF 1.75 	| CHF 1.75 	|  	| RND 210-00674 	| https://www.distrelec.ch/en/led-indicator-pcb-pins-fixed-orange-dc-2v-rnd-components-rnd-210-00674/p/30176538?trackQuery=LED+Indicator%2c+PCB+Pins%2c+Fixed%2c+Orange%2c+DC%2c+2V%2c+RND+Components&pos=13&origPos=13&origPageSize=50&track=true 	|
 | Yellow LED 	|  	| RND Components 	| 1 	| CHF 1.95 	| CHF 1.95 	|  	| RND 210-00675 	| https://www.distrelec.ch/en/led-indicator-pcb-pins-fixed-yellow-dc-2v-rnd-components-rnd-210-00675/p/30176539?trackQuery=210-00675&pos=1&origPos=1&origPageSize=50&track=true 	|
 | Green LED 	|  	| RND Components 	| 1 	| CHF 1.95 	| CHF 1.95 	|  	| RND 210-00673 	| https://www.distrelec.ch/en/led-indicator-pcb-pins-fixed-green-dc-2v-rnd-components-rnd-210-00673/p/30176537?queryFromSuggest=true 	|
@@ -126,7 +127,7 @@ The final cost of the hardware amounts to just under CHF 380.
 | SIM card 	| dependent on country 	|  	| 1 	| 2 	| CHF 2.00 	|  	|  	|  	|
 | TOTAL 	|  	|  	|  	|  	| CHF 357.60 	|  	|  	|  	|
 
-# Impreovements
+# Improvements
 
 ## codebase
 ### wake up from deepsleep, from low battery
@@ -156,7 +157,10 @@ Nonetheless, if one wants to include more sensors, the following steps should be
   * Extract the most conservative threshold probability, based on target values set (LRTMS2, or LogICC)
   * Standardize the input parameters, using the input parameter from the trained model
   * PCA the input parameters, using the input parameter from the trained model
-  * Pass the transformed input parameters, into the probability function $p={e^{β+α_{0}+...+α_{n}}}{1+e^{β+α_{0}+...+α_{n}}}$
+  * Pass the transformed input parameters, into the probability function   
+  $$
+  p=\frac{e^{\beta+\alpha_{0}+...+\alpha_{n}}}{1+e^{\beta+\alpha_{0}+...+\alpha_{n}}}
+  $$
   * Compute the probability
   * Compare the probability with the probability limit found from training
 

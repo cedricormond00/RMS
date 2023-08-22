@@ -16,7 +16,7 @@ void Tool_stringTime(uint32_t ePochTime, char* buf){
   // Format the time components into the provided buffer
   // sprintf(buf, "%2d%02d%02d", timeInfo.Year + 1970, timeInfo.Month, timeInfo.Day);//, timeInfo.Hour, timeInfo.Minute, timeInfo.Second);
 
-  sprintf(buf, "%4d/%02d/%02d/-%02d:%02d:%02d", timeInfo.Year + 1970, timeInfo.Month, timeInfo.Day, timeInfo.Hour, timeInfo.Minute, timeInfo.Second);
+  sprintf(buf, "%4d/%02d/%02d-%02d:%02d:%02d", timeInfo.Year + 1970, timeInfo.Month, timeInfo.Day, timeInfo.Hour, timeInfo.Minute, timeInfo.Second);
 }
 
 void Tools_print2digits(int number) {
