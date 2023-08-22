@@ -1,4 +1,23 @@
 
+- [General description of project](#general-description-of-project)
+- [User guide](#user-guide)
+  - [Project structure](#project-structure)
+    - [final_project](#final_project)
+    - [misc](#misc)
+  - [QuickStart guide](#quickstart-guide)
+    - [Configuration settings](#configuration-settings)
+    - [LED error signal description](#led-error-signal-description)
+    - [Development environment](#development-environment)
+- [Component selection](#component-selection)
+- [Improvements](#improvements)
+  - [codebase](#codebase)
+    - [Wake up from deepsleep, from low
+      battery](#wake-up-from-deepsleep-from-low-battery)
+    - [Storage optimisation](#storage-optimisation)
+    - [Adding new sensors to the predicting
+      algorithm](#adding-new-sensors-to-the-predicting-algorithm)
+- [References](#references)
+
 # General description of project
 
 <!-- badges: start -->
@@ -6,25 +25,30 @@
 [![DOI](https://zenodo.org/badge/630480035.svg)](https://zenodo.org/badge/latestdoi/630480035)
 <!-- badges: end -->
 
-This project is a remote monitoring system to be used on the [Blue
-Diversion Autarky
+This project is a remote monitoring system developed for the Water Wall
+of the [Blue Diversion Autarky
 Project](https://www.eawag.ch/en/research/humanwelfare/wastewater/projects/autarky/),
-developed at EAWAG<sup>\[1\]</sup>.
+developed at EAWAG.
 
-The waterfall, currently only a prototype, requires that an operator
-come onsite regularly, to monitor the microbial water quality in the
-clean water tank. This is time-consuming and limits the possibility of
-performing high-quality field tests. This project aims to tackle this
+Insufficiently treated reused water can transmit
+diseases<sup>\[1\]</sup>. It is necessary to ensure that the treated
+water is microbially safe at all times<sup>\[2\]</sup>. To monitor the
+microbial water quality in the clean water tank, to ensure sufficently
+high microbial water quality, currently, the operator must perform
+biweekly, onsite water sampling<sup>\[3\]</sup>. This is time-consuming
+and limits the possibility of performing high-quality field tests.
+
+This RMS (Remote Monitoring System) project aims to tackle this
 challenge by providing a real-time, online microbial water quality
-monitoring. This ensures that the water is of sufficiently high
-microbial water quality such that the waterwall may be used at no risk
-for the user.
+prediction system. This RMS communicates problems to operators (in order
+to fix the problem) as well as to users (to make sure they are made
+aware in case the water is unsafe).
 
-A machine model was developed by XXX link, and implemented here. The
-only parameter is the ORP reading. Decision making of water being safe
-or unsafe is based on a cut-off value found from the trained model. For
-example a XXX and LRT XXX, the ORP value was found to be at. For varying
-values,
+This RMS is an implementation of the machine learning model developed at
+EAWAG<sup>\[4\]</sup>. Currently, the only input parameter is the ORP
+reading. Decision making of water being safe or unsafe is based on a
+cut-off value found from the trained model. In practice, this value may
+be set by the operator, according to their needs.
 
 # User guide
 
@@ -33,28 +57,50 @@ values,
 - RTC calibration
 - ML model --->
 
-## final_project
+## Project structure
 
-This folder contains the source code for the project. To use the system,
-clone the repo, assemble the hardware as described in XXX (report DOI, +
-section link of circuit structure) and upload the platformIO project to
-the board. Once uploaded, the device will automatically start.
+This proejct is divided in 2 folders: - final_project - misc
 
-## Configuration settings
+### final_project
+
+This folder contains the source code for the project.
+
+### misc
+
+This folder contains aditional files useful for the project.
+
+## QuickStart guide
+
+This section details the step to take to start using the device.
+
+To use the RMS:
+
+1.  clone this repo. Youn may alternatively download the .zip file from
+    the DOI link provided at the top.
+2.  assemble the hardware as shown in figure XXX
+3.  configure settings as described in section
+    [Section 2.2.1.1](#sec-configDescription)
+4.  upload the platformIO project to the board. Once uploaded, the
+    device will automatically start.
+
+### Configuration settings
 
 If the device is used for the first time, make sure the device is
-connected to a PC. This will help for debugging potential mis-settings.
+connected to a PC. This will help for debugging potential wrong
+settings.
 
 The first automatic run will create a RMS_V1.CFG file, with default,
-hard-coded settings. Once the device has run at least run, you can
+hard-coded settings. Once the device has run at least once, you can
 safely disconnect all power supply, remove the SD card, and easily tune
 the configuration settings.
 
 Alternatively, if you can easily upload the RMS_V1.CFG file to the SD
-card before the first run. RMS_V1.CFG can be found in XXX (folder
-location on github)
+card before the first run. RMS_V1.CFG can be found in the “misc” folder.
 
-### Configuration parameters
+#### Configuration settings description
+
+The parameters that may be tuned during the configuarion are the
+following.
 
 *logitThreshold* : (mv) any ORP reading above this value will translate
 into a safe waterquality. This setting is found from running the code
@@ -74,7 +120,7 @@ equal to 24. For example, consider *hbTargetHour* = 9 and
 *hbIntervalHour* = 6. A heartbeat will be sent to the operator at 9:00,
 15:00, 21:00, 03:00. Please note that the exact time at which a
 heartbeat is sent is the closest time to the aforementioned full hour,
-plus a maximum of *xwqSleepPeriod*. Indeed the heartbeat SMS is sent
+plus a maximum of *s/u/fwqSleepPeriod*. Indeed the heartbeat SMS is sent
 after the device woke up for a watermonitoring function.
 
 *swqSleepPeriod* : (s) how much time should elapse between two water
@@ -100,18 +146,19 @@ quality or faulty reading.
 *sendSMS* : (boolean) sets whether the SMS should be sent to the
 operator or not.
 
-*remoteNumberLength* : (integer) tells how long the operator phone
+*remoteNumberLength* : (integer) holds the length of the operator phone
 number is.
 
 *remoteNumber* : (string) holds the operator phone number.
 
 ### LED error signal description
 
-In case the RMS is started without being connected to a PC, the LEDs
-provide some feedback in case some problems occured during
-initialisation. There is always one or two LEDs on, to indicate what
-region is affected, while another LED will blink to differentiate
-between the possible causes for the issue.
+When the RMS is started, in case of problems during initialisations,
+LEDs provide some feedback.
+
+One or two LEDs are on, to indicate what region is affected, while
+another LED will blink to differentiate between the possible causes for
+the issue. The table below provides a guide to debug potential problems.
 
 | Region  | Exact problem                                        | On LED         | Blinking LED |
 |---------|------------------------------------------------------|----------------|--------------|
@@ -124,7 +171,7 @@ between the possible causes for the issue.
 | RTC     | Failed to set-up heartbeat                           | Green + orange | Yellow       |
 | Unknow  | Unknown error                                        | Red            | Blue         |
 
-## Development environment
+### Development environment
 
 This project was developped using VSCode and the platformIO extension.
 
@@ -168,29 +215,33 @@ cost of the hardware amounts to just under CHF 380.
 
 # Improvements
 
+In case this project is carried forward, or reused, below are some
+directions to take, to try and improve the project further.
+
 ## codebase
 
-### wake up from deepsleep, from low battery
+### Wake up from deepsleep, from low battery
 
 If the RMS is off the grid power, and has been running on the battery
 for some time, the battery voltage will drop. We have set a
-batteryEmptyVoltage at 3.5V. If the voltage drops below 3.5V + 5%3.5V,
-the device enters a “criticalEL” state, and must go to deepSleep, so as
-to consume as little as power possibe, while informing the user that the
-device is not running.
+<span style="font-family: 'Courier New', monospace;">batteryEmptyVoltage</span>
+at 3.5V. If the voltage drops below 3.5V + 0.05x3.5V, the device enters
+a <span style="font-family: 'Fira Code', monospace;">criticalEL</span>
+state, and must go to deepSleep, so as to consume as little as power
+possible, while informing the user that the device is not running.
 
 However, if the grid power eventually turns back on, we want the device
-to be able to power back up. For this to occur, we have implemented some
-measures to ensure the device wakes back up. Just before going to sleep,
-we attach an interrupt from the PMIC to the arduino. That way, if the
-PMIC detects a stable power supply, it may interrupt the Arduino, thus
-waking it up.
+to be able to power back up. For this to occur, just before going to
+sleep, an interrupt from the PMIC is attached to the arduino. That way,
+if the PMIC detects a stable power supply, it may interrupt the Arduino,
+thus waking it up. This is another reason why we send the device to deep
+sleep, and not completely off.
 
 Because of the amount of time it takes to deplete the battery, thorough
-test could not be performed
+test could not be performed.
 
 What remains to be tested, is whether the device can effectively carry
-on its usual business after the device has woken up from a deep sleep.
+on its usual routine after the device has woken up from a deep sleep.
 
 Also, we want to know what happens when the battery voltage gets too
 low. Will the circuit disconnect?
@@ -203,12 +254,19 @@ configuration struct. These values where either read from the SD card,
 or set from the default settings. This is the case for - SWQ sleep
 duration - UWQ sleep duration - FWQ sleep duration
 
+The code may be modified so that it uses the values in the
+ConfigurationStruct instead of that from the
+<span style="font-family: 'Courier New', monospace;">rmsClass</span>
+object. This would allow to make the
+<span style="font-family: 'Courier New', monospace;">rmsClass</span>
+object lighter and easier to read.
+
 ### Adding new sensors to the predicting algorithm
 
 Nonetheless, if one wants to include more sensors, the following steps
 should be included to the function `FSM_implementMLDecision`
 
-- Using the code, accessible from the paper \[11\]
+- Using the code, accessible from the paper<sup>\[4\]</sup>
   - Extract the standardization parameters (mean + SD) from the training
     dataset
   - Extract the PCA components from the training dataset
@@ -226,21 +284,43 @@ should be included to the function `FSM_implementMLDecision`
 - Compute the probability
 - Compare the probability with the probability limit found from training
 
-![\dfrac{A}{B}](https://latex.codecogs.com/svg.latex?%5Cdfrac%7BA%7D%7BB%7D "\dfrac{A}{B}")
-
-# Appendix
-
-## Master thesis report
+# References
 
 <div id="refs" class="references csl-bib-body hanging-indent"
 line-spacing="2">
 
-<div id="ref-RN32" class="csl-entry">
+<div id="ref-RN66" class="csl-entry">
 
-1\. Victorin, K., Hellström, K. G., & Rylander, R. (1972). Redox
-potential measurements for determining the disinfecting power of
-chlorinated water \[Journal Article\]. *Journal of Hygiene*, *70*(2),
-313–323. <https://doi.org/10.1017/S0022172400022361>
+1\. Howe, K. J., Hand, D. W., Crittenden, J. C., Trussell, R. R., &
+Tchobanoglous, G. (2012). *Principles of water treatment* \[Book\]. John
+Wiley & Sons.
+
+</div>
+
+<div id="ref-RN68" class="csl-entry">
+
+2\. Organization, W. H. (2016). *Quantitative microbial risk assessment:
+Application for water safety management* \[Journal Article\].
+
+</div>
+
+<div id="ref-RN10" class="csl-entry">
+
+3\. Sutherland, C., Reynaert, E., Dhlamini, S., Magwaza, F., Lienert,
+J., Riechmann, M. E., Buthelezi, S., Khumalo, D., Morgenroth, E., &
+Udert, K. M. (2021). Socio-technical analysis of a sanitation innovation
+in a peri-urban household in durban, south africa \[Journal Article\].
+*Science of the Total Environment*, *755*, 143284.
+
+</div>
+
+<div id="ref-RN30" class="csl-entry">
+
+4\. Reynaert, E., Steiner, P., Yu, Q., D’Olif, L., Joller, N.,
+Schneider, M. Y., & Morgenroth, E. (2023). Predicting microbial water
+quality in on-site water reuse systems with online sensors \[Journal
+Article\]. *Water Research*, *240*, 120075.
+<https://www.sciencedirect.com/science/article/pii/S0043135423005110?via%3Dihub>
 
 </div>
 

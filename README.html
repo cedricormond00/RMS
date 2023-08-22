@@ -20,7 +20,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="README_files/libs/clipboard/clipboard.min.js"></script>
@@ -47,24 +66,135 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="general-description-of-project" class="level1">
 <h1>General description of project</h1>
-<p>This project is a remote monitoring system to be used on the <a href="https://www.eawag.ch/en/research/humanwelfare/wastewater/projects/autarky/">Blue Diversion Autarky Project</a>, developed at EAWAG <span class="citation" data-cites="RN32">[@RN32]</span>.</p>
-<p>The waterfall, currently only a prototype, requires that an operator come onsite regularly, to monitor the microbial water quality in the clean water tank. This is time-consuming and limits the possibility of performing high-quality field tests. This project aims to tackle this challenge by providing a real-time, online microbial water quality monitoring. This ensures that the water is of sufficiently high microbial water quality such that the waterwall may be used at no risk for the user.</p>
+<!-- badges: start -->
+<p><a href="https://zenodo.org/badge/latestdoi/630480035"><img src="https://zenodo.org/badge/630480035.svg" class="img-fluid" alt="DOI"></a> <!-- badges: end --></p>
+<p>This project is a remote monitoring system deverloped for the Water Wall of the <a href="https://www.eawag.ch/en/research/humanwelfare/wastewater/projects/autarky/">Blue Diversion Autarky Project</a>, developed at EAWAG<sup>[1]</sup>.</p>
+To guarantee safe microbial water quality from the waterfall, regular monitoring must be performed. Currently only a prototype, the Water Wall’s clean water tank microbial water quality is currently monitored by a biweekly operator onsite visit {<span class="citation" data-cites="RN10">@RN10</span>}
+<div id="ref-RN10" class="csl-entry">
+<p>. clean water tank. This is time-consuming and limits the possibility of performing high-quality field tests.</p>
+<p>This project aims to tackle this challenge by providing a real-time, online microbial water quality prediction. This RMS communicates problems to operators (in order to fix the problem) as well as to users (to make sure they do not use the water when it is not safe). Algorithms to predict the microbial water quality based on sensor measurements have already been developed (Reynaert et al., 2023b). This ensures that the water is of sufficiently high microbial water quality such that the Water Wall may be used at no risk for the user.</p>
 <p>A machine model was developed by XXX link, and implemented here. The only parameter is the ORP reading. Decision making of water being safe or unsafe is based on a cut-off value found from the trained model. For example a XXX and LRT XXX, the ORP value was found to be at. For varying values,</p>
+</div></section>
+<section id="user-guide" class="level1">
+<h1>User guide</h1>
+<!--- The project is divided in 3 folders 
+- final project
+- RTC calibration
+- ML model --->
+<section id="final_project" class="level2">
+<h2 class="anchored" data-anchor-id="final_project">final_project</h2>
+<p>This folder contains the source code for the project. To use the system, clone the repo, assemble the hardware as described in XXX (report DOI, + section link of circuit structure) and upload the platformIO project to the board. Once uploaded, the device will automatically start.</p>
+</section>
+<section id="configuration-settings" class="level2">
+<h2 class="anchored" data-anchor-id="configuration-settings">Configuration settings</h2>
+<p>If the device is used for the first time, make sure the device is connected to a PC. This will help for debugging potential mis-settings.</p>
+<p>The first automatic run will create a RMS_V1.CFG file, with default, hard-coded settings. Once the device has run at least run, you can safely disconnect all power supply, remove the SD card, and easily tune the configuration settings.</p>
+<p>Alternatively, if you can easily upload the RMS_V1.CFG file to the SD card before the first run. RMS_V1.CFG can be found in XXX (folder location on github)</p>
+<section id="configuration-parameters" class="level3">
+<h3 class="anchored" data-anchor-id="configuration-parameters">Configuration parameters</h3>
+<p><em>logitThreshold</em> : (mv) any ORP reading above this value will translate into a safe waterquality. This setting is found from running the code found in XXX.</p>
+<p><em>uraPressDuration</em> : (ms) how long the user should press the button for an alarm to be raised. In case an SMS has already been sent less then <em>uraSMSInterval</em>, only a water monitoring will occur, but no SMS will be spamming the user.</p>
+<p><em>hbTargetHour</em> : (hour, 24) At what time should a heartbeat be sent to the operator.</p>
+<p><em>hbIntervalHour</em> : (hour) At what frequency should the heartbeat be sent, starting from the <em>hbTargetHour</em>. Ensure this value is less or equal to 24. For example, consider <em>hbTargetHour</em> = 9 and <em>hbIntervalHour</em> = 6. A heartbeat will be sent to the operator at 9:00, 15:00, 21:00, 03:00. Please note that the exact time at which a heartbeat is sent is the closest time to the aforementioned full hour, plus a maximum of <em>xwqSleepPeriod</em>. Indeed the heartbeat SMS is sent after the device woke up for a watermonitoring function.</p>
+<p><em>swqSleepPeriod</em> : (s) how much time should elapse between two water monitoring events, while the water quality is safe.</p>
+<p><em>uwqSleepPeriod</em> : (s) how much time should elapse between two water monitoring events, while the water quality is unsafe.</p>
+<p><em>fwqSleepPeriod</em> : (s) how much time should elapse between two water monitoring events, while there has been faulty reading.</p>
+<p><em>uraSMSInterval</em> : (s) how much time should elapse, before a new SMS can be sent to the operator, informing them that the user raised an alarm. This is to prevent spamming the operator with notifications in case the user uses too often the button press</p>
+<p><em>wmSMSInterval</em> : (s) how much time should elapse, before a new SMS can be sent to the operator, updating them on the waterquality status, after an unsafe or faulty reading was first detected. This is to prevent spamming the operator with notification in the case of unsafe water quality or faulty reading.</p>
+<p><em>sendSMS</em> : (boolean) sets whether the SMS should be sent to the operator or not.</p>
+<p><em>remoteNumberLength</em> : (integer) tells how long the operator phone number is.</p>
+<p><em>remoteNumber</em> : (string) holds the operator phone number.</p>
+</section>
+<section id="led-error-signal-description" class="level3">
+<h3 class="anchored" data-anchor-id="led-error-signal-description">LED error signal description</h3>
+<p>In case the RMS is started without being connected to a PC, the LEDs provide some feedback in case some problems occured during initialisation. There is always one or two LEDs on, to indicate what region is affected, while another LED will blink to differentiate between the possible causes for the issue.</p>
+<table class="table">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 58%">
+<col style="width: 17%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Region</th>
+<th>Exact problem</th>
+<th>On LED</th>
+<th>Blinking LED</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Battery</td>
+<td>Battery not conected</td>
+<td>Orange</td>
+<td>Red</td>
+</tr>
+<tr class="even">
+<td>Battery</td>
+<td>Low battery energy level</td>
+<td>Orange</td>
+<td>Yellow</td>
+</tr>
+<tr class="odd">
+<td>SD Card</td>
+<td>Failed to initialise</td>
+<td>Green</td>
+<td>Red</td>
+</tr>
+<tr class="even">
+<td>SD Card</td>
+<td>Failed to create a valid filename</td>
+<td>Green</td>
+<td>Yellow</td>
+</tr>
+<tr class="odd">
+<td>SMS</td>
+<td>Inappropriate phone number</td>
+<td>Yellow</td>
+<td>Red</td>
+</tr>
+<tr class="even">
+<td>RTC</td>
+<td>Failed to initialise internal RTC using external RTC</td>
+<td>Green + orange</td>
+<td>Red</td>
+</tr>
+<tr class="odd">
+<td>RTC</td>
+<td>Failed to set-up heartbeat</td>
+<td>Green + orange</td>
+<td>Yellow</td>
+</tr>
+<tr class="even">
+<td>Unknow</td>
+<td>Unknown error</td>
+<td>Red</td>
+<td>Blue</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="development-environment" class="level2">
+<h2 class="anchored" data-anchor-id="development-environment">Development environment</h2>
+<p>This project was developped using VSCode and the platformIO extension.</p>
+</section>
 </section>
 <section id="component-selection" class="level1">
 <h1>Component selection</h1>
 <p>The following components were used for the prototype. For ease of reproducibility, links to the used suppliers are provided. The final cost of the hardware amounts to just under CHF 380.</p>
 <table class="table">
 <colgroup>
-<col style="width: 11%">
-<col style="width: 11%">
-<col style="width: 11%">
-<col style="width: 11%">
-<col style="width: 11%">
-<col style="width: 11%">
-<col style="width: 11%">
-<col style="width: 11%">
-<col style="width: 11%">
+<col style="width: 8%">
+<col style="width: 7%">
+<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 12%">
+<col style="width: 3%">
+<col style="width: 57%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -148,7 +278,7 @@ ul.task-list li input[type="checkbox"] {
 </tr>
 <tr class="odd">
 <td>Antenna</td>
-<td>not the exact on the prototype</td>
+<td>not this exact one used in the prototype</td>
 <td>Arduino</td>
 <td>1</td>
 <td>CHF 5.70</td>
@@ -402,114 +532,8 @@ ul.task-list li input[type="checkbox"] {
 </tbody>
 </table>
 </section>
-<section id="user-guide" class="level1">
-<h1>User guide</h1>
-<!--- The project is divided in 3 folders 
-- final project
-- RTC calibration
-- ML model --->
-<section id="final_project" class="level2">
-<h2 class="anchored" data-anchor-id="final_project">final_project</h2>
-<p>This folder contains the source code for the project. To use the system, clone the repo, assemble the hardware as described in XXX (report DOI, + section link of circuit structure) and upload the platformIO project to the board. Once uploaded, the device will automatically start.</p>
-</section>
-<section id="configuration-settings" class="level2">
-<h2 class="anchored" data-anchor-id="configuration-settings">Configuration settings</h2>
-<p>If the device is used for the first time, make sure the device is connected to a PC. This will help for debugging potential mis-settings.</p>
-<p>The first automatic run will create a RMS_V1.CFG file, with default, hard-coded settings. Once the device has run at least run, you can safely disconnect all power supply, remove the SD card, and easily tune the configuration settings.</p>
-<p>Alternatively, if you can easily upload the RMS_V1.CFG file to the SD card before the first run. RMS_V1.CFG can be found in XXX (folder location on github)</p>
-<section id="configuration-parameters" class="level3">
-<h3 class="anchored" data-anchor-id="configuration-parameters">Configuration parameters</h3>
-<p><em>logitThreshold</em> : (mv) any ORP reading above this value will translate into a safe waterquality. This setting is found from running the code found in XXX.</p>
-<p><em>uraPressDuration</em> : (ms) how long the user should press the button for an alarm to be raised. In case an SMS has already been sent less then <em>uraSMSInterval</em>, only a water monitoring will occur, but no SMS will be spamming the user.</p>
-<p><em>hbTargetHour</em> : (hour, 24) At what time should a heartbeat be sent to the operator.</p>
-<p><em>hbIntervalHour</em> : (hour) At what frequency should the heartbeat be sent, starting from the <em>hbTargetHour</em>. Ensure this value is less or equal to 24. For example, consider <em>hbTargetHour</em> = 9 and <em>hbIntervalHour</em> = 6. A heartbeat will be sent to the operator at 9:00, 15:00, 21:00, 03:00. Please note that the exact time at which a heartbeat is sent is the closest time to the aforementioned full hour, plus a maximum of <em>xwqSleepPeriod</em>. Indeed the heartbeat SMS is sent after the device woke up for a watermonitoring function.</p>
-<p><em>swqSleepPeriod</em> : (ms) how much time should elapse between two water monitoring events, while the water quality is safe.</p>
-<p><em>uwqSleepPeriod</em> : (ms) how much time should elapse between two water monitoring events, while the water quality is unsafe.</p>
-<p><em>fwqSleepPeriod</em> : (ms) how much time should elapse between two water monitoring events, while there has been faulty reading.</p>
-<p><em>uraSMSInterval</em> : (ms) how much time should elapse, before a new SMS can be sent to the operator, informing them that the user raised an alarm. This is to prevent spamming the operator with notifications in case the user uses too often the button press</p>
-<p><em>wmSMSInterval</em> : (ms) how much time should elapse, before a new SMS can be sent to the operator, updating them on the waterquality status, after an unsafe or faulty reading was first detected. This is to prevent spamming the operator with notification in the case of unsafe water quality or faulty reading.</p>
-<p><em>sendSMS</em> : (boolean) sets whether the SMS should be sent to the operator or not.</p>
-<p><em>remoteNumberLength</em> : (integer) tells how long the operator phone number is.</p>
-<p><em>remoteNumber</em> : (string) holds the operator phone number.</p>
-</section>
-<section id="led-error-signal-description" class="level3">
-<h3 class="anchored" data-anchor-id="led-error-signal-description">LED error signal description</h3>
-<p>In case the RMS is started without being connected to a PC, the LEDs provide some feedback in case some problems occured during initialisation. There is always one or two LEDs on, to indicate what region is affected, while another LED will blink to differentiate between the possible causes for the issue.</p>
-<table class="table">
-<colgroup>
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 25%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Region</th>
-<th>Exact problem</th>
-<th>On LED</th>
-<th>Blinking LED</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Battery</td>
-<td>Battery not conected</td>
-<td>Orange</td>
-<td>Red</td>
-</tr>
-<tr class="even">
-<td>Battery</td>
-<td>Low battery energy level</td>
-<td>Orange</td>
-<td>Yellow</td>
-</tr>
-<tr class="odd">
-<td>SD Card</td>
-<td>Failed to initialise</td>
-<td>Green</td>
-<td>Red</td>
-</tr>
-<tr class="even">
-<td>SD Card</td>
-<td>Failed to create a valid filename</td>
-<td>Green</td>
-<td>Yellow</td>
-</tr>
-<tr class="odd">
-<td>SMS</td>
-<td>Inappropriate phone number</td>
-<td>Yellow</td>
-<td>Red</td>
-</tr>
-<tr class="even">
-<td>RTC</td>
-<td>Failed to initialise internal RTC using external RTC</td>
-<td>Green + orange</td>
-<td>Red</td>
-</tr>
-<tr class="odd">
-<td>RTC</td>
-<td>Failed to set-up heartbeat</td>
-<td>Green + orange</td>
-<td>Yellow</td>
-</tr>
-<tr class="even">
-<td>Unknow</td>
-<td>Unknown error</td>
-<td>Red</td>
-<td>Blue</td>
-</tr>
-</tbody>
-</table>
-</section>
-</section>
-<section id="development-environment" class="level2">
-<h2 class="anchored" data-anchor-id="development-environment">Development environment</h2>
-<p>This project was developped using VSCode and the platformIO extension.</p>
-</section>
-</section>
-<section id="impreovements" class="level1">
-<h1>Impreovements</h1>
+<section id="improvements" class="level1">
+<h1>Improvements</h1>
 <section id="codebase" class="level2">
 <h2 class="anchored" data-anchor-id="codebase">codebase</h2>
 <section id="wake-up-from-deepsleep-from-low-battery" class="level3">
@@ -524,12 +548,47 @@ ul.task-list li input[type="checkbox"] {
 <h3 class="anchored" data-anchor-id="storage-optimisation">Storage optimisation</h3>
 <p>Currently, a lot of variables are being stored inside the rms class. Some of which are updated during the setup phase with values from the configuration struct. These values where either read from the SD card, or set from the default settings. This is the case for - SWQ sleep duration - UWQ sleep duration - FWQ sleep duration</p>
 </section>
+<section id="adding-new-sensors-to-the-predicting-algorithm" class="level3">
+<h3 class="anchored" data-anchor-id="adding-new-sensors-to-the-predicting-algorithm">Adding new sensors to the predicting algorithm</h3>
+<p>Nonetheless, if one wants to include more sensors, the following steps should be included to the function <code>FSM_implementMLDecision</code></p>
+<ul>
+<li><p>Using the code, accessible from the paper [11]</p>
+<ul>
+<li>Extract the standardization parameters (mean + SD) from the training dataset</li>
+<li>Extract the PCA components from the training dataset</li>
+<li>Extract the β and α<sub>0</sub>, …, α<sub>n</sub> parameters from the model</li>
+</ul></li>
+<li><p>Extract the most conservative threshold probability, based on target values set (LRTMS2, or LogICC)</p></li>
+<li><p>Standardize the input parameters, using the input parameter from the trained model</p></li>
+<li><p>PCA the input parameters, using the input parameter from the trained model</p></li>
+<li><p>Pass the transformed input parameters, into the probability function</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><embed src="https://latex.codecogs.com/svg.latex?p%3D%5Cfrac%7Be%5E%7B%5Cbeta%2B%5Calpha_%7B0%7D%2B...%2B%5Calpha_%7Bn%7D%7D%7D%7B1%2Be%5E%7B%5Cbeta%2B%5Calpha_%7B0%7D%2B...%2B%5Calpha_%7Bn%7D%7D%7D" title="p=\frac{e^{\beta+\alpha_{0}+...+\alpha_{n}}}{1+e^{\beta+\alpha_{0}+...+\alpha_{n}}}" class="img-fluid"></p>
+<figcaption class="figure-caption">p=</figcaption>
+</figure>
+</div></li>
+<li><p>Compute the probability</p></li>
+<li><p>Compare the probability with the probability limit found from training</p></li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><embed src="https://latex.codecogs.com/svg.latex?%5Cdfrac%7BA%7D%7BB%7D" title="\dfrac{A}{B}" class="img-fluid"></p>
+<figcaption class="figure-caption"></figcaption>
+</figure>
+</div>
+</section>
 </section>
 </section>
 <section id="appendix" class="level1">
 <h1>Appendix</h1>
 <section id="master-thesis-report" class="level2">
 <h2 class="anchored" data-anchor-id="master-thesis-report">Master thesis report</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" data-line-spacing="2" role="list">
+<div id="ref-RN32" class="csl-entry" role="listitem">
+1. Victorin, K., Hellström, K. G., &amp; Rylander, R. (1972). Redox potential measurements for determining the disinfecting power of chlorinated water [Journal Article]. <em>Journal of Hygiene</em>, <em>70</em>(2), 313–323. <a href="https://doi.org/10.1017/S0022172400022361" class="uri">https://doi.org/10.1017/S0022172400022361</a>
+</div>
+</div>
 </section>
 </section>
 
