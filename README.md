@@ -59,7 +59,10 @@ be set by the operator, according to their needs.
 
 ## Project structure
 
-This proejct is divided in 2 folders: - final_project - misc
+This proejct is divided in 2 folders:
+
+- final_project
+- misc
 
 ### final_project
 
@@ -77,11 +80,20 @@ To use the RMS:
 
 1.  clone this repo. Youn may alternatively download the .zip file from
     the DOI link provided at the top.
-2.  assemble the hardware as shown in figure XXX
+2.  assemble the hardware as shown in figure [Figure 1](#fig-assembly)
 3.  configure settings as described in section
     [Section 2.2.1.1](#sec-configDescription)
 4.  upload the platformIO project to the board. Once uploaded, the
     device will automatically start.
+
+<img src="./readme_misc/230809_Annotated_V1_2.png"
+title="Title: assembly diagram" id="fig-assembly" style="width:50.0%"
+data-fig-alt="RMS assembly schematic"
+alt="Figure 1: RMS assembly diagram" />
+
+<figcaption>
+Figure 1: RMS assembly diagram.
+</figcaption>
 
 ### Configuration settings
 
