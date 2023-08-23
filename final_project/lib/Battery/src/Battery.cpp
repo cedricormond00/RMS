@@ -1,5 +1,4 @@
 /*
-  Read battery voltage on MKR WIFI 1010 and log values to the serial monitor
 
 
                             ┌─────── VBatt
@@ -33,7 +32,7 @@
 #include "Tool.h"
 
 
-
+// boolean for debugging: displays output if true
 bool debug_Battery = true;
 
 
@@ -55,7 +54,7 @@ bool Battery_runInitSequence(rmsClass& rmsClassArg){
     rmsClassArg.set_powerStructStablePowerSupply(Battery_getIsStablePowerSupply());
     if (!rmsClassArg.get_powerStructStablePowerSupply())
     {
-        Serial.println("NO stable power supply.");
+        Serial.println("No stable power supply.");
     }
     else{
         Serial.println("Stable power supply");
@@ -127,9 +126,9 @@ float Battery_getBatteryVoltage(void){
     float voltBat = voltADC * (maxSourceVoltage/3.3);         //we cannot use map since it requires int inputs/outputs
     if (debug_Battery && debug){
         //report information over Serial
-        Serial.print("The ADC on PB09 reads a value of ");
+        Serial.print("The ADC on pin PB09 reads a value of ");
         Serial.print(rawADC);
-        Serial.print(" which is equivialent to ");
+        Serial.print(" which is equivalent to ");
         Serial.print(voltADC);
         Serial.print("V. This means the battery voltage is ");
         Serial.print(voltBat);

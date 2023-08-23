@@ -8,25 +8,16 @@
 void LED_runInitBeginSignal();
 
 
-
-
-
-
-void multipin_pinMode(unsigned int pin_array[], unsigned int arraySize, unsigned int mode);
-//void multipin_pinMode_s(unsigned int (&pin_array)[], unsigned int mode);
-
-void multipin_HL(unsigned int pin_array[], unsigned int arraySize, unsigned int status);
-
 void ToggleLED(unsigned int pin);
-
-
 
 
 /** \brief function to show the LED initialisation has completed*/
 void LED_runInitCompleteSignal();
 
 
-
+/** \brief Visual feedback to inform what error was encountered
+ 
+*/
 void LED_showBatteryLowSignal();
 void LED_showBatteryNotConnectedSignal();
 void LED_showSDCardNokSignal();
@@ -38,5 +29,11 @@ void LED_showSMSnbnok();
 
 
 
+
+
+// void multipin_pinMode(unsigned int pin_array[], unsigned int arraySize, unsigned int mode);
+//void multipin_pinMode_s(unsigned int (&pin_array)[], unsigned int mode);
+
+// void multipin_HL(unsigned int pin_array[], unsigned int arraySize, unsigned int status);
 
 #endif

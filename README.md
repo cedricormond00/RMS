@@ -78,8 +78,9 @@ This section details the step to take to start using the device.
 
 To use the RMS:
 
-1.  clone this repo. Youn may alternatively download the .zip file from
-    the DOI link provided at the top.
+1.  clone this [repo](https://github.com/cedricormond00/RMS). Youn may
+    alternatively download the .zip file from the DOI link provided at
+    the top.
 2.  in the terminal, navigate your way to the final_project folder (‘cd
     yourPath/RMS/final_project’)
 3.  in the terminal, type ‘code .’. (You will need to have installed
