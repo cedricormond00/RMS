@@ -80,13 +80,18 @@ To use the RMS:
 
 1.  clone this repo. Youn may alternatively download the .zip file from
     the DOI link provided at the top.
-2.  assemble the hardware as shown in figure [Figure 1](#fig-assembly)
-3.  configure settings as described in section
+2.  in the terminal, navigate your way to the final_project folder (‘cd
+    yourPath/RMS/final_project’)
+3.  in the terminal, type ‘code .’. (You will need to have installed
+    VSCode beforehand)
+4.  assemble the hardware as shown in figure [Figure 1](#fig-assembly)
+5.  configure settings as described in section
     [Section 2.2.1.1](#sec-configDescription)
-4.  upload the platformIO project to the board. Once uploaded, the
+6.  build the project in VSCode
+7.  upload the platformIO project to the board. Once uploaded, the
     device will automatically start.
 
-<img src="./readme_misc/230809_Annotated_V1_2.png"
+<img src="./readme_misc/images/230809_Annotated_V1_2.png"
 title="Title: assembly diagram" id="fig-assembly" style="width:50.0%"
 data-fig-alt="RMS assembly schematic"
 alt="Figure 1: RMS assembly diagram" />
@@ -98,16 +103,15 @@ Figure 1: RMS assembly diagram.
 ### Configuration settings
 
 If the device is used for the first time, make sure the device is
-connected to a PC. This will help for debugging potential wrong
-settings.
+connected to a PC. This will help debugging potential wrong settings.
 
 The first automatic run will create a RMS_V1.CFG file, with default,
 hard-coded settings. Once the device has run at least once, you can
 safely disconnect all power supply, remove the SD card, and easily tune
 the configuration settings.
 
-Alternatively, if you can easily upload the RMS_V1.CFG file to the SD
-card before the first run. RMS_V1.CFG can be found in the “misc” folder.
+Alternatively, you can easily upload the RMS_V1.CFG file to the SD card
+before the first run. RMS_V1.CFG can be found in the “misc” folder.
 
 #### Configuration settings description
 
@@ -116,7 +120,7 @@ following.
 
 *logitThreshold* : (mv) any ORP reading above this value will translate
 into a safe waterquality. This setting is found from running the code
-found in XXX.
+found in<sup>\[4\]</sup>.
 
 *uraPressDuration* : (ms) how long the user should press the button for
 an alarm to be raised. In case an SMS has already been sent less then
